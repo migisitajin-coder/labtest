@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>에이랩 일일 로그</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 16px; }
+    h1 { font-size: 1.4rem; margin-bottom: 8px; }
+    h2 { font-size: 1.1rem; margin-top: 24px; margin-bottom: 8px; }
+    .section { border: 1px solid #ccc; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+    label { display: block; margin-bottom: 4px; font-size: 0.9rem; }
+    input, select, textarea { width: 100%; padding: 6px; margin-bottom: 8px; box-sizing: border-box; }
+    textarea { min-height: 60px; }
+    button { padding: 8px 14px; border-radius: 6px; border: none; cursor: pointer; }
+    button#saveBtn { background: #333; color: #fff; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.85rem; }
+    th, td { border: 1px solid #ddd; padding: 6px; text-align: center; }
+    th { background: #f5f5f5; }
+    .small { font-size: 0.8rem; color: #666; }
+  </style>
+</head>
+<body>
+  <h1>에이랩 일일 로그</h1>
+  <p class="small">브라우저에만 저장됩니다 (localStorage). 새로고침해도 기록은 남습니다.</p>
+
+  <form id="logForm">
+    <!-- 1. 날짜 & 오늘 할 일 / 안 할 일 -->
+    <div class="section">
+      <h2>1. 날짜 & 오늘 할 일</h2>
+      <label for="date">날짜</label>
+      <input type="date" id="date" required />
+
+      <label for="keyTasks">오늘 핵심 할 일 (한 줄)</label>
+      <input type="text" id="keyTasks" placeholder="예: 에이랩 일일 로그 설계" />
+
+      <label for="keyNotTasks">오늘 안 할 일 (한 줄)</label>
+      <input type="text" id="keyNotTasks" placeholder="예: 야식, 쓸데없는 뉴스 보기" />
+    </div>
+
+    <!-- 2. 약 3개까지 기록 -->
+    <div class="section">
+      <h2>2. 약 💊 (최대 3개)</h2>
+
+      <h3 style="font-size:0.95rem; margin:8px 0;">약 1</h3>
+      <label for="med1Name">약 1 이름</label>
+      <input type="text" id="med1Name" placeholder="예: 콘서타 36mg" />
+
+      <label>
+        <input type="checkbox" id="med1Taken" />
+        오늘 약 1 복용함
+      </label>
+
+      <label for="med1Time">약 1 복용 시간</label>
+      <input type="time" id="med1Time" />
+
+      <h3 style="font-size:0.95rem; margin:8px 0;">약 2</h3>
+      <label for="med2Name">약 2 이름</label>
+      <input type="text" id="med2Name" placeholder="예: 라믹탈 100mg" />
+
+      <label>
+        <input type="checkbox" id="med2Taken" />
+        오늘 약 2 복용함
+      </label>
+
+      <label for="med2Time">약 2 복용 시간</label>
+      <input type="time" id="med2Time" />
+
+      <h3 style="font-size:0.95rem; margin:8px 0;">약 3</h3>
+      <label for="med3Name">약 3 이름</label>
+      <input type="text" id="med3Name" placeholder="예: 리보트릴 0.25mg" />
+
+      <label>
+        <input type="checkbox" id="med3Taken" />
+        오늘 약 3 복용함
+      </label>
+
+      <label for="med3Time">약 3 복용 시간</label>
+      <input type="time" id="med3Time" />
+    </div>
+
+    <!-- 3. 수면 -->
+    <div class="section">
+      <h2>3. 수면 🌙</h2>
+
+      <label for="bedTime">누운 시간</label>
+      <input type="time" id="bedTime" />
+
+      <label for="sleepReal">진짜 잔다 (잠든 시각)</label>
+      <input type="time" id="sleepReal" />
+
+      <label for="sleepStart">어제 취침 시각 (기록용)</label>
+      <input type="time" id="sleepStart" />
+
+      <label for="tossingTime">뒤척인 시간 (자유 기입)</label>
+      <input type="text" id="tossingTime" placeholder="예: 30분, 많이 뒤척임" />
+
+      <label for="sleepEnd">오늘 기상 시각</label>
+      <input type="time" id="sleepEnd" />
+
+      <div class="small" id="sleepSummary"></div>
+    </div>
+
+    <!-- 4. 기분 / 에너지 / 집중 + 이유 -->
+    <div class="section">
+      <h2>4. 기분 / 에너지 / 집중 🙂</h2>
+      <label for="mood">기분 (1 매우 나쁨 ~ 5 매우 좋음)</label>
+      <select id="mood">
+        <option value="">선택</option>
+        <option value="1">1 - 매우 나쁨</option>
+        <option value="2">2 - 나쁨</option>
+        <option value="3">3 - 보통</option>
+        <option value="4">4 - 좋음</option>
+        <option value="5">5 - 매우 좋음</option>
+      </select>
+
+      <label for="energy">에너지 / 각성 정도</label>
+      <select id="energy">
+        <option value="">선택</option>
+        <option value="1">1 - 거의 없음</option>
+        <option value="2">2 - 낮음</option>
+        <option value="3">3 - 보통</option>
+        <option value="4">4">4 - 높음</option>
+        <option value="5">5 - 과각성 느낌</option>
+      </select>
+
+      <label for="focus">집중도</label>
+      <select id="focus">
+        <option value="">선택</option>
+        <option value="1">1 - 전혀 안 됨</option>
+        <option value="2">2 - 잘 안 됨</option>
+        <option value="3">3 - 중간</option>
+        <option value="4">4 - 잘 됨</option>
+        <option value="5">5 - 매우 잘 됨</option>
+      </select>
+
+      <label for="moodReason">왜 그런 기분이었는지 (간단히)</label>
+      <input type="text" id="moodReason" placeholder="예: 잠 부족, 사람과의 갈등, 일 잘 풀림 등" />
+    </div>
+
+    <!-- 5. 할 일 진행 & 메모 + 오늘 못한 느낌 -->
+    <div class="section">
+      <h2>5. 할 일 진행 & 메모</h2>
+      <label for="taskDone">오늘 할 일 완료율 (%)</label>
+      <select id="taskDone">
+        <option value="0">0%</option>
+        <option value="25">25%</option>
+        <option value="50">50%</option>
+        <option value="75">75%</option>
+        <option value="100">100%</option>
+      </select>
+
+      <label for="notes">메모 / 특이사항</label>
+      <textarea id="notes" placeholder="부작용, 기분 변화, 사건 등을 자유롭게 적기"></textarea>
+
+      <label for="notDoneFeeling">오늘 못한 느낌 (%)</label>
+      <input type="number" id="notDoneFeeling" min="0" max="100" placeholder="예: 30 (숫자만)" />
+
+      <label for="notesNotDone">메모 / 특이사항 (못한 부분 위주)</label>
+      <textarea id="notesNotDone" placeholder="못한 일, 남은 찝찝함 등을 자유롭게 적기"></textarea>
+    </div>
+
+    <button type="submit" id="saveBtn">저장</button>
+  </form>
+
+  <h2>최근 7일 로그</h2>
+  <table id="logTable">
+    <thead>
+      <tr>
+        <th>날짜</th>
+        <th>수면</th>
+        <th>약 (복용한 약 이름)</th>
+        <th>기분</th>
+        <th>에너지</th>
+        <th>집중</th>
+        <th>완료율</th>
+        <th>메모</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const STORAGE_KEY = "dailyLogs_v2"; // v2로 변경 (구버전과 구분)
+
+    // 오늘 날짜 기본값 설정
+    (function setToday() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, "0");
+      const dd = String(today.getDate()).padStart(2, "0");
+      document.getElementById("date").value = `${yyyy}-${mm}-${dd}`;
+    })();
+
+    function loadLogs() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [];
+      try {
+        return JSON.parse(raw);
+      } catch (e) {
+        console.error("JSON parse error", e);
+        return [];
+      }
+    }
+
+    function saveLogs(logs) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+    }
+
+    function calcSleepHours(start, end) {
+      if (!start || !end) return "";
+      const [sh, sm] = start.split(":").map(Number);
+      const [eh, em] = end.split(":").map(Number);
+      let startMin = sh * 60 + sm;
+      let endMin = eh * 60 + em;
+      // 새벽 넘어가는 수면 고려 (예: 23:30 ~ 07:30)
+      if (endMin <= startMin) {
+        endMin += 24 * 60;
+      }
+      const diff = endMin - startMin;
+      const h = Math.floor(diff / 60);
+      const m = diff % 60;
+      return `${h}시간 ${m}분`;
+    }
+
+    function renderSleepSummary() {
+      const s = document.getElementById("sleepStart").value;
+      const e = document.getElementById("sleepEnd").value;
+      const summary = calcSleepHours(s, e);
+      document.getElementById("sleepSummary").textContent =
+        summary ? `총 수면(취침~기상 기준): ${summary}` : "";
+    }
+
+    document.getElementById("sleepStart").addEventListener("change", renderSleepSummary);
+    document.getElementById("sleepEnd").addEventListener("change", renderSleepSummary);
+
+    function renderTable() {
+      const logs = loadLogs().sort((a, b) => b.date.localeCompare(a.date));
+      const tbody = document.querySelector("#logTable tbody");
+      tbody.innerHTML = "";
+
+      logs.slice(0, 7).forEach(log => {
+        const sleepText = calcSleepHours(log.sleepStart, log.sleepEnd);
+
+        // 오늘 복용한 약 이름 요약
+        const meds = [];
+        if (log.med1Name && log.med1Taken) meds.push(log.med1Name);
+        if (log.med2Name && log.med2Taken) meds.push(log.med2Name);
+        if (log.med3Name && log.med3Taken) meds.push(log.med3Name);
+        const medSummary = meds.join(", ");
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${log.date || "-"}</td>
+          <td>${sleepText || "-"}</td>
+          <td>${medSummary || "-"}</td>
+          <td>${log.mood || "-"}</td>
+          <td>${log.energy || "-"}</td>
+          <td>${log.focus || "-"}</td>
+          <td>${log.taskDone || 0}%</td>
+          <td>${(log.notes || "").slice(0, 15)}${log.notes && log.notes.length > 15 ? "..." : ""}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById("logForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const log = {
+        date: document.getElementById("date").value,
+        keyTasks: document.getElementById("keyTasks").value,
+        keyNotTasks: document.getElementById("keyNotTasks").value,
+
+        med1Name: document.getElementById("med1Name").value,
+        med1Taken: document.getElementById("med1Taken").checked,
+        med1Time: document.getElementById("med1Time").value,
+
+        med2Name: document.getElementById("med2Name").value,
+        med2Taken: document.getElementById("med2Taken").checked,
+        med2Time: document.getElementById("med2Time").value,
+
+        med3Name: document.getElementById("med3Name").value,
+        med3Taken: document.getElementById("med3Taken").checked,
+        med3Time: document.getElementById("med3Time").value,
+
+        bedTime: document.getElementById("bedTime").value,
+        sleepReal: document.getElementById("sleepReal").value,
+        sleepStart: document.getElementById("sleepStart").value,
+        tossingTime: document.getElementById("tossingTime").value,
+        sleepEnd: document.getElementById("sleepEnd").value,
+
+        mood: document.getElementById("mood").value,
+        energy: document.getElementById("energy").value,
+        focus: document.getElementById("focus").value,
+        moodReason: document.getElementById("moodReason").value,
+
+        taskDone: document.getElementById("taskDone").value,
+        notes: document.getElementById("notes").value,
+        notDoneFeeling: document.getElementById("notDoneFeeling").value,
+        notesNotDone: document.getElementById("notesNotDone").value
+      };
+
+      const logs = loadLogs();
+      // 같은 날짜가 이미 있으면 덮어쓰기
+      const idx = logs.findIndex(l => l.date === log.date);
+      if (idx >= 0) {
+        logs[idx] = log;
+      } else {
+        logs.push(log);
+      }
+      saveLogs(logs);
+      renderTable();
+      alert("저장되었습니다.");
+    });
+
+    // 초기 렌더
+    renderTable();
+  </script>
+</body>
+</html>
