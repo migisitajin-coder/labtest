@@ -18,6 +18,19 @@
     th, td { border: 1px solid #ddd; padding: 6px; text-align: center; }
     th { background: #f5f5f5; }
     .small { font-size: 0.8rem; color: #666; }
+
+    .row-flex { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; }
+    .row-flex input[type="text"] { flex: 1; margin-bottom: 0; }
+    .row-flex select { flex: 1; margin-bottom: 0; }
+    .row-flex input[type="checkbox"] { width: auto; margin-bottom: 0; }
+
+    .done-line { text-decoration: line-through; opacity: 0.5; }
+
+    .time-label { margin-left: 4px; color: red; font-size: 0.8rem; }
+
+    .tag-box { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .tag-box label { display: flex; align-items: center; gap: 2px; border: 1px solid #ddd; border-radius: 12px; padding: 2px 8px; font-size: 0.8rem; margin-bottom: 0; }
+    .tag-box input[type="checkbox"] { width: auto; margin: 0; }
   </style>
 </head>
 <body>
@@ -25,80 +38,149 @@
   <p class="small">브라우저에만 저장됩니다 (localStorage). 새로고침해도 기록은 남습니다.</p>
 
   <form id="logForm">
-    <!-- 1. 날짜 & 오늘 할 일 / 안 할 일 -->
+    <!-- 1. 날짜 & 오늘 할 일 / 안 한 일 -->
     <div class="section">
       <h2>1. 날짜 & 오늘 할 일</h2>
       <label for="date">날짜</label>
       <input type="date" id="date" required />
 
-      <label for="keyTasks">오늘 핵심 할 일 (한 줄)</label>
-      <input type="text" id="keyTasks" placeholder="예: 에이랩 일일 로그 설계" />
+      <label>오늘 핵심 할 일 (최대 3개)</label>
 
-      <label for="keyNotTasks">오늘 안 할 일 (한 줄)</label>
-      <input type="text" id="keyNotTasks" placeholder="예: 야식, 쓸데없는 뉴스 보기" />
+      <div class="row-flex">
+        <input type="text" id="keyTask1" placeholder="예: 에이랩 일일 로그 설계" />
+        <input type="checkbox" id="keyTask1Done" title="완료" />
+      </div>
+      <div class="row-flex">
+        <input type="text" id="keyTask2" placeholder="예: 약·수면 기록하기" />
+        <input type="checkbox" id="keyTask2Done" title="완료" />
+      </div>
+      <div class="row-flex">
+        <input type="text" id="keyTask3" placeholder="예: 방 정리 10분" />
+        <input type="checkbox" id="keyTask3Done" title="완료" />
+      </div>
+
+      <label>오늘 안 한 일 (피하고 싶은 것)</label>
+      <div class="row-flex">
+        <input type="text" id="keyNotTasks" placeholder="예: 야식, 쓸데없는 뉴스 보기" />
+        <input type="checkbox" id="keyNotTasksDone" title="지킨 경우 체크" />
+      </div>
     </div>
 
-    <!-- 2. 약 3개까지 기록 -->
+    <!-- 2. 약 3개까지 기록 (체크 시 현재 시각 빨간색 표시) -->
     <div class="section">
       <h2>2. 약 💊 (최대 3개)</h2>
 
       <h3 style="font-size:0.95rem; margin:8px 0;">약 1</h3>
-      <label for="med1Name">약 1 이름</label>
-      <input type="text" id="med1Name" placeholder="예: 콘서타 36mg" />
-
-      <label>
-        <input type="checkbox" id="med1Taken" />
-        오늘 약 1 복용함
+      <label>약 1 이름
+        <span id="med1TimeLabel" class="time-label"></span>
       </label>
-
-      <label for="med1Time">약 1 복용 시간</label>
-      <input type="time" id="med1Time" />
+      <div class="row-flex">
+        <input type="text" id="med1Name" placeholder="예: 콘서타 36mg" />
+        <input type="checkbox" id="med1Taken" title="복용 시 체크" />
+      </div>
 
       <h3 style="font-size:0.95rem; margin:8px 0;">약 2</h3>
-      <label for="med2Name">약 2 이름</label>
-      <input type="text" id="med2Name" placeholder="예: 라믹탈 100mg" />
-
-      <label>
-        <input type="checkbox" id="med2Taken" />
-        오늘 약 2 복용함
+      <label>약 2 이름
+        <span id="med2TimeLabel" class="time-label"></span>
       </label>
-
-      <label for="med2Time">약 2 복용 시간</label>
-      <input type="time" id="med2Time" />
+      <div class="row-flex">
+        <input type="text" id="med2Name" placeholder="예: 라믹탈 100mg" />
+        <input type="checkbox" id="med2Taken" title="복용 시 체크" />
+      </div>
 
       <h3 style="font-size:0.95rem; margin:8px 0;">약 3</h3>
-      <label for="med3Name">약 3 이름</label>
-      <input type="text" id="med3Name" placeholder="예: 리보트릴 0.25mg" />
-
-      <label>
-        <input type="checkbox" id="med3Taken" />
-        오늘 약 3 복용함
+      <label>약 3 이름
+        <span id="med3TimeLabel" class="time-label"></span>
       </label>
-
-      <label for="med3Time">약 3 복용 시간</label>
-      <input type="time" id="med3Time" />
+      <div class="row-flex">
+        <input type="text" id="med3Name" placeholder="예: 리보트릴 0.25mg" />
+        <input type="checkbox" id="med3Taken" title="복용 시 체크" />
+      </div>
     </div>
 
-    <!-- 3. 수면 -->
+    <!-- 3. 수면 (8단계 이벤트, 체크 시 항목 옆에 시간 표시) -->
     <div class="section">
       <h2>3. 수면 🌙</h2>
 
-      <label for="bedTime">누운 시간</label>
-      <input type="time" id="bedTime" />
+      <div>
+        <label>누운 시간
+          <span id="bedStamp" class="time-label"></span>
+        </label>
+        <div class="row-flex">
+          <input type="text" id="bedNote" placeholder="예: 침대에 누운 시각 느낌 메모" />
+          <input type="checkbox" id="bedChk" title="누웠을 때 체크" />
+        </div>
+      </div>
 
-      <label for="sleepReal">진짜 잔다 (잠든 시각)</label>
-      <input type="time" id="sleepReal" />
+      <div>
+        <label>폰 할꺼야
+          <span id="phoneStamp" class="time-label"></span>
+        </label>
+        <div class="row-flex">
+          <input type="text" id="phoneNote" placeholder="예: 유튜브 / SNS / 웹서핑 등" />
+          <input type="checkbox" id="phoneChk" title="폰 보기 시작 시 체크" />
+        </div>
+      </div>
 
-      <label for="sleepStart">어제 취침 시각 (기록용)</label>
-      <input type="time" id="sleepStart" />
+      <div>
+        <label>잠 안옴
+          <span id="noSleepStamp" class="time-label"></span>
+        </label>
+        <div class="row-flex">
+          <input type="text" id="noSleepNote" placeholder="예: 생각 많음, 불안, 몸 불편 등" />
+          <input type="checkbox" id="noSleepChk" title="잠 안 온다고 느낄 때 체크" />
+        </div>
+      </div>
 
-      <label for="tossingTime">뒤척인 시간 (시:분 기준)</label>
-      <input type="time" id="tossingTime" />
+      <div>
+        <label>진짜 잔다 (잠든 시각 느낌)
+          <span id="sleepRealStamp" class="time-label"></span>
+        </label>
+        <div class="row-flex">
+          <input type="text" id="sleepRealNote" placeholder="예: 눈 감고 더 이상 폰 안 잡음" />
+          <input type="checkbox" id="sleepRealChk" title="잠 들었다고 느낄 때 체크" />
+        </div>
+      </div>
 
-      <label for="sleepEnd">오늘 기상 시각</label>
-      <input type="time" id="sleepEnd" />
+      <div>
+        <label>일어남
+          <span id="wakeStamp" class="time-label"></span>
+        </label>
+        <div class="row-flex">
+          <input type="text" id="wakeNote" placeholder="예: 알람 울림, 한 번 깸" />
+          <input type="checkbox" id="wakeChk" title="깨는 순간 체크" />
+        </div>
+      </div>
 
-      <div class="small" id="sleepSummary"></div>
+      <div>
+        <label>꾸물거림
+          <span id="lingerStamp" class="time-label"></span>
+        </label>
+        <div class="row-flex">
+          <input type="text" id="lingerNote" placeholder="예: 침대에서 폰, 멍때리기 등" />
+          <input type="checkbox" id="lingerChk" title="꾸물거리기 시작 시 체크" />
+        </div>
+      </div>
+
+      <div>
+        <label>진짜 일어남
+          <span id="wakeRealStamp" class="time-label"></span>
+        </label>
+        <div class="row-flex">
+          <input type="text" id="wakeRealNote" placeholder="예: 자리에서 완전히 일어남" />
+          <input type="checkbox" id="wakeRealChk" title="완전히 일어난 시점 체크" />
+        </div>
+      </div>
+
+      <div>
+        <label>밤샘
+          <span id="allNightStamp" class="time-label"></span>
+        </label>
+        <div class="row-flex">
+          <input type="text" id="allNightNote" placeholder="예: 밤새 작업, 밤샘 느낌 메모" />
+          <input type="checkbox" id="allNightChk" title="밤샘 시 체크" />
+        </div>
+      </div>
     </div>
 
     <!-- 4. 기분 / 에너지 / 집중 + 이유 -->
@@ -138,7 +220,7 @@
       <input type="text" id="moodReason" placeholder="예: 잠 부족, 사람과의 갈등, 일 잘 풀림 등" />
     </div>
 
-    <!-- 5. 할 일 진행 & 메모 + 오늘 못한 느낌 -->
+    <!-- 5. 할 일 진행 & 메모 + 오늘 못한 느낌 + 태그(A안) -->
     <div class="section">
       <h2>5. 할 일 진행 & 메모</h2>
       <label for="taskDone">오늘 할 일 완료율 (%)</label>
@@ -152,6 +234,16 @@
 
       <label for="notes">메모 / 특이사항</label>
       <textarea id="notes" placeholder="부작용, 기분 변화, 사건 등을 자유롭게 적기"></textarea>
+
+      <span class="small">메모 태그 (중복 선택 가능, A안: 횟수 통계용)</span>
+      <div class="tag-box">
+        <label><input type="checkbox" class="memoTag" value="두통/몸 불편" />두통/몸 불편</label>
+        <label><input type="checkbox" class="memoTag" value="과각성" />과각성</label>
+        <label><input type="checkbox" class="memoTag" value="과식/야식" />과식/야식</label>
+        <label><input type="checkbox" class="memoTag" value="관계 스트레스" />관계 스트레스</label>
+        <label><input type="checkbox" class="memoTag" value="감정 기복 큼" />감정 기복 큼</label>
+        <label><input type="checkbox" class="memoTag" value="컨디션 좋음" />컨디션 좋음</label>
+      </div>
 
       <label for="notDoneFeeling">오늘 못한 느낌 (%)</label>
       <select id="notDoneFeeling">
@@ -174,20 +266,33 @@
     <thead>
       <tr>
         <th>날짜</th>
-        <th>수면</th>
+        <th>수면(진짜 잔다~진짜 일어남)</th>
         <th>약 (복용한 약 이름)</th>
         <th>기분</th>
         <th>에너지</th>
         <th>집중</th>
         <th>완료율</th>
+        <th>태그</th>
         <th>메모</th>
       </tr>
     </thead>
     <tbody></tbody>
   </table>
 
+  <h3 style="margin-top:16px;">메모 태그 통계 (전체 누적)</h3>
+  <div id="tagStats" class="small"></div>
+
   <script>
     const STORAGE_KEY = "dailyLogs_v2";
+
+    const MEMO_TAG_LIST = [
+      "두통/몸 불편",
+      "과각성",
+      "과식/야식",
+      "관계 스트레스",
+      "감정 기복 큼",
+      "컨디션 좋음"
+    ];
 
     // 오늘 날짜 기본값 설정
     (function setToday() {
@@ -213,85 +318,170 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
     }
 
-    function calcSleepHours(start, end) {
-      if (!start || !end) return "";
-      const [sh, sm] = start.split(":").map(Number);
-      const [eh, em] = end.split(":").map(Number);
-      let startMin = sh * 60 + sm;
-      let endMin = eh * 60 + em;
-      if (endMin <= startMin) {
-        endMin += 24 * 60;
-      }
-      const diff = endMin - startMin;
-      const h = Math.floor(diff / 60);
-      const m = diff % 60;
-      return `${h}시간 ${m}분`;
+    // 체크하면 줄 긋기 (오늘 할 일 / 오늘 안 한 일)
+    function attachStrikeCheckbox(checkboxId, inputId) {
+      const cb = document.getElementById(checkboxId);
+      const input = document.getElementById(inputId);
+      if (!cb || !input) return;
+      cb.addEventListener("change", () => {
+        if (cb.checked) input.classList.add("done-line");
+        else input.classList.remove("done-line");
+      });
     }
 
-    function renderSleepSummary() {
-      const s = document.getElementById("sleepStart").value;
-      const e = document.getElementById("sleepEnd").value;
-      const summary = calcSleepHours(s, e);
-      document.getElementById("sleepSummary").textContent =
-        summary ? `총 수면(취침~기상 기준): ${summary}` : "";
+    attachStrikeCheckbox("keyTask1Done", "keyTask1");
+    attachStrikeCheckbox("keyTask2Done", "keyTask2");
+    attachStrikeCheckbox("keyTask3Done", "keyTask3");
+    attachStrikeCheckbox("keyNotTasksDone", "keyNotTasks");
+
+    // 체크하면 현재 시간 빨간색 표시 (약 / 수면)
+    function formatNowTime() {
+      const d = new Date();
+      const h = String(d.getHours()).padStart(2, "0");
+      const m = String(d.getMinutes()).padStart(2, "0");
+      return `${h}:${m}`;
     }
 
-    document.getElementById("sleepStart").addEventListener("change", renderSleepSummary);
-    document.getElementById("sleepEnd").addEventListener("change", renderSleepSummary);
+    function attachTimeCheckbox(checkboxId, spanId) {
+      const cb = document.getElementById(checkboxId);
+      const span = document.getElementById(spanId);
+      if (!cb || !span) return;
+      cb.addEventListener("change", () => {
+        if (cb.checked) {
+          span.textContent = formatNowTime();
+        } else {
+          span.textContent = "";
+        }
+      });
+    }
 
-    function renderTable() {
+    // 약 3개
+    attachTimeCheckbox("med1Taken", "med1TimeLabel");
+    attachTimeCheckbox("med2Taken", "med2TimeLabel");
+    attachTimeCheckbox("med3Taken", "med3TimeLabel");
+
+    // 수면 8개
+    attachTimeCheckbox("bedChk", "bedStamp");
+    attachTimeCheckbox("phoneChk", "phoneStamp");
+    attachTimeCheckbox("noSleepChk", "noSleepStamp");
+    attachTimeCheckbox("sleepRealChk", "sleepRealStamp");
+    attachTimeCheckbox("wakeChk", "wakeStamp");
+    attachTimeCheckbox("lingerChk", "lingerStamp");
+    attachTimeCheckbox("wakeRealChk", "wakeRealStamp");
+    attachTimeCheckbox("allNightChk", "allNightStamp");
+
+    function renderTableAndStats() {
       const logs = loadLogs().sort((a, b) => b.date.localeCompare(a.date));
       const tbody = document.querySelector("#logTable tbody");
       tbody.innerHTML = "";
 
-      logs.slice(0, 7).forEach(log => {
-        const sleepText = calcSleepHours(log.sleepStart, log.sleepEnd);
+      // 태그 통계 초기화
+      const tagCounts = {};
+      MEMO_TAG_LIST.forEach(t => tagCounts[t] = 0);
 
+      logs.slice(0, 7).forEach(log => {
+        // 수면 요약: 진짜 잔다 ~ 진짜 일어남 기준
+        const start = log.sleepRealStamp || log.bedStamp || "";
+        const end = log.wakeRealStamp || log.wakeStamp || "";
+        let sleepText = "-";
+        if (start || end) {
+          const sTxt = start || "?";
+          const eTxt = end || "?";
+          sleepText = `${sTxt} ~ ${eTxt}`;
+        }
+
+        // 약 요약
         const meds = [];
         if (log.med1Name && log.med1Taken) meds.push(log.med1Name);
         if (log.med2Name && log.med2Taken) meds.push(log.med2Name);
         if (log.med3Name && log.med3Taken) meds.push(log.med3Name);
         const medSummary = meds.join(", ");
 
+        // 메모 태그
+        const memoTags = log.memoTags || [];
+        memoTags.forEach(t => {
+          if (tagCounts[t] != null) tagCounts[t] += 1;
+        });
+        const tagSummary = memoTags.join(", ");
+
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${log.date || "-"}</td>
-          <td>${sleepText || "-"}</td>
+          <td>${sleepText}</td>
           <td>${medSummary || "-"}</td>
           <td>${log.mood || "-"}</td>
           <td>${log.energy || "-"}</td>
           <td>${log.focus || "-"}</td>
           <td>${log.taskDone || 0}%</td>
+          <td>${tagSummary || "-"}</td>
           <td>${(log.notes || "").slice(0, 15)}${log.notes && log.notes.length > 15 ? "..." : ""}</td>
         `;
         tbody.appendChild(tr);
       });
+
+      // 태그 통계 표시
+      const statsDiv = document.getElementById("tagStats");
+      const totalLogs = logs.length;
+      if (!totalLogs) {
+        statsDiv.textContent = "아직 저장된 로그가 없습니다.";
+        return;
+      }
+      const parts = [];
+      MEMO_TAG_LIST.forEach(tag => {
+        const cnt = tagCounts[tag] || 0;
+        parts.push(`${tag}: ${cnt}회`);
+      });
+      statsDiv.textContent = parts.join(" / ");
     }
 
     document.getElementById("logForm").addEventListener("submit", function (e) {
       e.preventDefault();
+
+      // 메모 태그 수집
+      const tagChecks = Array.from(document.querySelectorAll(".memoTag"));
+      const memoTags = tagChecks.filter(c => c.checked).map(c => c.value);
+
       const log = {
         date: document.getElementById("date").value,
-        keyTasks: document.getElementById("keyTasks").value,
+
+        keyTask1: document.getElementById("keyTask1").value,
+        keyTask1Done: document.getElementById("keyTask1Done").checked,
+        keyTask2: document.getElementById("keyTask2").value,
+        keyTask2Done: document.getElementById("keyTask2Done").checked,
+        keyTask3: document.getElementById("keyTask3").value,
+        keyTask3Done: document.getElementById("keyTask3Done").checked,
+
         keyNotTasks: document.getElementById("keyNotTasks").value,
+        keyNotTasksDone: document.getElementById("keyNotTasksDone").checked,
 
         med1Name: document.getElementById("med1Name").value,
         med1Taken: document.getElementById("med1Taken").checked,
-        med1Time: document.getElementById("med1Time").value,
+        med1TimeLabel: document.getElementById("med1TimeLabel").textContent,
 
         med2Name: document.getElementById("med2Name").value,
         med2Taken: document.getElementById("med2Taken").checked,
-        med2Time: document.getElementById("med2Time").value,
+        med2TimeLabel: document.getElementById("med2TimeLabel").textContent,
 
         med3Name: document.getElementById("med3Name").value,
         med3Taken: document.getElementById("med3Taken").checked,
-        med3Time: document.getElementById("med3Time").value,
+        med3TimeLabel: document.getElementById("med3TimeLabel").textContent,
 
-        bedTime: document.getElementById("bedTime").value,
-        sleepReal: document.getElementById("sleepReal").value,
-        sleepStart: document.getElementById("sleepStart").value,
-        tossingTime: document.getElementById("tossingTime").value,
-        sleepEnd: document.getElementById("sleepEnd").value,
+        bedNote: document.getElementById("bedNote").value,
+        bedStamp: document.getElementById("bedStamp").textContent,
+        phoneNote: document.getElementById("phoneNote").value,
+        phoneStamp: document.getElementById("phoneStamp").textContent,
+        noSleepNote: document.getElementById("noSleepNote").value,
+        noSleepStamp: document.getElementById("noSleepStamp").textContent,
+        sleepRealNote: document.getElementById("sleepRealNote").value,
+        sleepRealStamp: document.getElementById("sleepRealStamp").textContent,
+        wakeNote: document.getElementById("wakeNote").value,
+        wakeStamp: document.getElementById("wakeStamp").textContent,
+        lingerNote: document.getElementById("lingerNote").value,
+        lingerStamp: document.getElementById("lingerStamp").textContent,
+        wakeRealNote: document.getElementById("wakeRealNote").value,
+        wakeRealStamp: document.getElementById("wakeRealStamp").textContent,
+        allNightNote: document.getElementById("allNightNote").value,
+        allNightStamp: document.getElementById("allNightStamp").textContent,
 
         mood: document.getElementById("mood").value,
         energy: document.getElementById("energy").value,
@@ -300,6 +490,7 @@
 
         taskDone: document.getElementById("taskDone").value,
         notes: document.getElementById("notes").value,
+        memoTags: memoTags,
         notDoneFeeling: document.getElementById("notDoneFeeling").value,
         notesNotDone: document.getElementById("notesNotDone").value
       };
@@ -312,11 +503,12 @@
         logs.push(log);
       }
       saveLogs(logs);
-      renderTable();
+      renderTableAndStats();
       alert("저장되었습니다.");
     });
 
-    renderTable();
+    // 초기 렌더
+    renderTableAndStats();
   </script>
 </body>
 </html>
