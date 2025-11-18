@@ -12,8 +12,8 @@
     label { display: block; margin-bottom: 4px; font-size: 0.9rem; }
     input, select, textarea { width: 100%; padding: 6px; margin-bottom: 8px; box-sizing: border-box; }
     textarea { min-height: 60px; }
-    button { padding: 8px 14px; border-radius: 6px; border: none; cursor: pointer; }
-    button#saveBtn { background: #333; color: #fff; }
+    button { padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; cursor: pointer; background: #f9f9f9; }
+    button#saveBtn { padding: 8px 14px; background: #333; color: #fff; border: none; }
     table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.85rem; }
     th, td { border: 1px solid #ddd; padding: 6px; text-align: center; }
     th { background: #f5f5f5; }
@@ -23,6 +23,7 @@
     .row-flex input[type="text"] { flex: 1; margin-bottom: 0; }
     .row-flex select { flex: 1; margin-bottom: 0; }
     .row-flex input[type="checkbox"] { width: auto; margin-bottom: 0; }
+    .row-flex button { width: auto; margin-bottom: 0; }
 
     .done-line { text-decoration: line-through; opacity: 0.5; }
 
@@ -31,6 +32,9 @@
     .tag-box { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
     .tag-box label { display: flex; align-items: center; gap: 2px; border: 1px solid #ddd; border-radius: 12px; padding: 2px 8px; font-size: 0.8rem; margin-bottom: 0; }
     .tag-box input[type="checkbox"] { width: auto; margin: 0; }
+
+    .score-label { display: inline-block; margin-bottom: 4px; }
+    .score-current { font-weight: bold; }
   </style>
 </head>
 <body>
@@ -66,12 +70,12 @@
       </div>
     </div>
 
-    <!-- 2. 약 3개까지 기록 (체크 시 날짜+시간 빨간색 표시) -->
+    <!-- 2. 약 복용 3개 -->
     <div class="section">
-      <h2>2. 약 💊 (최대 3개)</h2>
+      <h2>2. 약 복용 💊 (최대 3개)</h2>
 
-      <h3 style="font-size:0.95rem; margin:8px 0;">약 1</h3>
-      <label>약 1 이름
+      <h3 style="font-size:0.95rem; margin:8px 0;">아침</h3>
+      <label>복용하시는 약 1
         <span id="med1TimeLabel" class="time-label"></span>
       </label>
       <div class="row-flex">
@@ -79,8 +83,8 @@
         <input type="checkbox" id="med1Taken" title="복용 시 체크" />
       </div>
 
-      <h3 style="font-size:0.95rem; margin:8px 0;">약 2</h3>
-      <label>약 2 이름
+      <h3 style="font-size:0.95rem; margin:8px 0;">점심</h3>
+      <label>복용하시는 약 2
         <span id="med2TimeLabel" class="time-label"></span>
       </label>
       <div class="row-flex">
@@ -88,8 +92,8 @@
         <input type="checkbox" id="med2Taken" title="복용 시 체크" />
       </div>
 
-      <h3 style="font-size:0.95rem; margin:8px 0;">약 3</h3>
-      <label>약 3 이름
+      <h3 style="font-size:0.95rem; margin:8px 0;">저녁</h3>
+      <label>복용하시는 약 3
         <span id="med3TimeLabel" class="time-label"></span>
       </label>
       <div class="row-flex">
@@ -183,18 +187,20 @@
       </div>
     </div>
 
-    <!-- 4. 기분 / 에너지 / 집중 + 이유 -->
+    <!-- 4. 기분 / 에너지 / 집중 -->
     <div class="section">
       <h2>4. 기분 / 에너지 / 집중 🙂</h2>
-      <label for="mood">기분 (1 매우 나쁨 ~ 5 매우 좋음)</label>
-      <select id="mood">
-        <option value="">선택</option>
-        <option value="1">1 - 매우 나쁨</option>
-        <option value="2">2 - 나쁨</option>
-        <option value="3">3 - 보통</option>
-        <option value="4">4 - 좋음</option>
-        <option value="5">5 - 매우 좋음</option>
-      </select>
+
+      <!-- 기분: 점수 + 버튼 -->
+      <span class="score-label">기분 점수 (0~100)</span>
+      <div class="row-flex">
+        <span class="small">현재: <span id="moodValue" class="score-current">0</span></span>
+        <input type="hidden" id="mood" value="0" />
+      </div>
+      <div class="row-flex">
+        <button type="button" id="moodMinus5">-</button><span>5</span><button type="button" id="moodPlus5">+</button>
+        <button type="button" id="moodMinus10">-</button><span>10</span><button type="button" id="moodPlus10">+</button>
+      </div>
 
       <label for="energy">에너지 / 각성 정도</label>
       <select id="energy">
@@ -220,22 +226,40 @@
       <input type="text" id="moodReason" placeholder="예: 잠 부족, 사람과의 갈등, 일 잘 풀림 등" />
     </div>
 
-    <!-- 5. 할 일 진행 & 메모 + 오늘 못한 느낌 + 태그(A안) -->
+    <!-- 5. 할 일 진행 & 메모 -->
     <div class="section">
       <h2>5. 할 일 진행 & 메모</h2>
-      <label for="taskDone">오늘 할 일 완료율 (%)</label>
-      <select id="taskDone">
-        <option value="0">0%</option>
-        <option value="25">25%</option>
-        <option value="50">50%</option>
-        <option value="75">75%</option>
-        <option value="100">100%</option>
-      </select>
+
+      <!-- 완료율: 점수 + 버튼 -->
+      <span class="score-label">오늘 했어야 하는 일 완료율 (%)</span>
+      <div class="row-flex">
+        <span class="small">현재: <span id="taskDoneValue" class="score-current">0</span>%</span>
+        <input type="hidden" id="taskDone" value="0" />
+      </div>
+      <div class="row-flex">
+        <button type="button" id="taskDoneMinus5">-</button><span>5</span><button type="button" id="taskDonePlus5">+</button>
+        <button type="button" id="taskDoneMinus10">-</button><span>10</span><button type="button" id="taskDonePlus10">+</button>
+      </div>
 
       <label for="notes">메모 / 특이사항</label>
       <textarea id="notes" placeholder="부작용, 기분 변화, 사건 등을 자유롭게 적기"></textarea>
 
-      <span class="small">메모 태그 (중복 선택 가능, A안: 횟수 통계용)</span>
+      <!-- 못한 느낌: 점수 + 버튼 -->
+      <span class="score-label">오늘 못한 느낌 (%)</span>
+      <div class="row-flex">
+        <span class="small">현재: <span id="notDoneValue" class="score-current">0</span>%</span>
+        <input type="hidden" id="notDoneFeeling" value="0" />
+      </div>
+      <div class="row-flex">
+        <button type="button" id="notDoneMinus5">-</button><span>5</span><button type="button" id="notDonePlus5">+</button>
+        <button type="button" id="notDoneMinus10">-</button><span>10</span><button type="button" id="notDonePlus10">+</button>
+      </div>
+
+      <label for="notesNotDone">메모 / 특이사항 (못한 부분 위주)</label>
+      <textarea id="notesNotDone" placeholder="못한 일, 남은 찝찝함 등을 자유롭게 적기"></textarea>
+
+      <!-- 메모 태그 -->
+      <span class="small" style="display:block; margin-top:6px;">메모 태그 (중복 선택 가능, A안: 횟수 통계용)</span>
       <div class="tag-box">
         <label><input type="checkbox" class="memoTag" value="두통/몸 불편" />두통/몸 불편</label>
         <label><input type="checkbox" class="memoTag" value="과각성" />과각성</label>
@@ -245,17 +269,15 @@
         <label><input type="checkbox" class="memoTag" value="컨디션 좋음" />컨디션 좋음</label>
       </div>
 
-      <label for="notDoneFeeling">오늘 못한 느낌 (%)</label>
-      <select id="notDoneFeeling">
-        <option value="0">0%</option>
-        <option value="25">25%</option>
-        <option value="50">50%</option>
-        <option value="75">75%</option>
-        <option value="100">100%</option>
-      </select>
-
-      <label for="notesNotDone">메모 / 특이사항 (못한 부분 위주)</label>
-      <textarea id="notesNotDone" placeholder="못한 일, 남은 찝찝함 등을 자유롭게 적기"></textarea>
+      <!-- 체크 요약 -->
+      <div id="checkSummaryBox" class="small" style="margin-top:8px;">
+        <div>오늘 전체 체크수 : <span id="totalCheckCount" style="color:red;">0</span>개</div>
+        <div>1. 날짜 & 오늘 할 일: <span id="checkCount1">0</span>개</div>
+        <div>2. 약 복용: <span id="checkCount2">0</span>개</div>
+        <div>3. 수면: <span id="checkCount3">0</span>개</div>
+        <div>4. 기분/에너지/집중: <span id="checkCount4">0</span>개</div>
+        <div>5. 할 일 진행 & 메모: <span id="checkCount5">0</span>개</div>
+      </div>
     </div>
 
     <button type="submit" id="saveBtn">저장</button>
@@ -374,6 +396,45 @@
     attachTimeCheckbox("wakeRealChk", "wakeRealStamp");
     attachTimeCheckbox("allNightChk", "allNightStamp");
 
+    // 점수형 컨트롤 공통 함수
+    function makeScoreController(valueSpanId, hiddenInputId, minus5Id, plus5Id, minus10Id, plus10Id) {
+      let value = 0;
+      const span = document.getElementById(valueSpanId);
+      const hidden = document.getElementById(hiddenInputId);
+
+      function updateDisplay() {
+        span.textContent = value;
+        hidden.value = value;
+      }
+      updateDisplay();
+
+      function clamp(v) {
+        if (v < 0) return 0;
+        if (v > 100) return 100;
+        return v;
+      }
+
+      const m5 = document.getElementById(minus5Id);
+      const p5 = document.getElementById(plus5Id);
+      const m10 = document.getElementById(minus10Id);
+      const p10 = document.getElementById(plus10Id);
+
+      if (m5) m5.addEventListener("click", () => { value = clamp(value - 5); updateDisplay(); });
+      if (p5) p5.addEventListener("click", () => { value = clamp(value + 5); updateDisplay(); });
+      if (m10) m10.addEventListener("click", () => { value = clamp(value - 10); updateDisplay(); });
+      if (p10) p10.addEventListener("click", () => { value = clamp(value + 10); updateDisplay(); });
+
+      return {
+        getValue: () => value,
+        setValue: (v) => { value = clamp(Number(v) || 0); updateDisplay(); }
+      };
+    }
+
+    // 기분, 완료율, 못한 느낌 컨트롤 생성
+    const moodController = makeScoreController("moodValue", "mood", "moodMinus5", "moodPlus5", "moodMinus10", "moodPlus10");
+    const taskDoneController = makeScoreController("taskDoneValue", "taskDone", "taskDoneMinus5", "taskDonePlus5", "taskDoneMinus10", "taskDonePlus10");
+    const notDoneController = makeScoreController("notDoneValue", "notDoneFeeling", "notDoneMinus5", "notDonePlus5", "notDoneMinus10", "notDonePlus10");
+
     function renderTableAndStats() {
       const logs = loadLogs().sort((a, b) => b.date.localeCompare(a.date));
       const tbody = document.querySelector("#logTable tbody");
@@ -438,6 +499,15 @@
       statsDiv.textContent = parts.join(" / ");
     }
 
+    function updateCheckSummaryUI(log) {
+      document.getElementById("totalCheckCount").textContent = log.totalCheckCount || 0;
+      document.getElementById("checkCount1").textContent = log.checkCount1 || 0;
+      document.getElementById("checkCount2").textContent = log.checkCount2 || 0;
+      document.getElementById("checkCount3").textContent = log.checkCount3 || 0;
+      document.getElementById("checkCount4").textContent = log.checkCount4 || 0;
+      document.getElementById("checkCount5").textContent = log.checkCount5 || 0;
+    }
+
     document.getElementById("logForm").addEventListener("submit", function (e) {
       e.preventDefault();
 
@@ -499,6 +569,50 @@
         notesNotDone: document.getElementById("notesNotDone").value
       };
 
+      // 체크수 계산
+      const checkCount1 =
+        (log.keyTask1Done ? 1 : 0) +
+        (log.keyTask2Done ? 1 : 0) +
+        (log.keyTask3Done ? 1 : 0) +
+        (log.keyNotTasksDone ? 1 : 0);
+
+      const checkCount2 =
+        (log.med1Taken ? 1 : 0) +
+        (log.med2Taken ? 1 : 0) +
+        (log.med3Taken ? 1 : 0);
+
+      const checkCount3 =
+        (log.bedStamp ? 1 : 0) +
+        (log.phoneStamp ? 1 : 0) +
+        (log.noSleepStamp ? 1 : 0) +
+        (log.sleepRealStamp ? 1 : 0) +
+        (log.wakeStamp ? 1 : 0) +
+        (log.lingerStamp ? 1 : 0) +
+        (log.wakeRealStamp ? 1 : 0) +
+        (log.allNightStamp ? 1 : 0);
+
+      const checkCount4 =
+        (Number(log.mood) > 0 ? 1 : 0) +
+        (log.energy ? 1 : 0) +
+        (log.focus ? 1 : 0) +
+        (log.moodReason ? 1 : 0);
+
+      const checkCount5 =
+        (Number(log.taskDone) > 0 ? 1 : 0) +
+        (Number(log.notDoneFeeling) > 0 ? 1 : 0) +
+        (log.notes ? 1 : 0) +
+        (log.notesNotDone ? 1 : 0) +
+        (log.memoTags ? log.memoTags.length : 0);
+
+      const totalCheckCount = checkCount1 + checkCount2 + checkCount3 + checkCount4 + checkCount5;
+
+      log.checkCount1 = checkCount1;
+      log.checkCount2 = checkCount2;
+      log.checkCount3 = checkCount3;
+      log.checkCount4 = checkCount4;
+      log.checkCount5 = checkCount5;
+      log.totalCheckCount = totalCheckCount;
+
       const logs = loadLogs();
       const idx = logs.findIndex(l => l.date === log.date);
       if (idx >= 0) {
@@ -508,11 +622,22 @@
       }
       saveLogs(logs);
       renderTableAndStats();
+      updateCheckSummaryUI(log);
       alert("저장되었습니다.");
     });
 
     // 초기 렌더
     renderTableAndStats();
+
+    // 페이지 로드 시, 오늘 날짜 로그가 이미 있으면 체크요약만 불러오기 (선택)
+    (function initTodaySummary() {
+      const logs = loadLogs();
+      const today = document.getElementById("date").value;
+      const todayLog = logs.find(l => l.date === today);
+      if (todayLog && todayLog.totalCheckCount != null) {
+        updateCheckSummaryUI(todayLog);
+      }
+    })();
   </script>
 </body>
 </html>
