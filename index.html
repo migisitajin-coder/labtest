@@ -47,7 +47,7 @@
 
     .content {
       flex: 1;
-      padding: 8px 12px 60px;
+      padding: 8px 12px 120px; /* 아래쪽 여백: 기록입력 + 네비게이션 */
       overflow-y: auto;
     }
 
@@ -85,7 +85,7 @@
       transition: width 0.2s ease;
     }
 
-    /* 상단 요약 카드 (약/수면 2줄) */
+    /* 상단 요약 카드 (약 복용 / 수면 관리) */
     .summary-card {
       margin-top: 8px;
       padding: 10px;
@@ -103,7 +103,7 @@
       flex-wrap: wrap;
     }
     .summary-label {
-      width: 40px;
+      width: 66px;
       font-weight: 600;
     }
     .summary-slot {
@@ -216,17 +216,9 @@
       color: #d32f2f;
     }
 
-    /* 내 상태 기록 */
-    .state-card {
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 12px;
-      background: #ffffff;
-      border: 1px solid #ddd;
-    }
+    /* 기록 보기 */
     .state-log-list {
-      margin-top: 8px;
-      max-height: 120px;
+      max-height: 160px;
       overflow-y: auto;
       font-size: 0.8rem;
     }
@@ -239,10 +231,24 @@
       color: #777;
     }
 
+    /* 하단 입력 바 (내 상태 기록) */
+    .state-input-bar {
+      position: sticky;
+      bottom: 48px; /* 네비게이션 높이 */
+      background: #ffffff;
+      border-top: 1px solid #ddd;
+      padding: 4px 10px 6px;
+      z-index: 6;
+    }
+    .state-input-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
     .state-input-row {
       display: flex;
       gap: 6px;
-      margin-top: 4px;
+      margin-top: 2px;
     }
     .state-input-row input[type="text"] {
       flex: 1;
@@ -313,7 +319,6 @@
     <section class="progress-card">
       <div class="progress-header">
         <div class="progress-label">
-          <!-- 사람 뛰는 애니메이션은 나중에 이미지/아이콘으로 교체 -->
           🏃‍♀️ <span>오늘 진행률</span>
         </div>
         <span class="small" id="progressText">약·수면 기준 (임시)</span>
@@ -323,11 +328,11 @@
       </div>
     </section>
 
-    <!-- 상단 요약 카드 (약 / 수면) -->
+    <!-- 상단 요약 카드 (약 복용 / 수면 관리) -->
     <section class="summary-card">
-      <!-- 약 -->
+      <!-- 약 복용 -->
       <div class="summary-row" id="summaryMedRow">
-        <span class="summary-label">약</span>
+        <span class="summary-label">약 복용</span>
         <input type="checkbox" id="summaryMedCheck" class="summary-checkbox" />
         <span class="summary-slot" id="summaryMedSlot">-</span>
         <span class="summary-time-plan" id="summaryMedPlan">(--:--)</span>
@@ -335,9 +340,9 @@
         <span class="summary-diff" id="summaryMedDiff"></span>
         <button type="button" class="btn-next" id="summaryMedNextBtn">다음에</button>
       </div>
-      <!-- 수면 -->
+      <!-- 수면 관리 -->
       <div class="summary-row" id="summarySleepRow">
-        <span class="summary-label">수면</span>
+        <span class="summary-label">수면 관리</span>
         <input type="checkbox" id="summarySleepCheck" class="summary-checkbox" />
         <span class="summary-slot" id="summarySleepSlot">-</span>
         <span class="summary-time-plan" id="summarySleepPlan">(--:--)</span>
@@ -359,7 +364,7 @@
           <div class="column-card">
             <div class="column-title">
               <span>약 복용</span>
-              <span class="small">체크 시 상단 “약”에 반영</span>
+              <span class="small">체크 시 상단 "약 복용"에 반영</span>
             </div>
             <div id="medSlotsContainer"></div>
           </div>
@@ -367,7 +372,7 @@
           <div class="column-card">
             <div class="column-title">
               <span>수면 관리</span>
-              <span class="small">체크 시 상단 “수면”에 반영</span>
+              <span class="small">체크 시 상단 "수면 관리"에 반영</span>
             </div>
             <div id="sleepSlotsContainer"></div>
           </div>
@@ -375,16 +380,26 @@
       </div>
     </details>
 
-    <!-- 내 상태 기록 -->
-    <section class="state-card">
-      <div style="font-weight:600; font-size:0.95rem;">내 상태 기록</div>
-      <div class="state-input-row">
-        <input type="text" id="stateInput" placeholder="지금 상태를 한 줄로 적어주세요." />
-        <button type="button" class="btn-send" id="stateSendBtn">전송</button>
+    <!-- 기록 보기 아코디언 -->
+    <details class="accordion" id="logAccordion" open>
+      <summary>
+        <span>기록 보기</span>
+        <span class="small">내 상태 기록 리스트</span>
+      </summary>
+      <div class="accordion-body">
+        <div class="state-log-list" id="stateLogList"></div>
       </div>
-      <div class="state-log-list" id="stateLogList"></div>
-    </section>
+    </details>
   </main>
+
+  <!-- 내 상태 기록 입력 바 -->
+  <div class="state-input-bar">
+    <div class="state-input-title">내 상태 기록</div>
+    <div class="state-input-row">
+      <input type="text" id="stateInput" placeholder="지금 상태를 한 줄로 적어주세요." />
+      <button type="button" class="btn-send" id="stateSendBtn">전송</button>
+    </div>
+  </div>
 
   <!-- 하단 네비게이션 -->
   <nav class="bottom-nav">
@@ -413,36 +428,35 @@
 
 <script>
   /* -------------------------
-     1. 슬롯 기본 설정 (임시 값)
-     이 부분만 나중에 “약&수면 설정 화면”에서 수정 가능하게 확장하면 됩니다.
+     1. 약 / 수면 슬롯 기본 설정
   ------------------------- */
   const medSlotsConfig = [
-    { id: "med_morning", label: "아침", planTime: "09:00" },
-    { id: "med_lunch",   label: "점심", planTime: "13:00" },
-    { id: "med_dinner",  label: "저녁", planTime: "19:00" },
-    { id: "med_night",   label: "취침", planTime: "23:00" },
+    { id: "med_morning", label: "아침",   planTime: "09:00" },
+    { id: "med_lunch",   label: "점심",   planTime: "13:00" },
+    { id: "med_dinner",  label: "저녁",   planTime: "19:00" },
+    { id: "med_night",   label: "취침",   planTime: "23:00" },
     { id: "med_prn",     label: "필요시", planTime: "--:--" },
     { id: "med_custom",  label: "직접입력", planTime: "--:--" }
   ];
 
   const sleepSlotsConfig = [
-    { id: "sleep_bed",   label: "누움",   planTime: "01:00" },
-    { id: "sleep_sleep", label: "잠듦",   planTime: "01:30" },
-    { id: "sleep_wake",  label: "기상",   planTime: "08:00" },
-    { id: "sleep_nap",   label: "낮잠",   planTime: "15:00" },
-    { id: "sleep_custom",label: "직접입력", planTime: "--:--" }
+    { id: "sleep_bed",    label: "누움",   planTime: "01:00" },
+    { id: "sleep_sleep",  label: "잠듦",   planTime: "01:30" },
+    { id: "sleep_wake",   label: "기상",   planTime: "08:00" },
+    { id: "sleep_nap",    label: "낮잠",   planTime: "15:00" },
+    { id: "sleep_custom", label: "직접입력", planTime: "--:--" }
   ];
 
-  // 상태: 각 슬롯의 체크 여부 및 실제 시간
   let medSlotsState = medSlotsConfig.map(s => ({ ...s, checked: false, actualTime: null }));
   let sleepSlotsState = sleepSlotsConfig.map(s => ({ ...s, checked: false, actualTime: null }));
 
+  // 현재 포인터(상단 요약에 어떤 슬롯을 보여줄지)
   let currentMedIndex = 0;
-  let currentSleepIndex = sleepSlotsConfig.findIndex(s => s.label === "기상");
+  let currentSleepIndex = sleepSlotsState.findIndex(s => s.label === "기상");
   if (currentSleepIndex === -1) currentSleepIndex = 0;
 
   /* -------------------------
-     2. 유틸 함수
+     2. 시간 관련 유틸
   ------------------------- */
   function formatNowTime() {
     const d = new Date();
@@ -451,14 +465,13 @@
     return `${hh}:${mm}`;
   }
 
-  // planTime("09:00")과 actual("11:30") 차이 → "+2h30m" 같은 문자열
   function diffTime(plan, actual) {
     if (!plan || plan === "--:--" || !actual) return "";
     const [ph, pm] = plan.split(":").map(Number);
     const [ah, am] = actual.split(":").map(Number);
     const planMin = ph * 60 + pm;
     const actMin = ah * 60 + am;
-    let diff = actMin - planMin; // +면 늦게, -면 일찍
+    let diff = actMin - planMin; // + 늦음, - 빠름
     const sign = diff === 0 ? "±" : (diff > 0 ? "+" : "-");
     diff = Math.abs(diff);
     const h = Math.floor(diff / 60);
@@ -466,16 +479,9 @@
     return `${sign}${h}h${String(m).padStart(2, "0")}m`;
   }
 
-  function getFirstUncheckedIndex(stateArr) {
-    const idx = stateArr.findIndex(s => !s.checked);
-    return idx === -1 ? stateArr.length - 1 : idx;
-  }
-
   /* -------------------------
-     3. DOM 렌더링
+     3. 약/수면 슬롯 렌더링
   ------------------------- */
-
-  // (1) 하단 리스트 렌더
   function renderSlotsList() {
     const medContainer = document.getElementById("medSlotsContainer");
     const sleepContainer = document.getElementById("sleepSlotsContainer");
@@ -485,6 +491,7 @@
     medSlotsState.forEach((slot, index) => {
       const row = document.createElement("div");
       row.className = "slot-row";
+
       const cb = document.createElement("input");
       cb.type = "checkbox";
       cb.checked = slot.checked;
@@ -513,6 +520,7 @@
     sleepSlotsState.forEach((slot, index) => {
       const row = document.createElement("div");
       row.className = "slot-row";
+
       const cb = document.createElement("input");
       cb.type = "checkbox";
       cb.checked = slot.checked;
@@ -539,37 +547,7 @@
     });
   }
 
-  // (2) 상단 요약 카드 렌더
-  function renderSummary() {
-    // 약
-    currentMedIndex = getFirstUncheckedIndex(medSlotsState);
-    const medSlot = medSlotsState[currentMedIndex];
-    document.getElementById("summaryMedSlot").textContent = medSlot.label;
-    const planSpan = document.getElementById("summaryMedPlan");
-    planSpan.textContent = `(${medSlot.planTime})`;
-    planSpan.className = "summary-time-plan" + (medSlot.checked ? " done" : "");
-    const actualSpan = document.getElementById("summaryMedActual");
-    actualSpan.textContent = medSlot.actualTime ? medSlot.actualTime : "";
-    const diffSpan = document.getElementById("summaryMedDiff");
-    diffSpan.textContent = medSlot.actualTime ? diffTime(medSlot.planTime, medSlot.actualTime) : "";
-    const summaryMedCheck = document.getElementById("summaryMedCheck");
-    summaryMedCheck.checked = medSlot.checked;
-
-    // 수면
-    currentSleepIndex = getFirstUncheckedIndex(sleepSlotsState);
-    const sleepSlot = sleepSlotsState[currentSleepIndex];
-    document.getElementById("summarySleepSlot").textContent = sleepSlot.label;
-    const sPlanSpan = document.getElementById("summarySleepPlan");
-    sPlanSpan.textContent = `(${sleepSlot.planTime})`;
-    sPlanSpan.className = "summary-time-plan" + (sleepSlot.checked ? " done" : "");
-    const sActualSpan = document.getElementById("summarySleepActual");
-    sActualSpan.textContent = sleepSlot.actualTime ? sleepSlot.actualTime : "";
-    const sDiffSpan = document.getElementById("summarySleepDiff");
-    sDiffSpan.textContent = sleepSlot.actualTime ? diffTime(sleepSlot.planTime, sleepSlot.actualTime) : "";
-    const summarySleepCheck = document.getElementById("summarySleepCheck");
-    summarySleepCheck.checked = sleepSlot.checked;
-
-    // 진행률 (임시: 약+수면 전체 슬롯 중 체크된 비율)
+  function updateProgress() {
     const totalSlots = medSlotsState.length + sleepSlotsState.length;
     const doneSlots =
       medSlotsState.filter(s => s.checked).length +
@@ -579,31 +557,75 @@
     document.getElementById("progressText").textContent = `오늘 체크 진행률 ${rate}% (임시)`;
   }
 
+  function renderSummary() {
+    // 약 복용 - currentMedIndex 기준
+    const medSlot = medSlotsState[currentMedIndex];
+    document.getElementById("summaryMedSlot").textContent = medSlot.label;
+    const mPlanSpan = document.getElementById("summaryMedPlan");
+    mPlanSpan.textContent = `(${medSlot.planTime})`;
+    mPlanSpan.className = "summary-time-plan" + (medSlot.checked ? " done" : "");
+    const mActualSpan = document.getElementById("summaryMedActual");
+    mActualSpan.textContent = medSlot.actualTime ? medSlot.actualTime : "";
+    const mDiffSpan = document.getElementById("summaryMedDiff");
+    mDiffSpan.textContent = medSlot.actualTime ? diffTime(medSlot.planTime, medSlot.actualTime) : "";
+    document.getElementById("summaryMedCheck").checked = medSlot.checked;
+
+    // 수면 관리 - currentSleepIndex 기준
+    const sleepSlot = sleepSlotsState[currentSleepIndex];
+    document.getElementById("summarySleepSlot").textContent = sleepSlot.label;
+    const sPlanSpan = document.getElementById("summarySleepPlan");
+    sPlanSpan.textContent = `(${sleepSlot.planTime})`;
+    sPlanSpan.className = "summary-time-plan" + (sleepSlot.checked ? " done" : "");
+    const sActualSpan = document.getElementById("summarySleepActual");
+    sActualSpan.textContent = sleepSlot.actualTime ? sleepSlot.actualTime : "";
+    const sDiffSpan = document.getElementById("summarySleepDiff");
+    sDiffSpan.textContent = sleepSlot.actualTime ? diffTime(sleepSlot.planTime, sleepSlot.actualTime) : "";
+    document.getElementById("summarySleepCheck").checked = sleepSlot.checked;
+
+    updateProgress();
+  }
+
   // 초기 렌더
   renderSlotsList();
   renderSummary();
 
   /* -------------------------
-     4. 이벤트 바인딩
+     4. 슬롯 토글/다음 로직
   ------------------------- */
 
-  // (1) 하단 슬롯 체크 시
-  function handleSlotToggle(type, index, checked) {
+  // 체크 시: 상태 업데이트 + "체크된 슬롯 뒤의 다음 미체크 슬롯"을 포인터로
+  function handleSlotToggle(type, index, checkedFromUser) {
     const stateArr = type === "med" ? medSlotsState : sleepSlotsState;
     const slot = stateArr[index];
-    slot.checked = checked;
-    slot.actualTime = checked ? formatNowTime() : null;
+
+    slot.checked = checkedFromUser;
+    slot.actualTime = checkedFromUser ? formatNowTime() : null;
+
+    // 포인터 이동: "이번에 체크한 슬롯 뒤"에서 출발 → 다음 미체크 슬롯
+    if (checkedFromUser) {
+      let idx = index;
+      let step = 0;
+      const len = stateArr.length;
+      do {
+        idx = (idx + 1) % len;
+        step++;
+        if (!stateArr[idx].checked) break;
+      } while (step < len);
+      if (type === "med") currentMedIndex = idx;
+      else currentSleepIndex = idx;
+    }
+
     renderSlotsList();
     renderSummary();
   }
 
+  // 하단 리스트 체크
   document.getElementById("medSlotsContainer").addEventListener("change", (e) => {
     if (e.target.type === "checkbox") {
       const idx = Number(e.target.dataset.index);
       handleSlotToggle("med", idx, e.target.checked);
     }
   });
-
   document.getElementById("sleepSlotsContainer").addEventListener("change", (e) => {
     if (e.target.type === "checkbox") {
       const idx = Number(e.target.dataset.index);
@@ -611,7 +633,7 @@
     }
   });
 
-  // (2) 상단 요약 체크박스 → 현재 슬롯 토글
+  // 상단 요약 체크
   document.getElementById("summaryMedCheck").addEventListener("change", (e) => {
     handleSlotToggle("med", currentMedIndex, e.target.checked);
   });
@@ -619,55 +641,98 @@
     handleSlotToggle("sleep", currentSleepIndex, e.target.checked);
   });
 
-  // (3) “다음에” 버튼 → 현재 인덱스를 다음 미완료 슬롯으로 이동
+  // "다음에" 버튼: 순차적으로 다음 슬롯으로 커서 이동 (체크 여부와 관계 없이)
+  function moveNextSlot(type) {
+    const stateArr = type === "med" ? medSlotsState : sleepSlotsState;
+    if (!stateArr.length) return;
+    let idx = type === "med" ? currentMedIndex : currentSleepIndex;
+    idx = (idx + 1) % stateArr.length;
+    if (type === "med") currentMedIndex = idx;
+    else currentSleepIndex = idx;
+    renderSummary();
+  }
+
   document.getElementById("summaryMedNextBtn").addEventListener("click", () => {
-    const arr = medSlotsState;
-    if (!arr.length) return;
-    let idx = currentMedIndex;
-    let step = 0;
-    do {
-      idx = (idx + 1) % arr.length;
-      step++;
-      if (!arr[idx].checked) break;
-    } while (step < arr.length);
-    currentMedIndex = idx;
-    renderSummary();
+    moveNextSlot("med");
   });
-
   document.getElementById("summarySleepNextBtn").addEventListener("click", () => {
-    const arr = sleepSlotsState;
-    if (!arr.length) return;
-    let idx = currentSleepIndex;
-    let step = 0;
-    do {
-      idx = (idx + 1) % arr.length;
-      step++;
-      if (!arr[idx].checked) break;
-    } while (step < arr.length);
-    currentSleepIndex = idx;
-    renderSummary();
+    moveNextSlot("sleep");
   });
 
-  // (4) 내 상태 기록
+  /* -------------------------
+     5. 내 상태 기록 / 기록 보기
+  ------------------------- */
+
   const stateInput = document.getElementById("stateInput");
   const stateLogList = document.getElementById("stateLogList");
-  document.getElementById("stateSendBtn").addEventListener("click", () => {
+  const stateSendBtn = document.getElementById("stateSendBtn");
+
+  const stateLogs = []; // { text, timeStr, totalMinutes, diffText }
+
+  function addStateLog(text) {
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, "0");
+    const mm = String(now.getMinutes()).padStart(2, "0");
+    const timeStr = `${hh}:${mm}`;
+    let totalMinutes = now.getHours() * 60 + now.getMinutes();
+
+    let diffText = "방금 전";
+    if (stateLogs.length > 0) {
+      const prev = stateLogs[stateLogs.length - 1];
+      let diffMin = totalMinutes - prev.totalMinutes;
+      // 날짜가 바뀌었을 가능성까지 고려 (0시 넘어간 경우)
+      if (diffMin < 0) diffMin += 24 * 60;
+
+      if (diffMin < 1) {
+        diffText = "방금 전";
+      } else {
+        const h = Math.floor(diffMin / 60);
+        const m = diffMin % 60;
+        if (h === 0) {
+          diffText = `${m}분 전`;
+        } else if (m === 0) {
+          diffText = `${h}시간 전`;
+        } else {
+          diffText = `${h}시간 ${m}분 전`;
+        }
+      }
+    }
+
+    stateLogs.push({ text, timeStr, totalMinutes, diffText });
+    renderStateLogs();
+  }
+
+  function renderStateLogs() {
+    stateLogList.innerHTML = "";
+    const logsToShow = [...stateLogs].reverse(); // 최신이 위로
+    logsToShow.forEach((log) => {
+      const item = document.createElement("div");
+      item.className = "state-log-item";
+      item.innerHTML = `
+        <div>${log.text}</div>
+        <div class="state-log-time">${log.timeStr} · ${log.diffText}</div>
+      `;
+      stateLogList.appendChild(item);
+    });
+  }
+
+  stateSendBtn.addEventListener("click", () => {
     const text = stateInput.value.trim();
     if (!text) return;
-    const time = formatNowTime();
-    const item = document.createElement("div");
-    item.className = "state-log-item";
-    item.innerHTML = `<div>${text}</div><div class="state-log-time">${time}</div>`;
-    stateLogList.prepend(item);
+    addStateLog(text);
     stateInput.value = "";
   });
 
-  // (5) 아코디언 열림 상태(나중에 localStorage 연동 가능)
-  document.getElementById("medSleepAccordion").addEventListener("toggle", (e) => {
-    // TODO: localStorage에 open/close 저장 가능
+  stateInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      stateSendBtn.click();
+    }
   });
 
-  // (6) 하단 네비게이션
+  /* -------------------------
+     6. 하단 네비게이션 (임시 동작)
+  ------------------------- */
   document.querySelectorAll(".nav-item").forEach(item => {
     item.addEventListener("click", () => {
       document.querySelectorAll(".nav-item").forEach(i => i.classList.remove("active"));
