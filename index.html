@@ -2,1387 +2,1485 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>에이랩 일일로그</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>A-Lab · 일일로그</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    * { box-sizing: border-box; }
+    /* --------------------------
+       0. 기본 색상 & 공통 스타일
+       -------------------------- */
+    :root {
+      --bg-main: #f3f4f8;
+      --bg-card: #ffffff;
+      --accent: #6366f1;      /* 포인트 컬러 (보라계열) */
+      --accent-soft: #eef0ff;
+      --accent-warn: #ff6b6b;
+      --text-main: #111827;
+      --text-sub: #6b7280;
+      --border-soft: #e5e7eb;
+      --shadow-soft: 0 12px 30px rgba(15, 23, 42, 0.12);
+      --radius-card: 18px;
+      --radius-pill: 999px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       margin: 0;
-      background: #f5f5f7;
-      color: #111;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+        sans-serif;
+      background: var(--bg-main);
+      color: var(--text-main);
     }
-    .app {
-      max-width: 480px;
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* --------------------------
+       1. 상단 헤더
+       -------------------------- */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(243, 244, 248, 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+    }
+
+    .top-bar {
+      max-width: 960px;
       margin: 0 auto;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      background: #fff;
-    }
-    /* 상단 앱바 */
-    .app-bar {
+      padding: 8px 14px 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 12px;
-      border-bottom: 1px solid #ddd;
     }
-    .icon-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 16px;
-      border: none;
-      background: #f0f0f0;
+
+    .top-left,
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .menu-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 18px;
-    }
-    .app-title {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-weight: 700;
-      font-size: 1rem;
-    }
-    .app-title-emoji {
-      font-size: 1.1rem;
-    }
-    .app-title-text {
-      font-size: 1rem;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
     }
 
-    .content {
-      flex: 1;
-      padding: 8px 12px 120px; /* 아래쪽 여백: 기록입력 + 네비게이션 */
-      overflow-y: auto;
+    .menu-icon div {
+      width: 14px;
+      height: 2px;
+      background: #4b5563;
+      border-radius: 999px;
+      position: relative;
+    }
+
+    .menu-icon div::before,
+    .menu-icon div::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      width: 14px;
+      height: 2px;
+      background: #4b5563;
+      border-radius: 999px;
+    }
+
+    .menu-icon div::before {
+      top: -4px;
+    }
+
+    .menu-icon div::after {
+      top: 4px;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0.02em;
+      color: #111827;
+    }
+
+    .header-logo span.emoji {
+      font-size: 20px;
+    }
+
+    .header-logo span.text {
+      font-weight: 700;
+    }
+
+    .header-title-sub {
+      font-size: 11px;
+      color: var(--text-sub);
+      margin-left: 2px;
+    }
+
+    /* --------------------------
+       2. 전체 레이아웃 / 메인 컨테이너
+       -------------------------- */
+    main {
+      max-width: 960px;
+      margin: 8px auto 80px;
+      padding: 0 12px 24px;
+    }
+
+    .section-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      margin-top: 6px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .section-title-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #111827;
+    }
+
+    .section-sub {
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    /* --------------------------
+       3. 카드 공통 스타일
+       -------------------------- */
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-soft);
+      padding: 14px 14px 16px;
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .badge-soft {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      font-size: 11px;
+      color: #374151;
+    }
+
+    .badge-soft span {
+      font-size: 12px;
     }
 
     /* 진행률 바 */
-    .progress-card {
-      margin-top: 8px;
-      padding: 10px;
-      border-radius: 12px;
-      background: #fafafa;
-      border: 1px solid #e0e0e0;
-    }
-    .progress-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    .progress-wrapper {
+      margin-top: 4px;
       margin-bottom: 6px;
-      font-size: 0.85rem;
     }
-    .progress-label {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .progress-bar-wrap {
+
+    .progress-bar-bg {
       width: 100%;
-      height: 10px;
+      height: 12px;
       border-radius: 999px;
-      background: #e5e5e5;
+      background: #e5e7eb;
       overflow: hidden;
+      position: relative;
     }
+
     .progress-bar-fill {
-      width: 40%; /* TODO: 실제 데이터와 연동 */
       height: 100%;
-      background: #50c878;
-      transition: width 0.2s ease;
-    }
-
-    /* 상단 요약 카드 (약 복용 / 수면 관리) */
-    .summary-card {
-      margin-top: 8px;
-      padding: 10px;
-      border-radius: 12px;
-      background: #ffffff;
-      border: 1px solid #dde3ff;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-    }
-    .summary-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 0;
-      font-size: 0.85rem;
-      flex-wrap: wrap;
-    }
-    .summary-label {
-      width: 66px;
-      font-weight: 600;
-    }
-    .summary-slot {
-      font-weight: 500;
-      min-width: 40px;
-    }
-    .summary-time-plan {
-      font-size: 0.78rem;
-      color: #777;
-    }
-    .summary-time-plan.done {
-      text-decoration: line-through;
-      color: #bbb;
-    }
-    .summary-time-actual {
-      font-size: 0.85rem;
-      color: #d32f2f;
-      font-weight: 600;
-    }
-    .summary-diff {
-      font-size: 0.78rem;
-      color: #d32f2f;
-    }
-    .summary-checkbox {
-      transform: scale(1.1);
-    }
-    .btn-next, .btn-prev {
-      padding: 4px 8px;
+      width: 35%;
       border-radius: 999px;
-      font-size: 0.78rem;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .btn-next {
-      border: none;
-      background: #4caf50;
-      color: #fff;
-      margin-left: auto;
-    }
-    .btn-prev {
-      border: 1px solid #bbb;
-      background: #ffffff;
-      color: #555;
+      background: linear-gradient(90deg, #4ade80, #22c55e);
+      box-shadow: 0 4px 10px rgba(34, 197, 94, 0.4);
+      transition: width 0.3s ease-out;
     }
 
-    /* 약&수면 아코디언 */
-    details.accordion {
-      margin-top: 10px;
-      border-radius: 12px;
-      border: 1px solid #ddd;
-      background: #fafafa;
+    .runner-emoji {
+      position: absolute;
+      top: -18px;
+      right: 0;
+      font-size: 18px;
+      pointer-events: none;
     }
-    details.accordion summary {
-      list-style: none;
-      padding: 8px 10px;
-      cursor: pointer;
+
+    .progress-caption {
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--text-sub);
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-    details.accordion[open] summary {
-      border-bottom: 1px solid #ddd;
-    }
-    details.accordion summary::-webkit-details-marker {
-      display: none;
-    }
-    .accordion-body {
-      padding: 8px 8px 10px;
-    }
-    .accordion-arrow {
-      font-size: 0.9rem;
     }
 
-    .two-columns {
-      display: flex;
+    /* --------------------------
+       4. 상단 약/수면 “다음 항목” 카드
+       -------------------------- */
+    .next-row {
+      display: grid;
+      grid-template-columns: 1fr;
       gap: 8px;
+      margin-top: 6px;
     }
-    .column-card {
-      flex: 1;
-      background: #fff;
-      border-radius: 10px;
-      border: 1px solid #e0e0e0;
-      padding: 8px;
-      max-height: 200px;
-      overflow-y: auto;
+
+    @media (min-width: 540px) {
+      .next-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
-    .column-title {
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 4px;
+
+    .next-item-card {
+      border-radius: 14px;
+      background: linear-gradient(145deg, #ffffff, #f8fafc);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.15);
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+    }
+
+    .next-item-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-    .slot-row {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 0.8rem;
-      padding: 2px 0;
-      flex-wrap: wrap;
-    }
-    .slot-row input[type="checkbox"] {
-      flex-shrink: 0;
-    }
-    .slot-name {
-      min-width: 40px;
-    }
-    .slot-plan {
-      font-size: 0.75rem;
-      color: #777;
-    }
-    .slot-plan.done {
-      text-decoration: line-through;
-      color: #bbb;
-    }
-    .slot-actual {
-      font-size: 0.75rem;
-      color: #d32f2f;
-    }
-    .slot-diff {
-      font-size: 0.75rem;
-      color: #d32f2f;
+      font-size: 12px;
+      color: #4b5563;
     }
 
-    /* 기록 보기 */
-    .state-log-list {
-      max-height: 160px;
-      overflow-y: auto;
-      font-size: 0.8rem;
-    }
-    .state-log-item {
-      padding: 4px 0;
-      border-bottom: 1px solid #f0f0f0;
-    }
-    .state-log-time {
-      font-size: 0.75rem;
-      color: #777;
-    }
-
-    /* 하단 입력 바 (내 상태 기록) */
-    .state-input-bar {
-      position: sticky;
-      bottom: 48px; /* 네비게이션 높이 */
-      background: #ffffff;
-      border-top: 1px solid #ddd;
-      padding: 4px 10px 6px;
-      z-index: 6;
-    }
-    .state-input-title {
-      font-size: 0.8rem;
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-    .state-input-row {
+    .next-item-main {
       display: flex;
-      gap: 6px;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
       margin-top: 2px;
     }
-    .state-input-row input[type="text"] {
-      flex: 1;
-      padding: 6px;
-      font-size: 0.85rem;
+
+    .next-label {
+      font-size: 13px;
+      font-weight: 600;
     }
-    .btn-send {
-      padding: 6px 10px;
-      font-size: 0.85rem;
-      border-radius: 999px;
-      border: none;
-      background: #1976d2;
-      color: #fff;
-      cursor: pointer;
+
+    .next-time {
+      font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono",
+        "Courier New", monospace;
+      font-size: 14px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .next-diff {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-warn);
       white-space: nowrap;
     }
 
-    /* 하단 네비게이션 */
+    .pill-btn {
+      border-radius: 999px;
+      border: none;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #22c55e;
+      color: white;
+      box-shadow: 0 6px 14px rgba(34, 197, 94, 0.35);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .pill-btn span {
+      font-size: 12px;
+    }
+
+    /* --------------------------
+       5. 약 & 수면 아코디언 카드
+       -------------------------- */
+    .accordion-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      padding: 4px 0 2px;
+    }
+
+    .accordion-title {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .accordion-arrow {
+      font-size: 16px;
+      color: #6b7280;
+      transition: transform 0.2s ease-out;
+    }
+
+    .accordion-arrow.open {
+      transform: rotate(180deg);
+    }
+
+    .med-sleep-columns {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    @media (min-width: 640px) {
+      .med-sleep-columns {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .sub-card {
+      border-radius: 16px;
+      background: #f9fafb;
+      padding: 10px 12px 10px;
+      box-shadow: inset 0 0 0 1px rgba(209, 213, 219, 0.8);
+    }
+
+    .sub-card-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #374151;
+    }
+
+    .check-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 6px 8px;
+      margin-bottom: 4px;
+      border-radius: 12px;
+      background: #ffffff;
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+      font-size: 12px;
+    }
+
+    .check-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .check-label-main {
+      font-weight: 500;
+    }
+
+    .check-plan {
+      font-size: 11px;
+      color: #6b7280;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
+    }
+
+    .check-right {
+      text-align: right;
+      min-width: 70px;
+    }
+
+    .check-time {
+      font-size: 11px;
+      color: var(--accent-warn);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
+    }
+
+    .check-diff {
+      font-size: 10px;
+      color: var(--accent-warn);
+    }
+
+    .check-row.checked .check-label-main {
+      text-decoration: line-through;
+      color: #9ca3af;
+    }
+
+    .check-row.checked .check-plan {
+      text-decoration: line-through;
+      color: #d1d5db;
+    }
+
+    /* --------------------------
+       6. 내 상태 기록 카드
+       -------------------------- */
+    .status-card-input {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .status-input {
+      flex: 1;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-soft);
+      padding: 8px 12px;
+      font-size: 13px;
+      outline: none;
+      background: #f9fafb;
+    }
+
+    .status-input:focus {
+      border-color: var(--accent);
+      background: #ffffff;
+      box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.4);
+    }
+
+    .status-send-btn {
+      border-radius: 999px;
+      border: none;
+      background: var(--accent);
+      color: white;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 8px 16px rgba(99, 102, 241, 0.45);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .status-send-btn span {
+      font-size: 12px;
+    }
+
+    .status-log-list {
+      margin-top: 10px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 10px;
+      background: #f9fafb;
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+
+    .status-content {
+      flex: 1;
+      word-break: break-all;
+    }
+
+    .status-time {
+      font-size: 11px;
+      color: var(--text-sub);
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    /* --------------------------
+       7. 통계 카드
+       -------------------------- */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .stat-pill {
+      border-radius: 16px;
+      background: #f9fafb;
+      padding: 8px 10px;
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .stat-label {
+      color: #6b7280;
+    }
+
+    .stat-value {
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    /* --------------------------
+       8. 네비게이션 바
+       -------------------------- */
     .bottom-nav {
-      position: sticky;
+      position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      height: 48px;
-      border-top: 1px solid #ddd;
-      background: #fff;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.18);
       display: flex;
-      z-index: 5;
+      justify-content: center;
+      align-items: center;
+      z-index: 30;
     }
+
+    .bottom-nav-inner {
+      max-width: 960px;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      padding: 0 12px;
+    }
+
     .nav-item {
       flex: 1;
-      font-size: 0.7rem;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 2px;
+      font-size: 10px;
+      color: #6b7280;
       cursor: pointer;
-      color: #555;
     }
+
+    .nav-item span.icon {
+      font-size: 16px;
+    }
+
     .nav-item.active {
-      color: #1976d2;
+      color: var(--accent);
       font-weight: 600;
     }
 
-    /* --- 약&수면 상세보기 전용 스타일 --- */
-    .medset-header {
-      margin-top: 8px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .medset-header-dot {
-      font-size: 1.1rem;
-    }
-    .medset-tabs {
-      margin-top: 8px;
-      display: flex;
-      border-bottom: 1px solid #ddd;
-    }
-    .medset-tab {
-      flex: 1;
-      padding: 8px 0;
-      font-size: 0.9rem;
-      border: none;
-      cursor: pointer;
-      background: #f5f5f5;
-      color: #555;
-    }
-    .medset-tab.active {
-      background: #e1e3ff;
-      color: #111;
-      font-weight: 600;
-      border-bottom: 2px solid #5c6bc0;
+    /* --------------------------
+       9. 약&수면 상세보기 화면
+       -------------------------- */
+    #detailView {
+      max-width: 960px;
+      margin: 8px auto 80px;
+      padding: 0 12px 24px;
     }
 
-    .medset-section-title {
-      margin-top: 10px;
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-    .med-card {
-      margin-top: 6px;
-      background: #ffffff;
-      border-radius: 14px;
-      border: 1px solid #e0e0e0;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-      padding: 10px;
-    }
-    .med-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    .med-card-title {
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-    .med-card-date {
-      text-align: center;
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-    .med-card-date span {
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: #f5f5f5;
-    }
-    .med-row {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      margin-bottom: 4px;
-      flex-wrap: wrap;
-      font-size: 0.8rem;
-    }
-    .med-row-label {
-      width: 40px;
-      font-weight: 600;
-    }
-    .med-input-text {
-      flex: 1;
-      min-width: 60px;
-      padding: 4px;
-      font-size: 0.78rem;
-    }
-    .med-input-small {
-      width: 50px;
-      padding: 4px;
-      font-size: 0.78rem;
-    }
-    .med-select {
-      padding: 3px;
-      font-size: 0.78rem;
-    }
-    .med-delete-btn {
-      margin-left: auto;
-      padding: 2px 6px;
-      font-size: 0.7rem;
-      border-radius: 999px;
-      border: 1px solid #ccc;
-      background: #fff0f0;
-      color: #d32f2f;
-      cursor: pointer;
-    }
-    .med-footer-row {
+    .detail-header {
       margin-top: 8px;
-      text-align: right;
-    }
-    .btn-primary {
-      padding: 6px 12px;
-      font-size: 0.8rem;
-      border-radius: 999px;
-      border: none;
-      background: #1976d2;
-      color: #fff;
-      cursor: pointer;
-    }
-
-    .med-delete-list {
-      margin-top: 8px;
-      padding: 8px;
-      background: #f5f5f5;
-      border-radius: 10px;
-      font-size: 0.78rem;
-    }
-    .med-delete-list-title {
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .med-calendar-card {
-      margin-top: 10px;
-      background: #ffffff;
-      border-radius: 14px;
-      border: 1px solid #e0e0e0;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-      padding: 10px;
-      font-size: 0.8rem;
-    }
-    .med-calendar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 4px;
-    }
-    .med-calendar-header span {
-      font-weight: 600;
-    }
-    .med-calendar-month-btn {
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      font-size: 0.9rem;
-      padding: 2px 6px;
-    }
-    .med-calendar-grid {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.75rem;
       margin-bottom: 6px;
-    }
-    .med-calendar-grid th,
-    .med-calendar-grid td {
-      text-align: center;
-      padding: 2px 0;
-    }
-    .med-calendar-grid th {
+      font-size: 14px;
       font-weight: 600;
-    }
-    .med-calendar-grid td span {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      line-height: 20px;
-      border-radius: 50%;
-    }
-    .med-calendar-grid td span.today {
-      background: #ffe082;
-      font-weight: 600;
-    }
-    .med-calendar-grid td span.in-range {
-      background: #bbdefb;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .med-range-buttons {
+    .detail-tabs {
+      display: flex;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid #e5e7eb;
+      background: #e5e7eb;
+      margin-bottom: 10px;
+      max-width: 260px;
+    }
+
+    .detail-tab {
+      flex: 1;
+      text-align: center;
+      padding: 6px 0;
+      font-size: 13px;
+      cursor: pointer;
+      color: #6b7280;
+    }
+
+    .detail-tab.active {
+      background: #ffffff;
+      color: #111827;
+      font-weight: 600;
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.15);
+    }
+
+    .detail-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-soft);
+      padding: 14px 14px 16px;
+      margin-bottom: 14px;
+    }
+
+    .detail-row {
+      display: grid;
+      grid-template-columns: 70px 1fr;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+
+    .detail-row label {
+      font-weight: 600;
+      color: #4b5563;
+    }
+
+    .detail-input-line {
       display: flex;
       gap: 6px;
-      margin-bottom: 6px;
-    }
-    .med-range-buttons button {
-      flex: 1;
-      padding: 4px 0;
-      border-radius: 999px;
-      border: none;
-      cursor: pointer;
-      font-size: 0.78rem;
-      background: #f5f5f5;
-    }
-    .med-range-buttons button.active {
-      background: #ffcc80;
-      font-weight: 600;
-    }
-    .med-range-label {
-      padding: 4px 6px;
-      background: #424242;
-      color: #fff;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      text-align: center;
-      margin-bottom: 6px;
+      align-items: center;
+      flex-wrap: wrap;
     }
 
-    @media (min-width: 768px) {
-      .app {
-        margin-top: 16px;
-        margin-bottom: 16px;
-        border-radius: 16px;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-      }
+    .detail-input {
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      padding: 6px 8px;
+      font-size: 12px;
+      min-width: 60px;
+      background: #f9fafb;
+      outline: none;
+    }
+
+    .detail-input:focus {
+      border-color: var(--accent);
+      background: #ffffff;
+      box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.35);
+    }
+
+    .detail-suffix {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    .detail-save-btn {
+      margin-top: 10px;
+      width: 100%;
+      border-radius: var(--radius-pill);
+      border: none;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    /* 간단한 달력 틀 (디자인용) */
+    .mini-calendar {
+      border-radius: 18px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      padding: 10px 10px 12px;
+      margin-top: 8px;
+    }
+
+    .mini-cal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .mini-cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 2px;
+      font-size: 10px;
+      text-align: center;
+      color: #6b7280;
+    }
+
+    .mini-cal-cell {
+      padding: 4px 0;
+      border-radius: 8px;
+    }
+
+    .mini-cal-cell.today {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .period-display {
+      margin-top: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      background: #111827;
+      color: white;
+      border-radius: 999px;
+      padding: 6px 10px;
     }
   </style>
 </head>
 <body>
-<div class="app">
-  <!-- 상단 앱바 -->
-  <header class="app-bar">
-    <button class="icon-btn" title="설정 / 메뉴">
-      ☰
-    </button>
-    <div class="app-title">
-      <span class="app-title-emoji">🧠</span>
-      <span class="app-title-text">A-Lab</span>
+  <!-- 상단 헤더 -->
+  <header>
+    <div class="top-bar">
+      <div class="top-left">
+        <div class="menu-icon">
+          <div></div>
+        </div>
+      </div>
+      <div class="header-logo">
+        <span class="emoji">🧠</span>
+        <span class="text">A-Lab</span>
+        <span class="header-title-sub">일일로그</span>
+      </div>
+      <div class="top-right">
+        <!-- 오른쪽에는 나중에 설정/프로필 아이콘 등 배치 가능 -->
+      </div>
     </div>
-    <div style="width:32px;height:32px;"></div>
   </header>
 
-  <main class="content">
-    <!-- 뷰 1: 일일 로그 (기존 화면) -->
-    <div id="viewDaily">
-      <!-- 진행률 카드 -->
-      <section class="progress-card">
-        <div class="progress-header">
-          <div class="progress-label">
-            🏃‍♀️ <span>오늘 진행률</span>
-          </div>
-          <span class="small" id="progressText">약·수면 기준 (임시)</span>
-        </div>
-        <div class="progress-bar-wrap">
-          <div class="progress-bar-fill" id="progressBar"></div>
-        </div>
-      </section>
-
-      <!-- 상단 요약 카드 (약 복용 / 수면 관리) -->
-      <section class="summary-card">
-        <!-- 약 복용 -->
-        <div class="summary-row" id="summaryMedRow">
-          <span class="summary-label">약 복용</span>
-          <input type="checkbox" id="summaryMedCheck" class="summary-checkbox" />
-          <span class="summary-slot" id="summaryMedSlot">-</span>
-          <span class="summary-time-plan" id="summaryMedPlan">(--:--)</span>
-          <span class="summary-time-actual" id="summaryMedActual"></span>
-          <span class="summary-diff" id="summaryMedDiff"></span>
-          <button type="button" class="btn-prev" id="summaryMedPrevBtn">이전</button>
-          <button type="button" class="btn-next" id="summaryMedNextBtn">다음에</button>
-        </div>
-        <!-- 수면 관리 -->
-        <div class="summary-row" id="summarySleepRow">
-          <span class="summary-label">수면 관리</span>
-          <input type="checkbox" id="summarySleepCheck" class="summary-checkbox" />
-          <span class="summary-slot" id="summarySleepSlot">-</span>
-          <span class="summary-time-plan" id="summarySleepPlan">(--:--)</span>
-          <span class="summary-time-actual" id="summarySleepActual"></span>
-          <span class="summary-diff" id="summarySleepDiff"></span>
-          <button type="button" class="btn-prev" id="summarySleepPrevBtn">이전</button>
-          <button type="button" class="btn-next" id="summarySleepNextBtn">다음에</button>
-        </div>
-      </section>
-
-      <!-- 약&수면 아코디언 -->
-      <details class="accordion" id="medSleepAccordion" open>
-        <summary>
-          <span>약 & 수면</span>
-          <span class="accordion-arrow" data-for="medSleepAccordion">▲</span>
-        </summary>
-        <div class="accordion-body">
-          <div class="two-columns">
-            <!-- 약 복용 리스트 -->
-            <div class="column-card">
-              <div class="column-title">
-                <span>약 복용</span>
-              </div>
-              <div id="medSlotsContainer"></div>
-            </div>
-            <!-- 수면 관리 리스트 -->
-            <div class="column-card">
-              <div class="column-title">
-                <span>수면 관리</span>
-              </div>
-              <div id="sleepSlotsContainer"></div>
+  <!-- 메인 일일로그 화면 -->
+  <main id="mainView">
+    <!-- 1. 오늘 진행률 & 다음 약/수면 -->
+    <section class="card">
+      <div class="card-header-row">
+        <div>
+          <div class="section-title-row">
+            <div class="section-title">
+              <span class="section-title-dot"></span>
+              <span>오늘 요약</span>
             </div>
           </div>
+          <div class="section-sub" id="todayDateLabel"></div>
         </div>
-      </details>
-
-      <!-- 기록 보기 아코디언 -->
-      <details class="accordion" id="logAccordion" open>
-        <summary>
-          <span>기록 보기</span>
-          <span class="accordion-arrow" data-for="logAccordion">▲</span>
-        </summary>
-        <div class="accordion-body">
-          <div class="state-log-list" id="stateLogList"></div>
+        <div class="badge-soft">
+          <span>✔</span>
+          <span id="todayDoneCount">0개 완료</span>
         </div>
-      </details>
-    </div>
-
-    <!-- 뷰 2: 약&수면 상세보기 (설정 탭) -->
-    <div id="viewMedSettings" style="display:none;">
-      <div class="medset-header">
-        <span class="medset-header-dot">●</span>
-        <span>약&수면 상세보기</span>
       </div>
 
-      <div class="medset-tabs">
-        <button type="button" class="medset-tab active" data-medtab="med">약</button>
-        <button type="button" class="medset-tab" data-medtab="sleep">수면</button>
+      <div class="progress-wrapper">
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressFill"></div>
+          <div class="runner-emoji">🏃‍♀️</div>
+        </div>
+        <div class="progress-caption">
+          <span>기록하면 채워지는 하루</span>
+          <span id="progressPercentLabel">0%</span>
+        </div>
       </div>
 
-      <!-- 약 탭 내용 -->
-      <div id="medTabPane">
-        <div class="medset-section-title">* 약 설정하기</div>
-        <div class="med-card">
-          <div class="med-card-header">
-            <span class="med-card-title">약 설정하기</span>
-            <button class="icon-btn" style="width:26px;height:26px;font-size:14px;" title="편집">
-              ✏️
+      <div class="next-row">
+        <!-- 약 -->
+        <div class="next-item-card" id="nextMedCard">
+          <div class="next-item-top">
+            <span>💊 약</span>
+            <button class="pill-btn" type="button" onclick="markNext('med')">
+              <span>다음에</span> ➜
             </button>
           </div>
-          <div class="med-card-date">
-            <span id="medConfigDate">&lt; 오늘 날짜 &gt;</span>
-          </div>
-
-          <!-- 기본 6개 항목 -->
-          <div id="medRows">
-            <!-- 예시 행 템플릿을 JS에서 생성 -->
-          </div>
-
-          <!-- 삭제 목록 / 복구용 (UI만 우선 구성) -->
-          <div class="med-delete-list">
-            <div class="med-delete-list-title">삭제 목록 (스와이프 대신 버튼으로 임시 구현)</div>
-            <div id="medDeletedList">삭제된 항목이 여기에 표시됩니다.</div>
-            <button type="button" class="btn-primary" id="medRestoreBtn" style="margin-top:4px;">복구하기</button>
-          </div>
-
-          <div class="med-footer-row">
-            <button type="button" class="btn-primary">저장</button>
+          <div class="next-item-main">
+            <div>
+              <div class="next-label" id="nextMedLabel">아침</div>
+              <div class="section-sub">설정된 시간 기준</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="next-time" id="nextMedTime">09:00</div>
+              <div class="next-diff" id="nextMedDiff">+0h00m</div>
+            </div>
           </div>
         </div>
 
-        <!-- 약 복용 기간 설정용 달력 카드 (UI 중심, 동작은 간단 처리) -->
-        <div class="med-calendar-card">
-          <div class="med-calendar-header">
-            <button class="med-calendar-month-btn" id="calPrevMonthBtn">◀월</button>
-            <span id="calMonthLabel">11월</span>
-            <button class="med-calendar-month-btn" id="calNextMonthBtn">월▶</button>
+        <!-- 수면 -->
+        <div class="next-item-card" id="nextSleepCard">
+          <div class="next-item-top">
+            <span>😴 수면</span>
+            <button class="pill-btn" type="button" onclick="markNext('sleep')">
+              <span>다음에</span> ➜
+            </button>
           </div>
-          <table class="med-calendar-grid">
-            <thead>
-              <tr>
-                <th>SUN</th><th>MON</th><th>TUE</th><th>WED</th><th>THU</th><th>FRI</th><th>SAT</th>
-              </tr>
-            </thead>
-            <tbody id="calBody">
-              <!-- JS로 날짜 채움 -->
-            </tbody>
-          </table>
-
-          <div class="med-range-buttons">
-            <button type="button" data-range="7" id="btnRange7">1주일</button>
-            <button type="button" data-range="14" id="btnRange14">2주일</button>
-            <button type="button" data-range="30" id="btnRange30">한달</button>
-            <button type="button" data-range="custom" id="btnRangeCustom">(+)</button>
-          </div>
-
-          <div class="med-range-label" id="rangeLabel">
-            기간을 선택하면 여기에<br/>예: 한달 · 25/11.20(목) ~ 26.1.20(화)
-          </div>
-
-          <div style="text-align:right;margin-top:4px;">
-            <button type="button" class="btn-primary">저장</button>
+          <div class="next-item-main">
+            <div>
+              <div class="next-label" id="nextSleepLabel">기상</div>
+              <div class="section-sub">설정된 시간 기준</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="next-time" id="nextSleepTime">07:30</div>
+              <div class="next-diff" id="nextSleepDiff">+0h00m</div>
+            </div>
           </div>
         </div>
       </div>
+    </section>
 
-      <!-- 수면 탭 내용 (지금은 구조만, 추후 세부 내용 추가) -->
-      <div id="sleepTabPane" style="display:none;">
-        <div class="medset-section-title" style="margin-top:10px;">수면 설정 (추후 구체화)</div>
-        <div class="med-card">
-          <p style="font-size:0.8rem;margin:0;">
-            수면 탭을 눌렀을 때 보여줄 상세 설정 영역입니다.<br/>
-            수면 시간대, 알림, 수면 패턴 등을 여기서 설계하시면 됩니다.
-          </p>
+    <!-- 2. 약 & 수면 아코디언 카드 -->
+    <section class="card">
+      <div class="accordion-header" onclick="toggleAccordion()">
+        <div class="accordion-title">
+          <span>💊 약 & 수면</span>
+        </div>
+        <span class="accordion-arrow open" id="accordionArrow">▾</span>
+      </div>
+
+      <div id="accordionBody">
+        <div class="med-sleep-columns">
+          <!-- 약 복용 -->
+          <div class="sub-card">
+            <div class="sub-card-title">
+              <span>약 복용</span>
+            </div>
+            <div id="medList">
+              <!-- JS로 행 생성 -->
+            </div>
+          </div>
+
+          <!-- 수면 관리 -->
+          <div class="sub-card">
+            <div class="sub-card-title">
+              <span>수면 관리</span>
+            </div>
+            <div id="sleepList">
+              <!-- JS로 행 생성 -->
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- 3. 내 상태 기록 카드 -->
+    <section class="card">
+      <div class="section-title-row">
+        <div class="section-title">
+          <span class="section-title-dot"></span>
+          <span>내 상태 기록</span>
+        </div>
+      </div>
+      <div class="section-sub">지금 떠오르는 생각·기분을 한 줄로 남겨두세요.</div>
+
+      <div class="status-card-input">
+        <input
+          id="statusInput"
+          class="status-input"
+          type="text"
+          placeholder="에이랩님 반가워요! 상태를 알려주세요~"
+        />
+        <button class="status-send-btn" type="button" onclick="addStatusLog()">
+          <span>기록</span> ⮕
+        </button>
+      </div>
+
+      <div class="section-title-row" style="margin-top:12px;">
+        <div class="section-title">
+          <span class="section-title-dot"></span>
+          <span>기록 보기</span>
+        </div>
+      </div>
+      <div class="status-log-list" id="statusLog"></div>
+    </section>
+
+    <!-- 4. 오늘 통계 카드 -->
+    <section class="card">
+      <div class="section-title-row">
+        <div class="section-title">
+          <span class="section-title-dot"></span>
+          <span>오늘 체크 요약</span>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-pill">
+          <span class="stat-label">약 복용 체크</span>
+          <span class="stat-value" id="statMedCount">0개</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-label">수면 관리 체크</span>
+          <span class="stat-value" id="statSleepCount">0개</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-label">상태 메시지</span>
+          <span class="stat-value" id="statStatusCount">0개</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-label">전체 체크 합계</span>
+          <span class="stat-value" id="statTotalCount">0개</span>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <!-- 내 상태 기록 입력 바 (일일 로그 화면에서만 보이도록) -->
-  <div class="state-input-bar" id="stateInputBar">
-    <div class="state-input-title">내 상태 기록</div>
-    <div class="state-input-row">
-      <input type="text" id="stateInput" placeholder="지금 상태를 한 줄로 적어주세요." />
-      <button type="button" class="btn-send" id="stateSendBtn">전송</button>
+  <!-- 약&수면 상세보기 화면 -->
+  <section id="detailView" class="hidden">
+    <div class="detail-header">
+      <span>●</span>
+      <span>약&수면 상세보기</span>
     </div>
-  </div>
+
+    <div class="detail-tabs">
+      <div
+        class="detail-tab active"
+        id="tabMed"
+        onclick="switchDetailTab('med')"
+      >
+        약
+      </div>
+      <div
+        class="detail-tab"
+        id="tabSleep"
+        onclick="switchDetailTab('sleep')"
+      >
+        수면
+      </div>
+    </div>
+
+    <!-- 약 설정 카드 -->
+    <div class="detail-card" id="detailMedCard">
+      <div class="card-header-row">
+        <div class="section-title">
+          <span class="section-title-dot"></span>
+          <span>* 약 설정하기</span>
+        </div>
+      </div>
+
+      <div class="detail-row">
+        <label>날짜</label>
+        <div class="detail-input-line">
+          <input
+            class="detail-input"
+            type="date"
+            id="medConfigDate"
+            onchange="syncConfigDate()"
+          />
+        </div>
+      </div>
+
+      <!-- 아침 / 점심 / 저녁 / 취침 / 필요시 / 직접입력 -->
+      <div id="medConfigRows"></div>
+
+      <!-- 미니 달력(기간 설정 느낌만) -->
+      <div class="mini-calendar">
+        <div class="mini-cal-header">
+          <button
+            type="button"
+            class="detail-input"
+            style="padding:4px 8px; min-width:40px;"
+            onclick="changeMiniMonth(-1)"
+          >
+            ◀
+          </button>
+          <span id="miniMonthLabel">11월</span>
+          <button
+            type="button"
+            class="detail-input"
+            style="padding:4px 8px; min-width:40px;"
+            onclick="changeMiniMonth(1)"
+          >
+            ▶
+          </button>
+        </div>
+        <div class="mini-cal-grid" id="miniCalGrid"></div>
+        <div class="period-display" id="periodDisplay">
+          기간 미설정
+        </div>
+      </div>
+
+      <button class="detail-save-btn" type="button">
+        설정 저장
+      </button>
+    </div>
+
+    <!-- 수면 설정 카드 (단순 버전) -->
+    <div class="detail-card hidden" id="detailSleepCard">
+      <div class="card-header-row">
+        <div class="section-title">
+          <span class="section-title-dot"></span>
+          <span>* 수면 설정하기</span>
+        </div>
+      </div>
+
+      <div class="detail-row">
+        <label>기상 시간</label>
+        <div class="detail-input-line">
+          <input
+            class="detail-input"
+            type="time"
+            id="sleepWakeTimeConfig"
+            value="07:30"
+          />
+        </div>
+      </div>
+      <div class="detail-row">
+        <label>취침 시간</label>
+        <div class="detail-input-line">
+          <input
+            class="detail-input"
+            type="time"
+            id="sleepBedTimeConfig"
+            value="00:30"
+          />
+        </div>
+      </div>
+      <button class="detail-save-btn" type="button">
+        설정 저장
+      </button>
+    </div>
+  </section>
 
   <!-- 하단 네비게이션 -->
   <nav class="bottom-nav">
-    <div class="nav-item active" data-tab="state">
-      <div>😊</div>
-      <div>내 상태</div>
-    </div>
-    <div class="nav-item" data-tab="todo">
-      <div>✅</div>
-      <div>할일 루틴</div>
-    </div>
-    <div class="nav-item" data-tab="camera">
-      <div>📷</div>
-      <div>카메라</div>
-    </div>
-    <div class="nav-item" data-tab="medsleep">
-      <div>💊</div>
-      <div>약&수면</div>
-    </div>
-    <div class="nav-item" data-tab="stats">
-      <div>📊</div>
-      <div>통계보기</div>
+    <div class="bottom-nav-inner">
+      <div class="nav-item active" onclick="switchView('main')">
+        <span class="icon">💬</span>
+        <span>내 상태</span>
+      </div>
+      <div class="nav-item">
+        <span class="icon">🧩</span>
+        <span>할일 루틴</span>
+      </div>
+      <div class="nav-item">
+        <span class="icon">📷</span>
+        <span>카메라?</span>
+      </div>
+      <div class="nav-item" onclick="switchView('detail')">
+        <span class="icon">✅</span>
+        <span>약&수면</span>
+      </div>
+      <div class="nav-item">
+        <span class="icon">📈</span>
+        <span>통계보기</span>
+      </div>
     </div>
   </nav>
-</div>
 
-<script>
-  /* -------------------------
-     1. 약 / 수면 슬롯 기본 설정 (일일로그 화면)
-  ------------------------- */
-  const medSlotsConfig = [
-    { id: "med_morning", label: "아침",   planTime: "09:00" },
-    { id: "med_lunch",   label: "점심",   planTime: "13:00" },
-    { id: "med_dinner",  label: "저녁",   planTime: "19:00" },
-    { id: "med_night",   label: "취침",   planTime: "23:00" },
-    { id: "med_prn",     label: "필요시", planTime: "--:--" },
-    { id: "med_custom",  label: "직접입력", planTime: "--:--" }
-  ];
+  <script>
+    /* ===============================
+       JS: 아주 기본 기능만 유지
+       =============================== */
 
-  const sleepSlotsConfig = [
-    { id: "sleep_bed",    label: "누움",   planTime: "01:00" },
-    { id: "sleep_sleep",  label: "잠듦",   planTime: "01:30" },
-    { id: "sleep_wake",   label: "기상",   planTime: "08:00" },
-    { id: "sleep_nap",    label: "낮잠",   planTime: "15:00" },
-    { id: "sleep_custom", label: "직접입력", planTime: "--:--" }
-  ];
+    // 약·수면 기본 데이터 (간단 버전)
+    const medPlans = [
+      { id: "아침", label: "아침", time: "09:00" },
+      { id: "점심", label: "점심", time: "13:00" },
+      { id: "저녁", label: "저녁", time: "19:00" },
+      { id: "취침", label: "취침전", time: "23:30" },
+      { id: "필요시", label: "필요시", time: "00:00" },
+      { id: "직접입력", label: "직접입력", time: "00:00" }
+    ];
 
-  let medSlotsState = medSlotsConfig.map(s => ({ ...s, checked: false, actualTime: null }));
-  let sleepSlotsState = sleepSlotsConfig.map(s => ({ ...s, checked: false, actualTime: null }));
+    const sleepPlans = [
+      { id: "기상", label: "기상", time: "07:30" },
+      { id: "누움", label: "누운 시간", time: "00:20" },
+      { id: "진짜잠", label: "진짜 잔다", time: "00:40" },
+      { id: "일어남", label: "일어남", time: "07:10" }
+    ];
 
-  function firstUncheckedIndex(arr) {
-    const idx = arr.findIndex(s => !s.checked);
-    return idx === -1 ? 0 : idx;
-  }
+    let medIndex = 0;
+    let sleepIndex = 0;
 
-  let currentMedIndex = firstUncheckedIndex(medSlotsState);
-  let currentSleepIndex = firstUncheckedIndex(sleepSlotsState);
+    let medCheckCount = 0;
+    let sleepCheckCount = 0;
+    let statusCount = 0;
 
-  /* -------------------------
-     2. 시간 관련 유틸
-  ------------------------- */
-  function formatNowTime() {
-    const d = new Date();
-    const hh = String(d.getHours()).padStart(2, "0");
-    const mm = String(d.getMinutes()).padStart(2, "0");
-    return `${hh}:${mm}`;
-  }
-
-  function diffTime(plan, actual) {
-    if (!plan || plan === "--:--" || !actual) return "";
-    const [ph, pm] = plan.split(":").map(Number);
-    const [ah, am] = actual.split(":").map(Number);
-    const planMin = ph * 60 + pm;
-    const actMin = ah * 60 + am;
-    let diff = actMin - planMin; // + 늦게, - 일찍
-    const sign = diff === 0 ? "±" : (diff > 0 ? "+" : "-");
-    diff = Math.abs(diff);
-    const h = Math.floor(diff / 60);
-    const m = diff % 60;
-    return `${sign}${h}h${String(m).padStart(2, "0")}m`;
-  }
-
-  /* -------------------------
-     3. 약/수면 슬롯 렌더링
-  ------------------------- */
-  function renderSlotsList() {
-    const medContainer = document.getElementById("medSlotsContainer");
-    const sleepContainer = document.getElementById("sleepSlotsContainer");
-    medContainer.innerHTML = "";
-    sleepContainer.innerHTML = "";
-
-    medSlotsState.forEach((slot, index) => {
-      const row = document.createElement("div");
-      row.className = "slot-row";
-
-      const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.checked = slot.checked;
-      cb.dataset.type = "med";
-      cb.dataset.index = index;
-
-      const nameSpan = document.createElement("span");
-      nameSpan.className = "slot-name";
-      nameSpan.textContent = slot.label;
-
-      const planSpan = document.createElement("span");
-      planSpan.className = "slot-plan" + (slot.checked ? " done" : "");
-      planSpan.textContent = `(${slot.planTime})`;
-
-      const actualSpan = document.createElement("span");
-      actualSpan.className = "slot-actual";
-      actualSpan.textContent = slot.actualTime ? slot.actualTime : "";
-
-      const diffSpan = document.createElement("span");
-      diffSpan.className = "slot-diff";
-      diffSpan.textContent = slot.actualTime ? diffTime(slot.planTime, slot.actualTime) : "";
-
-      row.appendChild(cb);
-      row.appendChild(nameSpan);
-      row.appendChild(planSpan);
-      row.appendChild(actualSpan);
-      row.appendChild(diffSpan);
-      medContainer.appendChild(row);
-    });
-
-    sleepSlotsState.forEach((slot, index) => {
-      const row = document.createElement("div");
-      row.className = "slot-row";
-
-      const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.checked = slot.checked;
-      cb.dataset.type = "sleep";
-      cb.dataset.index = index;
-
-      const nameSpan = document.createElement("span");
-      nameSpan.className = "slot-name";
-      nameSpan.textContent = slot.label;
-
-      const planSpan = document.createElement("span");
-      planSpan.className = "slot-plan" + (slot.checked ? " done" : "");
-      planSpan.textContent = `(${slot.planTime})`;
-
-      const actualSpan = document.createElement("span");
-      actualSpan.className = "slot-actual";
-      actualSpan.textContent = slot.actualTime ? slot.actualTime : "";
-
-      const diffSpan = document.createElement("span");
-      diffSpan.className = "slot-diff";
-      diffSpan.textContent = slot.actualTime ? diffTime(slot.planTime, slot.actualTime) : "";
-
-      row.appendChild(cb);
-      row.appendChild(nameSpan);
-      row.appendChild(planSpan);
-      row.appendChild(actualSpan);
-      row.appendChild(diffSpan);
-      sleepContainer.appendChild(row);
-    });
-  }
-
-  function updateProgress() {
-    const totalSlots = medSlotsState.length + sleepSlotsState.length;
-    const doneSlots =
-      medSlotsState.filter(s => s.checked).length +
-      sleepSlotsState.filter(s => s.checked).length;
-    const rate = totalSlots === 0 ? 0 : Math.round((doneSlots / totalSlots) * 100);
-    document.getElementById("progressBar").style.width = `${rate}%`;
-    document.getElementById("progressText").textContent = `오늘 체크 진행률 ${rate}% (임시)`;
-  }
-
-  function renderSummary() {
-    // 약 복용
-    const medSlot = medSlotsState[currentMedIndex];
-    document.getElementById("summaryMedSlot").textContent = medSlot.label;
-    const mPlanSpan = document.getElementById("summaryMedPlan");
-    mPlanSpan.textContent = `(${medSlot.planTime})`;
-    mPlanSpan.className = "summary-time-plan" + (medSlot.checked ? " done" : "");
-    const mActualSpan = document.getElementById("summaryMedActual");
-    mActualSpan.textContent = medSlot.actualTime ? medSlot.actualTime : "";
-    const mDiffSpan = document.getElementById("summaryMedDiff");
-    mDiffSpan.textContent = medSlot.actualTime ? diffTime(medSlot.planTime, medSlot.actualTime) : "";
-    document.getElementById("summaryMedCheck").checked = medSlot.checked;
-
-    // 수면 관리
-    const sleepSlot = sleepSlotsState[currentSleepIndex];
-    document.getElementById("summarySleepSlot").textContent = sleepSlot.label;
-    const sPlanSpan = document.getElementById("summarySleepPlan");
-    sPlanSpan.textContent = `(${sleepSlot.planTime})`;
-    sPlanSpan.className = "summary-time-plan" + (sleepSlot.checked ? " done" : "");
-    const sActualSpan = document.getElementById("summarySleepActual");
-    sActualSpan.textContent = sleepSlot.actualTime ? sleepSlot.actualTime : "";
-    const sDiffSpan = document.getElementById("summarySleepDiff");
-    sDiffSpan.textContent = sleepSlot.actualTime ? diffTime(sleepSlot.planTime, sleepSlot.actualTime) : "";
-    document.getElementById("summarySleepCheck").checked = sleepSlot.checked;
-
-    updateProgress();
-    renderSlotsList(); // 리스트 쪽도 함께 갱신
-  }
-
-  // 초기 렌더
-  renderSummary();
-
-  /* -------------------------
-     4. 슬롯 토글 / 커서 이동
-  ------------------------- */
-
-  function handleSlotToggle(type, index, checkedFromUser) {
-    const stateArr = type === "med" ? medSlotsState : sleepSlotsState;
-    const slot = stateArr[index];
-
-    slot.checked = checkedFromUser;
-    slot.actualTime = checkedFromUser ? formatNowTime() : null;
-
-    renderSummary();
-  }
-
-  // 하단 리스트 체크
-  document.getElementById("medSlotsContainer").addEventListener("change", (e) => {
-    if (e.target.type === "checkbox") {
-      const idx = Number(e.target.dataset.index);
-      handleSlotToggle("med", idx, e.target.checked);
-    }
-  });
-  document.getElementById("sleepSlotsContainer").addEventListener("change", (e) => {
-    if (e.target.type === "checkbox") {
-      const idx = Number(e.target.dataset.index);
-      handleSlotToggle("sleep", idx, e.target.checked);
-    }
-  });
-
-  // 상단 요약 체크
-  document.getElementById("summaryMedCheck").addEventListener("change", (e) => {
-    handleSlotToggle("med", currentMedIndex, e.target.checked);
-  });
-  document.getElementById("summarySleepCheck").addEventListener("change", (e) => {
-    handleSlotToggle("sleep", currentSleepIndex, e.target.checked);
-  });
-
-  // 커서 이동: 다음 / 이전
-  function moveNextSlot(type) {
-    const stateArr = type === "med" ? medSlotsState : sleepSlotsState;
-    if (!stateArr.length) return;
-    if (type === "med") {
-      currentMedIndex = (currentMedIndex + 1) % stateArr.length;
-    } else {
-      currentSleepIndex = (currentSleepIndex + 1) % stateArr.length;
-    }
-    renderSummary();
-  }
-
-  function movePrevSlot(type) {
-    const stateArr = type === "med" ? medSlotsState : sleepSlotsState;
-    if (!stateArr.length) return;
-    if (type === "med") {
-      currentMedIndex = (currentMedIndex - 1 + stateArr.length) % stateArr.length;
-    } else {
-      currentSleepIndex = (currentSleepIndex - 1 + stateArr.length) % stateArr.length;
-    }
-    renderSummary();
-  }
-
-  document.getElementById("summaryMedNextBtn").addEventListener("click", () => {
-    moveNextSlot("med");
-  });
-  document.getElementById("summarySleepNextBtn").addEventListener("click", () => {
-    moveNextSlot("sleep");
-  });
-  document.getElementById("summaryMedPrevBtn").addEventListener("click", () => {
-    movePrevSlot("med");
-  });
-  document.getElementById("summarySleepPrevBtn").addEventListener("click", () => {
-    movePrevSlot("sleep");
-  });
-
-  /* -------------------------
-     5. 내 상태 기록 / 기록 보기
-  ------------------------- */
-
-  const stateInput = document.getElementById("stateInput");
-  const stateLogList = document.getElementById("stateLogList");
-  const stateSendBtn = document.getElementById("stateSendBtn");
-
-  const stateLogs = []; // { text, timeStr, totalMinutes, diffText }
-
-  function addStateLog(text) {
-    const now = new Date();
-    const hh = String(now.getHours()).padStart(2, "0");
-    const mm = String(now.getMinutes()).padStart(2, "0");
-    const timeStr = `${hh}:${mm}`;
-    let totalMinutes = now.getHours() * 60 + now.getMinutes();
-
-    let diffText = "방금 전";
-    if (stateLogs.length > 0) {
-      const prev = stateLogs[stateLogs.length - 1];
-      let diffMin = totalMinutes - prev.totalMinutes;
-      if (diffMin < 0) diffMin += 24 * 60; // 자정 넘어간 경우 보정
-
-      if (diffMin < 1) {
-        diffText = "방금 전";
-      } else {
-        const h = Math.floor(diffMin / 60);
-        const m = diffMin % 60;
-        if (h === 0) {
-          diffText = `${m}분 전`;
-        } else if (m === 0) {
-          diffText = `${h}시간 전`;
-        } else {
-          diffText = `${h}시간 ${m}분 전`;
-        }
-      }
+    // 오늘 날짜 표시
+    function setTodayLabel() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, "0");
+      const dd = String(today.getDate()).padStart(2, "0");
+      const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
+      const day = dayNames[today.getDay()];
+      document.getElementById(
+        "todayDateLabel"
+      ).innerText = `${yyyy}/${mm}/${dd} (${day}) 기준`;
     }
 
-    stateLogs.push({ text, timeStr, totalMinutes, diffText });
-    renderStateLogs();
-  }
+    // 체크 행 생성
+    function renderCheckLists() {
+      const medList = document.getElementById("medList");
+      const sleepList = document.getElementById("sleepList");
+      medList.innerHTML = "";
+      sleepList.innerHTML = "";
 
-  function renderStateLogs() {
-    stateLogList.innerHTML = "";
-    const logsToShow = [...stateLogs].reverse(); // 최신이 위로
-    logsToShow.forEach((log) => {
-      const item = document.createElement("div");
-      item.className = "state-log-item";
-      item.innerHTML = `
-        <div>${log.text}</div>
-        <div class="state-log-time">${log.timeStr} · ${log.diffText}</div>
-      `;
-      stateLogList.appendChild(item);
-    });
-  }
+      medPlans.forEach((plan, idx) => {
+        const row = document.createElement("div");
+        row.className = "check-row";
+        row.dataset.type = "med";
+        row.dataset.index = idx;
 
-  stateSendBtn.addEventListener("click", () => {
-    const text = stateInput.value.trim();
-    if (!text) return;
-    addStateLog(text);
-    stateInput.value = "";
-  });
-
-  stateInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      stateSendBtn.click();
-    }
-  });
-
-  /* -------------------------
-     6. 아코디언 화살표(▼/▲) 토글
-  ------------------------- */
-  function updateAccordionArrow(detailsEl) {
-    const id = detailsEl.id;
-    const arrowSpan = document.querySelector(`.accordion-arrow[data-for="${id}"]`);
-    if (!arrowSpan) return;
-    arrowSpan.textContent = detailsEl.open ? "▲" : "▼";
-  }
-
-  const medSleepAccordion = document.getElementById("medSleepAccordion");
-  const logAccordion = document.getElementById("logAccordion");
-
-  [medSleepAccordion, logAccordion].forEach(det => {
-    updateAccordionArrow(det);
-    det.addEventListener("toggle", () => updateAccordionArrow(det));
-  });
-
-  /* -------------------------
-     7. 약&수면 상세보기 - 약 항목 행 생성 / 삭제 목록
-  ------------------------- */
-  const medRowDefaults = [
-    "아침",
-    "점심",
-    "저녁",
-    "취침전",
-    "필요시",
-    "직접입력"
-  ];
-
-  let medRowsState = medRowDefaults.map(name => ({
-    name,
-    deleted: false
-  }));
-
-  let deletedRows = [];
-
-  function renderMedRows() {
-    const container = document.getElementById("medRows");
-    container.innerHTML = "";
-
-    medRowsState.forEach((row, index) => {
-      if (row.deleted) return;
-      const wrap = document.createElement("div");
-      wrap.className = "med-row";
-
-      const label = document.createElement("span");
-      label.className = "med-row-label";
-      label.textContent = row.name + ":";
-
-      const nameInput = document.createElement("input");
-      nameInput.type = "text";
-      nameInput.className = "med-input-text";
-      nameInput.placeholder = "약이름";
-
-      const doseInput = document.createElement("input");
-      doseInput.type = "number";
-      doseInput.className = "med-input-small";
-      doseInput.placeholder = "용량";
-
-      const unitSel = document.createElement("select");
-      unitSel.className = "med-select";
-      ["mg","알","포"].forEach(u => {
-        const opt = document.createElement("option");
-        opt.value = u;
-        opt.textContent = u;
-        unitSel.appendChild(opt);
+        row.innerHTML = `
+          <div class="check-left">
+            <input type="checkbox" onchange="handleCheck(this)" />
+            <div>
+              <div class="check-label-main">${plan.label}</div>
+              <div class="check-plan">${plan.time}</div>
+            </div>
+          </div>
+          <div class="check-right">
+            <div class="check-time"></div>
+            <div class="check-diff"></div>
+          </div>
+        `;
+        medList.appendChild(row);
       });
 
-      const timeInput = document.createElement("input");
-      timeInput.type = "text";
-      timeInput.className = "med-input-small";
-      timeInput.placeholder = "00:00";
+      sleepPlans.forEach((plan, idx) => {
+        const row = document.createElement("div");
+        row.className = "check-row";
+        row.dataset.type = "sleep";
+        row.dataset.index = idx;
 
-      const apSel = document.createElement("select");
-      apSel.className = "med-select";
-      ["A.M","P.M"].forEach(v => {
-        const opt = document.createElement("option");
-        opt.value = v;
-        opt.textContent = v;
-        apSel.appendChild(opt);
+        row.innerHTML = `
+          <div class="check-left">
+            <input type="checkbox" onchange="handleCheck(this)" />
+            <div>
+              <div class="check-label-main">${plan.label}</div>
+              <div class="check-plan">${plan.time}</div>
+            </div>
+          </div>
+          <div class="check-right">
+            <div class="check-time"></div>
+            <div class="check-diff"></div>
+          </div>
+        `;
+        sleepList.appendChild(row);
+      });
+    }
+
+    // 다음 카드 표시
+    function setNextCards() {
+      const med = medPlans[medIndex];
+      const sleep = sleepPlans[sleepIndex];
+      document.getElementById("nextMedLabel").innerText = med.label;
+      document.getElementById("nextMedTime").innerText = med.time;
+      document.getElementById("nextSleepLabel").innerText = sleep.label;
+      document.getElementById("nextSleepTime").innerText = sleep.time;
+
+      updateDiffLabel("med");
+      updateDiffLabel("sleep");
+    }
+
+    // 현재 시간 형식 (HH:MM)
+    function getNowTimeString() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, "0");
+      const mm = String(now.getMinutes()).padStart(2, "0");
+      return `${hh}:${mm}`;
+    }
+
+    // 시간 차이 계산 (+- 0h00m)
+    function calcTimeDiffStr(planTimeStr) {
+      const [ph, pm] = planTimeStr.split(":").map(Number);
+      const now = new Date();
+      const nh = now.getHours();
+      const nm = now.getMinutes();
+      const planMinutes = ph * 60 + pm;
+      const nowMinutes = nh * 60 + nm;
+      const diff = nowMinutes - planMinutes; // +면 늦음
+      const sign = diff >= 0 ? "+" : "-";
+      const abs = Math.abs(diff);
+      const h = Math.floor(abs / 60);
+      const m = abs % 60;
+      return `${sign}${h}h${String(m).padStart(2, "0")}m`;
+    }
+
+    function updateDiffLabel(type) {
+      if (type === "med") {
+        const med = medPlans[medIndex];
+        document.getElementById("nextMedDiff").innerText = calcTimeDiffStr(
+          med.time
+        );
+      } else {
+        const sleep = sleepPlans[sleepIndex];
+        document.getElementById("nextSleepDiff").innerText = calcTimeDiffStr(
+          sleep.time
+        );
+      }
+    }
+
+    // “다음에” 버튼 클릭
+    function markNext(type) {
+      if (type === "med") {
+        medIndex = (medIndex + 1) % medPlans.length;
+      } else {
+        sleepIndex = (sleepIndex + 1) % sleepPlans.length;
+      }
+      setNextCards();
+    }
+
+    // 체크 핸들러
+    function handleCheck(checkbox) {
+      const row = checkbox.closest(".check-row");
+      const type = row.dataset.type;
+      const index = Number(row.dataset.index);
+      const nowStr = getNowTimeString();
+
+      const timeEl = row.querySelector(".check-time");
+      const diffEl = row.querySelector(".check-diff");
+      const planStr =
+        type === "med" ? medPlans[index].time : sleepPlans[index].time;
+
+      if (checkbox.checked) {
+        row.classList.add("checked");
+        timeEl.innerText = nowStr;
+        diffEl.innerText = calcTimeDiffStr(planStr);
+
+        if (type === "med") medCheckCount++;
+        else sleepCheckCount++;
+      } else {
+        row.classList.remove("checked");
+        timeEl.innerText = "";
+        diffEl.innerText = "";
+        if (type === "med" && medCheckCount > 0) medCheckCount--;
+        if (type === "sleep" && sleepCheckCount > 0) sleepCheckCount--;
+      }
+      updateStats();
+    }
+
+    function updateStats() {
+      const total = medCheckCount + sleepCheckCount;
+      document.getElementById("statMedCount").innerText = `${medCheckCount}개`;
+      document.getElementById(
+        "statSleepCount"
+      ).innerText = `${sleepCheckCount}개`;
+      document.getElementById("statStatusCount").innerText = `${statusCount}개`;
+      document.getElementById("statTotalCount").innerText = `${total}개`;
+      document.getElementById("todayDoneCount").innerText = `${total}개 완료`;
+      const percent = Math.min(100, total * 10);
+      document.getElementById("progressFill").style.width = `${percent}%`;
+      document.getElementById("progressPercentLabel").innerText = `${percent}%`;
+    }
+
+    // 아코디언 토글
+    function toggleAccordion() {
+      const body = document.getElementById("accordionBody");
+      const arrow = document.getElementById("accordionArrow");
+      if (body.style.display === "none") {
+        body.style.display = "";
+        arrow.classList.add("open");
+      } else {
+        body.style.display = "none";
+        arrow.classList.remove("open");
+      }
+    }
+
+    // 내 상태 기록 추가
+    const statusLogs = [];
+    function addStatusLog() {
+      const input = document.getElementById("statusInput");
+      const text = input.value.trim();
+      if (!text) return;
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(
+        2,
+        "0"
+      )}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+      statusLogs.push({ text, time: now });
+      statusCount++;
+      updateStatusLogList();
+      updateStats();
+      input.value = "";
+    }
+
+    function formatAgo(prev, now) {
+      const diffMs = now - prev;
+      const diffMin = Math.floor(diffMs / 60000);
+      if (diffMin < 1) return "방금 전";
+      if (diffMin < 60) return `${diffMin}분 전`;
+      const h = Math.floor(diffMin / 60);
+      const m = diffMin % 60;
+      if (m === 0) return `${h}시간 전`;
+      return `${h}시간 ${m}분 전`;
+    }
+
+    function updateStatusLogList() {
+      const container = document.getElementById("statusLog");
+      container.innerHTML = "";
+      for (let i = statusLogs.length - 1; i >= 0; i--) {
+        const log = statusLogs[i];
+        const now = new Date();
+        const timeLabel =
+          i === statusLogs.length - 1
+            ? "방금 전"
+            : formatAgo(statusLogs[i].time, now);
+        const timeStr = `${String(log.time.getHours()).padStart(
+          2,
+          "0"
+        )}:${String(log.time.getMinutes()).padStart(2, "0")}`;
+
+        const item = document.createElement("div");
+        item.className = "status-item";
+        item.innerHTML = `
+          <div class="status-content">${log.text}</div>
+          <div class="status-time">${timeStr}<br/>${timeLabel}</div>
+        `;
+        container.appendChild(item);
+      }
+    }
+
+    // 뷰 전환 (메인 / 상세)
+    function switchView(target) {
+      const main = document.getElementById("mainView");
+      const detail = document.getElementById("detailView");
+      const navItems = document.querySelectorAll(".nav-item");
+      navItems.forEach((n, idx) => {
+        n.classList.remove("active");
+        if (target === "main" && idx === 0) n.classList.add("active");
+        if (target === "detail" && idx === 3) n.classList.add("active");
       });
 
-      const delBtn = document.createElement("button");
-      delBtn.type = "button";
-      delBtn.className = "med-delete-btn";
-      delBtn.textContent = "삭제";
-      delBtn.onclick = () => {
-        medRowsState[index].deleted = true;
-        deletedRows.push(row.name);
-        renderMedRows();
-        renderDeletedRows();
-      };
-
-      wrap.appendChild(label);
-      wrap.appendChild(nameInput);
-      wrap.appendChild(doseInput);
-      wrap.appendChild(unitSel);
-      wrap.appendChild(timeInput);
-      wrap.appendChild(apSel);
-      wrap.appendChild(delBtn);
-
-      container.appendChild(wrap);
-    });
-  }
-
-  function renderDeletedRows() {
-    const box = document.getElementById("medDeletedList");
-    if (deletedRows.length === 0) {
-      box.textContent = "삭제된 항목이 여기에 표시됩니다.";
-      return;
-    }
-    box.innerHTML = "";
-    deletedRows.forEach((name, idx) => {
-      const row = document.createElement("div");
-      const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.checked = true;
-      cb.dataset.index = idx;
-      const label = document.createElement("span");
-      label.textContent = " " + name;
-      row.appendChild(cb);
-      row.appendChild(label);
-      box.appendChild(row);
-    });
-  }
-
-  document.getElementById("medRestoreBtn").addEventListener("click", () => {
-    const box = document.getElementById("medDeletedList");
-    const checks = box.querySelectorAll("input[type='checkbox']");
-    const toRestore = [];
-    checks.forEach((cb) => {
-      if (cb.checked) {
-        const idx = Number(cb.dataset.index);
-        toRestore.push(deletedRows[idx]);
-      }
-    });
-    medRowsState = medRowsState.map(row => {
-      if (toRestore.includes(row.name)) {
-        return { ...row, deleted: false };
-      }
-      return row;
-    });
-    deletedRows = deletedRows.filter(name => !toRestore.includes(name));
-    renderMedRows();
-    renderDeletedRows();
-  });
-
-  renderMedRows();
-  renderDeletedRows();
-
-  /* -------------------------
-     8. 약 설정하기 날짜 표시 (오늘 기준)
-  ------------------------- */
-  function formatMedConfigDate(d) {
-    const year = d.getFullYear().toString().slice(2); // 25
-    const month = d.getMonth() + 1;
-    const date = d.getDate();
-    const weekdayNames = ["일","월","화","수","목","금","토"];
-    const wd = weekdayNames[d.getDay()];
-    // 예: 25/11.20(목)
-    return `${year}/${month}.${date}(${wd})`;
-  }
-
-  const today = new Date();
-  const medConfigDateSpan = document.getElementById("medConfigDate");
-  medConfigDateSpan.textContent = `‹ ${formatMedConfigDate(today)} ›`;
-
-  /* -------------------------
-     9. 달력 / 기간 버튼 (단순 버전)
-  ------------------------- */
-  let calCurrent = new Date(today.getFullYear(), today.getMonth(), 1);
-  let rangeInfo = { type: null, days: 0 };
-
-  const calMonthLabel = document.getElementById("calMonthLabel");
-  const calBody = document.getElementById("calBody");
-  const rangeLabel = document.getElementById("rangeLabel");
-
-  function renderCalendar() {
-    const year = calCurrent.getFullYear();
-    const month = calCurrent.getMonth(); // 0-11
-    calMonthLabel.textContent = `${month + 1}월`;
-
-    const firstDay = new Date(year, month, 1).getDay();
-    const lastDate = new Date(year, month + 1, 0).getDate();
-
-    calBody.innerHTML = "";
-    let row = document.createElement("tr");
-    // 빈칸
-    for (let i = 0; i < firstDay; i++) {
-      row.appendChild(document.createElement("td"));
-    }
-    for (let date = 1; date <= lastDate; date++) {
-      const td = document.createElement("td");
-      const span = document.createElement("span");
-      span.textContent = date;
-      const isToday =
-        year === today.getFullYear() &&
-        month === today.getMonth() &&
-        date === today.getDate();
-      if (isToday) span.classList.add("today");
-      td.appendChild(span);
-      row.appendChild(td);
-      if ((firstDay + date) % 7 === 0 || date === lastDate) {
-        calBody.appendChild(row);
-        row = document.createElement("tr");
-      }
-    }
-  }
-
-  renderCalendar();
-
-  document.getElementById("calPrevMonthBtn").addEventListener("click", () => {
-    calCurrent.setMonth(calCurrent.getMonth() - 1);
-    renderCalendar();
-  });
-  document.getElementById("calNextMonthBtn").addEventListener("click", () => {
-    calCurrent.setMonth(calCurrent.getMonth() + 1);
-    renderCalendar();
-  });
-
-  function setRange(days, label) {
-    rangeInfo.type = label;
-    rangeInfo.days = days;
-    const start = new Date(today);
-    const end = new Date(today);
-    end.setDate(end.getDate() + days);
-    const startStr = formatMedConfigDate(start);
-    const endStr = formatMedConfigDate(end);
-    rangeLabel.textContent = `${label} · ${startStr} ~ ${endStr}`;
-    document.querySelectorAll(".med-range-buttons button").forEach(b => b.classList.remove("active"));
-    if (days === 7) document.getElementById("btnRange7").classList.add("active");
-    if (days === 14) document.getElementById("btnRange14").classList.add("active");
-    if (days === 30) document.getElementById("btnRange30").classList.add("active");
-  }
-
-  document.getElementById("btnRange7").addEventListener("click", () => setRange(7, "1주일"));
-  document.getElementById("btnRange14").addEventListener("click", () => setRange(14, "2주일"));
-  document.getElementById("btnRange30").addEventListener("click", () => setRange(30, "한달"));
-  document.getElementById("btnRangeCustom").addEventListener("click", () => {
-    const daysStr = prompt("며칠 뒤까지 설정할까요? (예: 45)");
-    const days = Number(daysStr);
-    if (!Number.isNaN(days) && days > 0) {
-      setRange(days, `맞춤 ${days}일`);
-    }
-  });
-
-  /* -------------------------
-     10. 약/수면 상세보기 탭 전환 (약 / 수면)
-  ------------------------- */
-  const medTabPane = document.getElementById("medTabPane");
-  const sleepTabPane = document.getElementById("sleepTabPane");
-  document.querySelectorAll(".medset-tab").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".medset-tab").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      const t = btn.dataset.medtab;
-      if (t === "med") {
-        medTabPane.style.display = "";
-        sleepTabPane.style.display = "none";
+      if (target === "main") {
+        main.classList.remove("hidden");
+        detail.classList.add("hidden");
       } else {
-        medTabPane.style.display = "none";
-        sleepTabPane.style.display = "";
+        main.classList.add("hidden");
+        detail.classList.remove("hidden");
       }
-    });
-  });
+    }
 
-  /* -------------------------
-     11. 뷰 전환 (일일로그 ↔ 약&수면 상세보기)
-  ------------------------- */
-  const viewDaily = document.getElementById("viewDaily");
-  const viewMedSettings = document.getElementById("viewMedSettings");
-  const stateInputBar = document.getElementById("stateInputBar");
+    // 상세 탭 전환
+    function switchDetailTab(type) {
+      const tabMed = document.getElementById("tabMed");
+      const tabSleep = document.getElementById("tabSleep");
+      const cardMed = document.getElementById("detailMedCard");
+      const cardSleep = document.getElementById("detailSleepCard");
 
-  function showDailyView() {
-    viewDaily.style.display = "";
-    viewMedSettings.style.display = "none";
-    stateInputBar.style.display = "";
-  }
-
-  function showMedSettingsView() {
-    viewDaily.style.display = "none";
-    viewMedSettings.style.display = "";
-    stateInputBar.style.display = "none";
-  }
-
-  /* -------------------------
-     12. 하단 네비게이션 동작
-  ------------------------- */
-  document.querySelectorAll(".nav-item").forEach(item => {
-    item.addEventListener("click", () => {
-      document.querySelectorAll(".nav-item").forEach(i => i.classList.remove("active"));
-      item.classList.add("active");
-      const tab = item.dataset.tab;
-
-      if (tab === "medsleep") {
-        showMedSettingsView();
-        return;
+      if (type === "med") {
+        tabMed.active = true;
+        tabMed.classList.add("active");
+        tabSleep.classList.remove("active");
+        cardMed.classList.remove("hidden");
+        cardSleep.classList.add("hidden");
+      } else {
+        tabSleep.classList.add("active");
+        tabMed.classList.remove("active");
+        cardSleep.classList.remove("hidden");
+        cardMed.classList.add("hidden");
       }
+    }
 
-      // 나머지는 일단 일일로그 화면에 머물게
-      showDailyView();
-      if (tab !== "state") {
-        alert(`"${item.innerText.trim()}" 화면은 추후 연결 예정입니다.`);
+    // 약 설정 행 (아침/점심/저녁/취침/필요시/직접입력)
+    function renderMedConfigRows() {
+      const container = document.getElementById("medConfigRows");
+      container.innerHTML = "";
+      medPlans.forEach((plan) => {
+        const row = document.createElement("div");
+        row.className = "detail-row";
+        row.innerHTML = `
+          <label>${plan.label}</label>
+          <div class="detail-input-line">
+            <input class="detail-input" type="text" placeholder="약 이름" />
+            <input class="detail-input" type="number" min="0" max="9999" placeholder="0" />
+            <span class="detail-suffix">mg / 알 / 포</span>
+            <input class="detail-input" type="time" value="${plan.time}" />
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    // 상세 날짜 동기화 (오늘)
+    function initConfigDate() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, "0");
+      const dd = String(today.getDate()).padStart(2, "0");
+      document.getElementById("medConfigDate").value = `${yyyy}-${mm}-${dd}`;
+    }
+
+    function syncConfigDate() {
+      // 현재 버전에서는 날짜 값만 유지 (추가 로직은 나중에)
+    }
+
+    // 미니 달력 (단순한 모양만)
+    let miniMonthOffset = 0;
+    function renderMiniCalendar() {
+      const grid = document.getElementById("miniCalGrid");
+      const label = document.getElementById("miniMonthLabel");
+
+      const base = new Date();
+      base.setMonth(base.getMonth() + miniMonthOffset);
+      const month = base.getMonth() + 1;
+      label.innerText = `${month}월`;
+
+      grid.innerHTML = "";
+      const weeks = ["S", "M", "T", "W", "T", "F", "S"];
+      weeks.forEach((w) => {
+        const c = document.createElement("div");
+        c.className = "mini-cal-cell";
+        c.style.fontWeight = "600";
+        c.innerText = w;
+        grid.appendChild(c);
+      });
+
+      for (let i = 1; i <= 35; i++) {
+        const c = document.createElement("div");
+        c.className = "mini-cal-cell";
+        c.innerText = i <= 30 ? i : "";
+        if (i === 20) c.classList.add("today");
+        grid.appendChild(c);
       }
-    });
-  });
-</script>
+    }
+
+    function changeMiniMonth(delta) {
+      miniMonthOffset += delta;
+      renderMiniCalendar();
+    }
+
+    // 초기화
+    function init() {
+      setTodayLabel();
+      renderCheckLists();
+      setNextCards();
+      renderMedConfigRows();
+      initConfigDate();
+      renderMiniCalendar();
+      updateStats();
+    }
+
+    init();
+  </script>
 </body>
 </html>
