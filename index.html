@@ -2,642 +2,684 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>에이랩 일일 로그</title>
+  <title>에이랩 일일로그</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 16px; }
-    h1 { font-size: 1.4rem; margin-bottom: 8px; }
-    h2 { font-size: 1.1rem; margin-top: 24px; margin-bottom: 8px; }
-    .section { border: 1px solid #ccc; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
-    label { display: block; margin-bottom: 4px; font-size: 0.9rem; }
-    input, select, textarea { width: 100%; padding: 6px; margin-bottom: 8px; box-sizing: border-box; }
-    textarea { min-height: 60px; }
-    button { padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; cursor: pointer; background: #f9f9f9; }
-    button#saveBtn { padding: 8px 14px; background: #333; color: #fff; border: none; }
-    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.85rem; }
-    th, td { border: 1px solid #ddd; padding: 6px; text-align: center; }
-    th { background: #f5f5f5; }
-    .small { font-size: 0.8rem; color: #666; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      background: #f5f5f7;
+      color: #111;
+    }
+    .app {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+    }
+    /* 상단 앱바 */
+    .app-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-bottom: 1px solid #ddd;
+    }
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 16px;
+      border: none;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+    }
+    .app-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
 
-    .row-flex { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; }
-    .row-flex input[type="text"] { flex: 1; margin-bottom: 0; }
-    .row-flex select { flex: 1; margin-bottom: 0; }
-    .row-flex input[type="checkbox"] { width: auto; margin-bottom: 0; }
-    .row-flex button { width: auto; margin-bottom: 0; }
+    .content {
+      flex: 1;
+      padding: 8px 12px 60px;
+      overflow-y: auto;
+    }
 
-    .done-line { text-decoration: line-through; opacity: 0.5; }
+    /* 진행률 바 */
+    .progress-card {
+      margin-top: 8px;
+      padding: 10px;
+      border-radius: 12px;
+      background: #fafafa;
+      border: 1px solid #e0e0e0;
+    }
+    .progress-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+    }
+    .progress-label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .progress-bar-wrap {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: #e5e5e5;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      width: 40%; /* TODO: 실제 데이터와 연동 */
+      height: 100%;
+      background: #50c878;
+      transition: width 0.2s ease;
+    }
 
-    .time-label { margin-left: 4px; color: red; font-size: 0.8rem; }
+    /* 상단 요약 카드 (약/수면 2줄) */
+    .summary-card {
+      margin-top: 8px;
+      padding: 10px;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid #dde3ff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+    .summary-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 0;
+      font-size: 0.85rem;
+      flex-wrap: wrap;
+    }
+    .summary-label {
+      width: 40px;
+      font-weight: 600;
+    }
+    .summary-slot {
+      font-weight: 500;
+      min-width: 40px;
+    }
+    .summary-time-plan {
+      font-size: 0.78rem;
+      color: #777;
+    }
+    .summary-time-plan.done {
+      text-decoration: line-through;
+      color: #bbb;
+    }
+    .summary-time-actual {
+      font-size: 0.85rem;
+      color: #d32f2f;
+      font-weight: 600;
+    }
+    .summary-diff {
+      font-size: 0.78rem;
+      color: #d32f2f;
+    }
+    .btn-next {
+      margin-left: auto;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: none;
+      background: #4caf50;
+      color: #fff;
+      font-size: 0.78rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
 
-    .tag-box { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
-    .tag-box label { display: flex; align-items: center; gap: 2px; border: 1px solid #ddd; border-radius: 12px; padding: 2px 8px; font-size: 0.8rem; margin-bottom: 0; }
-    .tag-box input[type="checkbox"] { width: auto; margin: 0; }
+    .summary-checkbox {
+      transform: scale(1.1);
+    }
 
-    .score-label { display: inline-block; margin-bottom: 4px; }
-    .score-current { font-weight: bold; }
+    /* 약&수면 아코디언 */
+    details.accordion {
+      margin-top: 10px;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      background: #fafafa;
+    }
+    details.accordion summary {
+      list-style: none;
+      padding: 8px 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    details.accordion[open] summary {
+      border-bottom: 1px solid #ddd;
+    }
+    details.accordion summary::-webkit-details-marker {
+      display: none;
+    }
+    .accordion-body {
+      padding: 8px 8px 10px;
+    }
+    .two-columns {
+      display: flex;
+      gap: 8px;
+    }
+    .column-card {
+      flex: 1;
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid #e0e0e0;
+      padding: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .column-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .slot-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.8rem;
+      padding: 2px 0;
+    }
+    .slot-row input[type="checkbox"] {
+      flex-shrink: 0;
+    }
+    .slot-name {
+      min-width: 40px;
+    }
+    .slot-plan {
+      font-size: 0.75rem;
+      color: #777;
+    }
+    .slot-plan.done {
+      text-decoration: line-through;
+      color: #bbb;
+    }
+    .slot-actual {
+      font-size: 0.75rem;
+      color: #d32f2f;
+    }
+
+    /* 내 상태 기록 */
+    .state-card {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid #ddd;
+    }
+    .state-log-list {
+      margin-top: 8px;
+      max-height: 120px;
+      overflow-y: auto;
+      font-size: 0.8rem;
+    }
+    .state-log-item {
+      padding: 4px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .state-log-time {
+      font-size: 0.75rem;
+      color: #777;
+    }
+
+    .state-input-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .state-input-row input[type="text"] {
+      flex: 1;
+      padding: 6px;
+      font-size: 0.85rem;
+    }
+    .btn-send {
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      border-radius: 999px;
+      border: none;
+      background: #1976d2;
+      color: #fff;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* 하단 네비게이션 */
+    .bottom-nav {
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      border-top: 1px solid #ddd;
+      background: #fff;
+      display: flex;
+      z-index: 5;
+    }
+    .nav-item {
+      flex: 1;
+      font-size: 0.7rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #555;
+    }
+    .nav-item.active {
+      color: #1976d2;
+      font-weight: 600;
+    }
+
+    @media (min-width: 768px) {
+      .app {
+        margin-top: 16px;
+        margin-bottom: 16px;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>에이랩 일일 로그</h1>
-  <p class="small">브라우저에만 저장됩니다 (localStorage). 새로고침해도 기록은 남습니다.</p>
+<div class="app">
+  <!-- 상단 앱바 -->
+  <header class="app-bar">
+    <button class="icon-btn" title="설정 / 메뉴">
+      ☰
+    </button>
+    <div class="app-title">A-Lab · 일일로그</div>
+    <div style="width:32px;height:32px;"></div>
+  </header>
 
-  <form id="logForm">
-    <!-- 1. 날짜 & 오늘 할 일 / 안 한 일 -->
-    <div class="section">
-      <h2>1. 날짜 & 오늘 할 일</h2>
-      <label for="date">날짜</label>
-      <input type="date" id="date" required />
+  <main class="content">
+    <!-- 진행률 카드 -->
+    <section class="progress-card">
+      <div class="progress-header">
+        <div class="progress-label">
+          <!-- 사람 뛰는 애니메이션은 나중에 이미지/아이콘으로 교체 -->
+          🏃‍♀️ <span>오늘 진행률</span>
+        </div>
+        <span class="small" id="progressText">약·수면 기준 (임시)</span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressBar"></div>
+      </div>
+    </section>
 
-      <label>오늘 핵심 할 일 (최대 3개)</label>
+    <!-- 상단 요약 카드 (약 / 수면) -->
+    <section class="summary-card">
+      <!-- 약 -->
+      <div class="summary-row" id="summaryMedRow">
+        <span class="summary-label">약</span>
+        <input type="checkbox" id="summaryMedCheck" class="summary-checkbox" />
+        <span class="summary-slot" id="summaryMedSlot">-</span>
+        <span class="summary-time-plan" id="summaryMedPlan">(--:--)</span>
+        <span class="summary-time-actual" id="summaryMedActual"></span>
+        <span class="summary-diff" id="summaryMedDiff"></span>
+        <button type="button" class="btn-next" id="summaryMedNextBtn">다음에</button>
+      </div>
+      <!-- 수면 -->
+      <div class="summary-row" id="summarySleepRow">
+        <span class="summary-label">수면</span>
+        <input type="checkbox" id="summarySleepCheck" class="summary-checkbox" />
+        <span class="summary-slot" id="summarySleepSlot">-</span>
+        <span class="summary-time-plan" id="summarySleepPlan">(--:--)</span>
+        <span class="summary-time-actual" id="summarySleepActual"></span>
+        <span class="summary-diff" id="summarySleepDiff"></span>
+        <button type="button" class="btn-next" id="summarySleepNextBtn">다음에</button>
+      </div>
+    </section>
 
-      <div class="row-flex">
-        <input type="text" id="keyTask1" placeholder="예: 에이랩 일일 로그 설계" />
-        <input type="checkbox" id="keyTask1Done" title="완료" />
+    <!-- 약&수면 아코디언 -->
+    <details class="accordion" id="medSleepAccordion" open>
+      <summary>
+        <span>약 & 수면</span>
+        <span class="small">펼치기 / 접기</span>
+      </summary>
+      <div class="accordion-body">
+        <div class="two-columns">
+          <!-- 약 복용 리스트 -->
+          <div class="column-card">
+            <div class="column-title">
+              <span>약 복용</span>
+              <span class="small">체크 시 상단 “약”에 반영</span>
+            </div>
+            <div id="medSlotsContainer"></div>
+          </div>
+          <!-- 수면 관리 리스트 -->
+          <div class="column-card">
+            <div class="column-title">
+              <span>수면 관리</span>
+              <span class="small">체크 시 상단 “수면”에 반영</span>
+            </div>
+            <div id="sleepSlotsContainer"></div>
+          </div>
+        </div>
       </div>
-      <div class="row-flex">
-        <input type="text" id="keyTask2" placeholder="예: 약·수면 기록하기" />
-        <input type="checkbox" id="keyTask2Done" title="완료" />
-      </div>
-      <div class="row-flex">
-        <input type="text" id="keyTask3" placeholder="예: 방 정리 10분" />
-        <input type="checkbox" id="keyTask3Done" title="완료" />
-      </div>
+    </details>
 
-      <label>오늘 안 한 일 (피하고 싶은 것)</label>
-      <div class="row-flex">
-        <input type="text" id="keyNotTasks" placeholder="예: 야식, 쓸데없는 뉴스 보기" />
-        <input type="checkbox" id="keyNotTasksDone" title="지킨 경우 체크" />
+    <!-- 내 상태 기록 -->
+    <section class="state-card">
+      <div style="font-weight:600; font-size:0.95rem;">내 상태 기록</div>
+      <div class="state-input-row">
+        <input type="text" id="stateInput" placeholder="지금 상태를 한 줄로 적어주세요." />
+        <button type="button" class="btn-send" id="stateSendBtn">전송</button>
       </div>
+      <div class="state-log-list" id="stateLogList"></div>
+    </section>
+  </main>
+
+  <!-- 하단 네비게이션 -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" data-tab="state">
+      <div>😊</div>
+      <div>내 상태</div>
     </div>
-
-    <!-- 2. 약 복용 3개 -->
-    <div class="section">
-      <h2>2. 약 복용 💊 (최대 3개)</h2>
-
-      <h3 style="font-size:0.95rem; margin:8px 0;">아침</h3>
-      <label>복용하시는 약 1
-        <span id="med1TimeLabel" class="time-label"></span>
-      </label>
-      <div class="row-flex">
-        <input type="text" id="med1Name" placeholder="예: 콘서타 36mg" />
-        <input type="checkbox" id="med1Taken" title="복용 시 체크" />
-      </div>
-
-      <h3 style="font-size:0.95rem; margin:8px 0;">점심</h3>
-      <label>복용하시는 약 2
-        <span id="med2TimeLabel" class="time-label"></span>
-      </label>
-      <div class="row-flex">
-        <input type="text" id="med2Name" placeholder="예: 라믹탈 100mg" />
-        <input type="checkbox" id="med2Taken" title="복용 시 체크" />
-      </div>
-
-      <h3 style="font-size:0.95rem; margin:8px 0;">저녁</h3>
-      <label>복용하시는 약 3
-        <span id="med3TimeLabel" class="time-label"></span>
-      </label>
-      <div class="row-flex">
-        <input type="text" id="med3Name" placeholder="예: 리보트릴 0.25mg" />
-        <input type="checkbox" id="med3Taken" title="복용 시 체크" />
-      </div>
+    <div class="nav-item" data-tab="todo">
+      <div>✅</div>
+      <div>할일 루틴</div>
     </div>
-
-    <!-- 3. 수면 (8단계 이벤트, 체크 시 항목 옆에 날짜+시간 표시) -->
-    <div class="section">
-      <h2>3. 수면 🌙</h2>
-
-      <div>
-        <label>누운 시간
-          <span id="bedStamp" class="time-label"></span>
-        </label>
-        <div class="row-flex">
-          <input type="text" id="bedNote" placeholder="예: 침대에 누운 시각 느낌 메모" />
-          <input type="checkbox" id="bedChk" title="누웠을 때 체크" />
-        </div>
-      </div>
-
-      <div>
-        <label>폰 할꺼야
-          <span id="phoneStamp" class="time-label"></span>
-        </label>
-        <div class="row-flex">
-          <input type="text" id="phoneNote" placeholder="예: 유튜브 / SNS / 웹서핑 등" />
-          <input type="checkbox" id="phoneChk" title="폰 보기 시작 시 체크" />
-        </div>
-      </div>
-
-      <div>
-        <label>잠 안옴
-          <span id="noSleepStamp" class="time-label"></span>
-        </label>
-        <div class="row-flex">
-          <input type="text" id="noSleepNote" placeholder="예: 생각 많음, 불안, 몸 불편 등" />
-          <input type="checkbox" id="noSleepChk" title="잠 안 온다고 느낄 때 체크" />
-        </div>
-      </div>
-
-      <div>
-        <label>진짜 잔다 (잠든 시각 느낌)
-          <span id="sleepRealStamp" class="time-label"></span>
-        </label>
-        <div class="row-flex">
-          <input type="text" id="sleepRealNote" placeholder="예: 눈 감고 더 이상 폰 안 잡음" />
-          <input type="checkbox" id="sleepRealChk" title="잠 들었다고 느낄 때 체크" />
-        </div>
-      </div>
-
-      <div>
-        <label>일어남
-          <span id="wakeStamp" class="time-label"></span>
-        </label>
-        <div class="row-flex">
-          <input type="text" id="wakeNote" placeholder="예: 알람 울림, 한 번 깸" />
-          <input type="checkbox" id="wakeChk" title="깨는 순간 체크" />
-        </div>
-      </div>
-
-      <div>
-        <label>꾸물거림
-          <span id="lingerStamp" class="time-label"></span>
-        </label>
-        <div class="row-flex">
-          <input type="text" id="lingerNote" placeholder="예: 침대에서 폰, 멍때리기 등" />
-          <input type="checkbox" id="lingerChk" title="꾸물거리기 시작 시 체크" />
-        </div>
-      </div>
-
-      <div>
-        <label>진짜 일어남
-          <span id="wakeRealStamp" class="time-label"></span>
-        </label>
-        <div class="row-flex">
-          <input type="text" id="wakeRealNote" placeholder="예: 자리에서 완전히 일어남" />
-          <input type="checkbox" id="wakeRealChk" title="완전히 일어난 시점 체크" />
-        </div>
-      </div>
-
-      <div>
-        <label>밤샘
-          <span id="allNightStamp" class="time-label"></span>
-        </label>
-        <div class="row-flex">
-          <input type="text" id="allNightNote" placeholder="예: 밤새 작업, 밤샘 느낌 메모" />
-          <input type="checkbox" id="allNightChk" title="밤샘 시 체크" />
-        </div>
-      </div>
+    <div class="nav-item" data-tab="camera">
+      <div>📷</div>
+      <div>카메라</div>
     </div>
-
-    <!-- 4. 기분 / 에너지 / 집중 -->
-    <div class="section">
-      <h2>4. 기분 / 에너지 / 집중 🙂</h2>
-
-      <!-- 기분: 점수 + 버튼 -->
-      <span class="score-label">기분 점수 (0~100)</span>
-      <div class="row-flex">
-        <span class="small">현재: <span id="moodValue" class="score-current">0</span></span>
-        <input type="hidden" id="mood" value="0" />
-      </div>
-      <div class="row-flex">
-        <button type="button" id="moodMinus5">-</button><span>5</span><button type="button" id="moodPlus5">+</button>
-        <button type="button" id="moodMinus10">-</button><span>10</span><button type="button" id="moodPlus10">+</button>
-      </div>
-
-      <label for="energy">에너지 / 각성 정도</label>
-      <select id="energy">
-        <option value="">선택</option>
-        <option value="1">1 - 거의 없음</option>
-        <option value="2">2 - 낮음</option>
-        <option value="3">3 - 보통</option>
-        <option value="4">4 - 높음</option>
-        <option value="5">5 - 과각성 느낌</option>
-      </select>
-
-      <label for="focus">집중도</label>
-      <select id="focus">
-        <option value="">선택</option>
-        <option value="1">1 - 전혀 안 됨</option>
-        <option value="2">2 - 잘 안 됨</option>
-        <option value="3">3 - 중간</option>
-        <option value="4">4 - 잘 됨</option>
-        <option value="5">5 - 매우 잘 됨</option>
-      </select>
-
-      <label for="moodReason">왜 그런 기분이었는지 (간단히)</label>
-      <input type="text" id="moodReason" placeholder="예: 잠 부족, 사람과의 갈등, 일 잘 풀림 등" />
+    <div class="nav-item" data-tab="medsleep">
+      <div>💊</div>
+      <div>약&수면</div>
     </div>
-
-    <!-- 5. 할 일 진행 & 메모 -->
-    <div class="section">
-      <h2>5. 할 일 진행 & 메모</h2>
-
-      <!-- 완료율: 점수 + 버튼 -->
-      <span class="score-label">오늘 했어야 하는 일 완료율 (%)</span>
-      <div class="row-flex">
-        <span class="small">현재: <span id="taskDoneValue" class="score-current">0</span>%</span>
-        <input type="hidden" id="taskDone" value="0" />
-      </div>
-      <div class="row-flex">
-        <button type="button" id="taskDoneMinus5">-</button><span>5</span><button type="button" id="taskDonePlus5">+</button>
-        <button type="button" id="taskDoneMinus10">-</button><span>10</span><button type="button" id="taskDonePlus10">+</button>
-      </div>
-
-      <label for="notes">메모 / 특이사항</label>
-      <textarea id="notes" placeholder="부작용, 기분 변화, 사건 등을 자유롭게 적기"></textarea>
-
-      <!-- 못한 느낌: 점수 + 버튼 -->
-      <span class="score-label">오늘 못한 느낌 (%)</span>
-      <div class="row-flex">
-        <span class="small">현재: <span id="notDoneValue" class="score-current">0</span>%</span>
-        <input type="hidden" id="notDoneFeeling" value="0" />
-      </div>
-      <div class="row-flex">
-        <button type="button" id="notDoneMinus5">-</button><span>5</span><button type="button" id="notDonePlus5">+</button>
-        <button type="button" id="notDoneMinus10">-</button><span>10</span><button type="button" id="notDonePlus10">+</button>
-      </div>
-
-      <label for="notesNotDone">메모 / 특이사항 (못한 부분 위주)</label>
-      <textarea id="notesNotDone" placeholder="못한 일, 남은 찝찝함 등을 자유롭게 적기"></textarea>
-
-      <!-- 메모 태그 -->
-      <span class="small" style="display:block; margin-top:6px;">메모 태그 (중복 선택 가능, A안: 횟수 통계용)</span>
-      <div class="tag-box">
-        <label><input type="checkbox" class="memoTag" value="두통/몸 불편" />두통/몸 불편</label>
-        <label><input type="checkbox" class="memoTag" value="과각성" />과각성</label>
-        <label><input type="checkbox" class="memoTag" value="과식/야식" />과식/야식</label>
-        <label><input type="checkbox" class="memoTag" value="관계 스트레스" />관계 스트레스</label>
-        <label><input type="checkbox" class="memoTag" value="감정 기복 큼" />감정 기복 큼</label>
-        <label><input type="checkbox" class="memoTag" value="컨디션 좋음" />컨디션 좋음</label>
-      </div>
-
-      <!-- 체크 요약 -->
-      <div id="checkSummaryBox" class="small" style="margin-top:8px;">
-        <div>오늘 전체 체크수 : <span id="totalCheckCount" style="color:red;">0</span>개</div>
-        <div>1. 날짜 & 오늘 할 일: <span id="checkCount1">0</span>개</div>
-        <div>2. 약 복용: <span id="checkCount2">0</span>개</div>
-        <div>3. 수면: <span id="checkCount3">0</span>개</div>
-        <div>4. 기분/에너지/집중: <span id="checkCount4">0</span>개</div>
-        <div>5. 할 일 진행 & 메모: <span id="checkCount5">0</span>개</div>
-      </div>
+    <div class="nav-item" data-tab="stats">
+      <div>📊</div>
+      <div>통계보기</div>
     </div>
+  </nav>
+</div>
 
-    <button type="submit" id="saveBtn">저장</button>
-  </form>
+<script>
+  /* -------------------------
+     1. 슬롯 기본 설정 (임시 값)
+     이 부분만 나중에 “약&수면 설정 화면”에서 수정 가능하게 확장하면 됩니다.
+  ------------------------- */
+  const medSlotsConfig = [
+    { id: "med_morning", label: "아침", planTime: "09:00" },
+    { id: "med_lunch",   label: "점심", planTime: "13:00" },
+    { id: "med_dinner",  label: "저녁", planTime: "19:00" },
+    { id: "med_night",   label: "취침", planTime: "23:00" },
+    { id: "med_prn",     label: "필요시", planTime: "--:--" },
+    { id: "med_custom",  label: "직접입력", planTime: "--:--" }
+  ];
 
-  <h2>최근 7일 로그</h2>
-  <table id="logTable">
-    <thead>
-      <tr>
-        <th>날짜</th>
-        <th>수면(진짜 잔다~진짜 일어남)</th>
-        <th>약 (복용한 약 이름)</th>
-        <th>기분</th>
-        <th>에너지</th>
-        <th>집중</th>
-        <th>완료율</th>
-        <th>태그</th>
-        <th>메모</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  const sleepSlotsConfig = [
+    { id: "sleep_bed",   label: "누움",   planTime: "01:00" },
+    { id: "sleep_sleep", label: "잠듦",   planTime: "01:30" },
+    { id: "sleep_wake",  label: "기상",   planTime: "08:00" },
+    { id: "sleep_nap",   label: "낮잠",   planTime: "15:00" },
+    { id: "sleep_custom",label: "직접입력", planTime: "--:--" }
+  ];
 
-  <h3 style="margin-top:16px;">메모 태그 통계 (전체 누적)</h3>
-  <div id="tagStats" class="small"></div>
+  // 상태: 각 슬롯의 체크 여부 및 실제 시간
+  let medSlotsState = medSlotsConfig.map(s => ({ ...s, checked: false, actualTime: null }));
+  let sleepSlotsState = sleepSlotsConfig.map(s => ({ ...s, checked: false, actualTime: null }));
 
-  <script>
-    const STORAGE_KEY = "dailyLogs_v2";
+  let currentMedIndex = 0;
+  let currentSleepIndex = sleepSlotsConfig.findIndex(s => s.label === "기상");
+  if (currentSleepIndex === -1) currentSleepIndex = 0;
 
-    const MEMO_TAG_LIST = [
-      "두통/몸 불편",
-      "과각성",
-      "과식/야식",
-      "관계 스트레스",
-      "감정 기복 큼",
-      "컨디션 좋음"
-    ];
+  /* -------------------------
+     2. 유틸 함수
+  ------------------------- */
+  function formatNowTime() {
+    const d = new Date();
+    const hh = String(d.getHours()).padStart(2, "0");
+    const mm = String(d.getMinutes()).padStart(2, "0");
+    return `${hh}:${mm}`;
+  }
 
-    // 오늘 날짜 기본값 설정
-    (function setToday() {
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, "0");
-      const dd = String(today.getDate()).padStart(2, "0");
-      document.getElementById("date").value = `${yyyy}-${mm}-${dd}`;
-    })();
+  // planTime("09:00")과 actual("11:30") 차이 → "+2h30m" 같은 문자열
+  function diffTime(plan, actual) {
+    if (!plan || plan === "--:--" || !actual) return "";
+    const [ph, pm] = plan.split(":").map(Number);
+    const [ah, am] = actual.split(":").map(Number);
+    const planMin = ph * 60 + pm;
+    const actMin = ah * 60 + am;
+    let diff = actMin - planMin; // +면 늦게, -면 일찍
+    const sign = diff === 0 ? "±" : (diff > 0 ? "+" : "-");
+    diff = Math.abs(diff);
+    const h = Math.floor(diff / 60);
+    const m = diff % 60;
+    return `${sign}${h}h${String(m).padStart(2, "0")}m`;
+  }
 
-    function loadLogs() {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return [];
-      try {
-        return JSON.parse(raw);
-      } catch (e) {
-        console.error("JSON parse error", e);
-        return [];
-      }
-    }
+  function getFirstUncheckedIndex(stateArr) {
+    const idx = stateArr.findIndex(s => !s.checked);
+    return idx === -1 ? stateArr.length - 1 : idx;
+  }
 
-    function saveLogs(logs) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
-    }
+  /* -------------------------
+     3. DOM 렌더링
+  ------------------------- */
 
-    // 체크하면 줄 긋기 (오늘 할 일 / 오늘 안 한 일)
-    function attachStrikeCheckbox(checkboxId, inputId) {
-      const cb = document.getElementById(checkboxId);
-      const input = document.getElementById(inputId);
-      if (!cb || !input) return;
-      cb.addEventListener("change", () => {
-        if (cb.checked) input.classList.add("done-line");
-        else input.classList.remove("done-line");
-      });
-    }
+  // (1) 하단 리스트 렌더
+  function renderSlotsList() {
+    const medContainer = document.getElementById("medSlotsContainer");
+    const sleepContainer = document.getElementById("sleepSlotsContainer");
+    medContainer.innerHTML = "";
+    sleepContainer.innerHTML = "";
 
-    attachStrikeCheckbox("keyTask1Done", "keyTask1");
-    attachStrikeCheckbox("keyTask2Done", "keyTask2");
-    attachStrikeCheckbox("keyTask3Done", "keyTask3");
-    attachStrikeCheckbox("keyNotTasksDone", "keyNotTasks");
+    medSlotsState.forEach((slot, index) => {
+      const row = document.createElement("div");
+      row.className = "slot-row";
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = slot.checked;
+      cb.dataset.type = "med";
+      cb.dataset.index = index;
 
-    // 날짜+시간 포맷: 25-11-18 23:10
-    function formatNowTime() {
-      const d = new Date();
-      const yy = String(d.getFullYear()).slice(2);  // 뒤 2자리
-      const mm = String(d.getMonth() + 1).padStart(2, "0");
-      const dd = String(d.getDate()).padStart(2, "0");
-      const h = String(d.getHours()).padStart(2, "0");
-      const m = String(d.getMinutes()).padStart(2, "0");
-      return `${yy}-${mm}-${dd} ${h}:${m}`;
-    }
+      const nameSpan = document.createElement("span");
+      nameSpan.className = "slot-name";
+      nameSpan.textContent = slot.label;
 
-    // 체크하면 현재 날짜+시간 빨간색 표시 (약 / 수면)
-    function attachTimeCheckbox(checkboxId, spanId) {
-      const cb = document.getElementById(checkboxId);
-      const span = document.getElementById(spanId);
-      if (!cb || !span) return;
-      cb.addEventListener("change", () => {
-        if (cb.checked) {
-          span.textContent = formatNowTime();
-        } else {
-          span.textContent = "";
-        }
-      });
-    }
+      const planSpan = document.createElement("span");
+      planSpan.className = "slot-plan" + (slot.checked ? " done" : "");
+      planSpan.textContent = `(${slot.planTime})`;
 
-    // 약 3개
-    attachTimeCheckbox("med1Taken", "med1TimeLabel");
-    attachTimeCheckbox("med2Taken", "med2TimeLabel");
-    attachTimeCheckbox("med3Taken", "med3TimeLabel");
+      const actualSpan = document.createElement("span");
+      actualSpan.className = "slot-actual";
+      actualSpan.textContent = slot.actualTime ? slot.actualTime : "";
 
-    // 수면 8개
-    attachTimeCheckbox("bedChk", "bedStamp");
-    attachTimeCheckbox("phoneChk", "phoneStamp");
-    attachTimeCheckbox("noSleepChk", "noSleepStamp");
-    attachTimeCheckbox("sleepRealChk", "sleepRealStamp");
-    attachTimeCheckbox("wakeChk", "wakeStamp");
-    attachTimeCheckbox("lingerChk", "lingerStamp");
-    attachTimeCheckbox("wakeRealChk", "wakeRealStamp");
-    attachTimeCheckbox("allNightChk", "allNightStamp");
-
-    // 점수형 컨트롤 공통 함수
-    function makeScoreController(valueSpanId, hiddenInputId, minus5Id, plus5Id, minus10Id, plus10Id) {
-      let value = 0;
-      const span = document.getElementById(valueSpanId);
-      const hidden = document.getElementById(hiddenInputId);
-
-      function updateDisplay() {
-        span.textContent = value;
-        hidden.value = value;
-      }
-      updateDisplay();
-
-      function clamp(v) {
-        if (v < 0) return 0;
-        if (v > 100) return 100;
-        return v;
-      }
-
-      const m5 = document.getElementById(minus5Id);
-      const p5 = document.getElementById(plus5Id);
-      const m10 = document.getElementById(minus10Id);
-      const p10 = document.getElementById(plus10Id);
-
-      if (m5) m5.addEventListener("click", () => { value = clamp(value - 5); updateDisplay(); });
-      if (p5) p5.addEventListener("click", () => { value = clamp(value + 5); updateDisplay(); });
-      if (m10) m10.addEventListener("click", () => { value = clamp(value - 10); updateDisplay(); });
-      if (p10) p10.addEventListener("click", () => { value = clamp(value + 10); updateDisplay(); });
-
-      return {
-        getValue: () => value,
-        setValue: (v) => { value = clamp(Number(v) || 0); updateDisplay(); }
-      };
-    }
-
-    // 기분, 완료율, 못한 느낌 컨트롤 생성
-    const moodController = makeScoreController("moodValue", "mood", "moodMinus5", "moodPlus5", "moodMinus10", "moodPlus10");
-    const taskDoneController = makeScoreController("taskDoneValue", "taskDone", "taskDoneMinus5", "taskDonePlus5", "taskDoneMinus10", "taskDonePlus10");
-    const notDoneController = makeScoreController("notDoneValue", "notDoneFeeling", "notDoneMinus5", "notDonePlus5", "notDoneMinus10", "notDonePlus10");
-
-    function renderTableAndStats() {
-      const logs = loadLogs().sort((a, b) => b.date.localeCompare(a.date));
-      const tbody = document.querySelector("#logTable tbody");
-      tbody.innerHTML = "";
-
-      // 태그 통계 초기화
-      const tagCounts = {};
-      MEMO_TAG_LIST.forEach(t => tagCounts[t] = 0);
-
-      logs.slice(0, 7).forEach(log => {
-        // 수면 요약: 진짜 잔다 ~ 진짜 일어남 기준
-        const start = log.sleepRealStamp || log.bedStamp || "";
-        const end = log.wakeRealStamp || log.wakeStamp || "";
-        let sleepText = "-";
-        if (start || end) {
-          const sTxt = start || "?";
-          const eTxt = end || "?";
-          sleepText = `${sTxt} ~ ${eTxt}`;
-        }
-
-        // 약 요약
-        const meds = [];
-        if (log.med1Name && log.med1Taken) meds.push(log.med1Name);
-        if (log.med2Name && log.med2Taken) meds.push(log.med2Name);
-        if (log.med3Name && log.med3Taken) meds.push(log.med3Name);
-        const medSummary = meds.join(", ");
-
-        // 메모 태그
-        const memoTags = log.memoTags || [];
-        memoTags.forEach(t => {
-          if (tagCounts[t] != null) tagCounts[t] += 1;
-        });
-        const tagSummary = memoTags.join(", ");
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${log.date || "-"}</td>
-          <td>${sleepText}</td>
-          <td>${medSummary || "-"}</td>
-          <td>${log.mood || "-"}</td>
-          <td>${log.energy || "-"}</td>
-          <td>${log.focus || "-"}</td>
-          <td>${log.taskDone || 0}%</td>
-          <td>${tagSummary || "-"}</td>
-          <td>${(log.notes || "").slice(0, 15)}${log.notes && log.notes.length > 15 ? "..." : ""}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      // 태그 통계 표시
-      const statsDiv = document.getElementById("tagStats");
-      const totalLogs = logs.length;
-      if (!totalLogs) {
-        statsDiv.textContent = "아직 저장된 로그가 없습니다.";
-        return;
-      }
-      const parts = [];
-      MEMO_TAG_LIST.forEach(tag => {
-        const cnt = tagCounts[tag] || 0;
-        parts.push(`${tag}: ${cnt}회`);
-      });
-      statsDiv.textContent = parts.join(" / ");
-    }
-
-    function updateCheckSummaryUI(log) {
-      document.getElementById("totalCheckCount").textContent = log.totalCheckCount || 0;
-      document.getElementById("checkCount1").textContent = log.checkCount1 || 0;
-      document.getElementById("checkCount2").textContent = log.checkCount2 || 0;
-      document.getElementById("checkCount3").textContent = log.checkCount3 || 0;
-      document.getElementById("checkCount4").textContent = log.checkCount4 || 0;
-      document.getElementById("checkCount5").textContent = log.checkCount5 || 0;
-    }
-
-    document.getElementById("logForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      // 메모 태그 수집
-      const tagChecks = Array.from(document.querySelectorAll(".memoTag"));
-      const memoTags = tagChecks.filter(c => c.checked).map(c => c.value);
-
-      const log = {
-        date: document.getElementById("date").value,
-
-        keyTask1: document.getElementById("keyTask1").value,
-        keyTask1Done: document.getElementById("keyTask1Done").checked,
-        keyTask2: document.getElementById("keyTask2").value,
-        keyTask2Done: document.getElementById("keyTask2Done").checked,
-        keyTask3: document.getElementById("keyTask3").value,
-        keyTask3Done: document.getElementById("keyTask3Done").checked,
-
-        keyNotTasks: document.getElementById("keyNotTasks").value,
-        keyNotTasksDone: document.getElementById("keyNotTasksDone").checked,
-
-        med1Name: document.getElementById("med1Name").value,
-        med1Taken: document.getElementById("med1Taken").checked,
-        med1TimeLabel: document.getElementById("med1TimeLabel").textContent,
-
-        med2Name: document.getElementById("med2Name").value,
-        med2Taken: document.getElementById("med2Taken").checked,
-        med2TimeLabel: document.getElementById("med2TimeLabel").textContent,
-
-        med3Name: document.getElementById("med3Name").value,
-        med3Taken: document.getElementById("med3Taken").checked,
-        med3TimeLabel: document.getElementById("med3TimeLabel").textContent,
-
-        bedNote: document.getElementById("bedNote").value,
-        bedStamp: document.getElementById("bedStamp").textContent,
-        phoneNote: document.getElementById("phoneNote").value,
-        phoneStamp: document.getElementById("phoneStamp").textContent,
-        noSleepNote: document.getElementById("noSleepNote").value,
-        noSleepStamp: document.getElementById("noSleepStamp").textContent,
-        sleepRealNote: document.getElementById("sleepRealNote").value,
-        sleepRealStamp: document.getElementById("sleepRealStamp").textContent,
-        wakeNote: document.getElementById("wakeNote").value,
-        wakeStamp: document.getElementById("wakeStamp").textContent,
-        lingerNote: document.getElementById("lingerNote").value,
-        lingerStamp: document.getElementById("lingerStamp").textContent,
-        wakeRealNote: document.getElementById("wakeRealNote").value,
-        wakeRealStamp: document.getElementById("wakeRealStamp").textContent,
-        allNightNote: document.getElementById("allNightNote").value,
-        allNightStamp: document.getElementById("allNightStamp").textContent,
-
-        mood: document.getElementById("mood").value,
-        energy: document.getElementById("energy").value,
-        focus: document.getElementById("focus").value,
-        moodReason: document.getElementById("moodReason").value,
-
-        taskDone: document.getElementById("taskDone").value,
-        notes: document.getElementById("notes").value,
-        memoTags: memoTags,
-        notDoneFeeling: document.getElementById("notDoneFeeling").value,
-        notesNotDone: document.getElementById("notesNotDone").value
-      };
-
-      // 체크수 계산
-      const checkCount1 =
-        (log.keyTask1Done ? 1 : 0) +
-        (log.keyTask2Done ? 1 : 0) +
-        (log.keyTask3Done ? 1 : 0) +
-        (log.keyNotTasksDone ? 1 : 0);
-
-      const checkCount2 =
-        (log.med1Taken ? 1 : 0) +
-        (log.med2Taken ? 1 : 0) +
-        (log.med3Taken ? 1 : 0);
-
-      const checkCount3 =
-        (log.bedStamp ? 1 : 0) +
-        (log.phoneStamp ? 1 : 0) +
-        (log.noSleepStamp ? 1 : 0) +
-        (log.sleepRealStamp ? 1 : 0) +
-        (log.wakeStamp ? 1 : 0) +
-        (log.lingerStamp ? 1 : 0) +
-        (log.wakeRealStamp ? 1 : 0) +
-        (log.allNightStamp ? 1 : 0);
-
-      const checkCount4 =
-        (Number(log.mood) > 0 ? 1 : 0) +
-        (log.energy ? 1 : 0) +
-        (log.focus ? 1 : 0) +
-        (log.moodReason ? 1 : 0);
-
-      const checkCount5 =
-        (Number(log.taskDone) > 0 ? 1 : 0) +
-        (Number(log.notDoneFeeling) > 0 ? 1 : 0) +
-        (log.notes ? 1 : 0) +
-        (log.notesNotDone ? 1 : 0) +
-        (log.memoTags ? log.memoTags.length : 0);
-
-      const totalCheckCount = checkCount1 + checkCount2 + checkCount3 + checkCount4 + checkCount5;
-
-      log.checkCount1 = checkCount1;
-      log.checkCount2 = checkCount2;
-      log.checkCount3 = checkCount3;
-      log.checkCount4 = checkCount4;
-      log.checkCount5 = checkCount5;
-      log.totalCheckCount = totalCheckCount;
-
-      const logs = loadLogs();
-      const idx = logs.findIndex(l => l.date === log.date);
-      if (idx >= 0) {
-        logs[idx] = log;
-      } else {
-        logs.push(log);
-      }
-      saveLogs(logs);
-      renderTableAndStats();
-      updateCheckSummaryUI(log);
-      alert("저장되었습니다.");
+      row.appendChild(cb);
+      row.appendChild(nameSpan);
+      row.appendChild(planSpan);
+      row.appendChild(actualSpan);
+      medContainer.appendChild(row);
     });
 
-    // 초기 렌더
-    renderTableAndStats();
+    sleepSlotsState.forEach((slot, index) => {
+      const row = document.createElement("div");
+      row.className = "slot-row";
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = slot.checked;
+      cb.dataset.type = "sleep";
+      cb.dataset.index = index;
 
-    // 페이지 로드 시, 오늘 날짜 로그가 이미 있으면 체크요약만 불러오기 (선택)
-    (function initTodaySummary() {
-      const logs = loadLogs();
-      const today = document.getElementById("date").value;
-      const todayLog = logs.find(l => l.date === today);
-      if (todayLog && todayLog.totalCheckCount != null) {
-        updateCheckSummaryUI(todayLog);
+      const nameSpan = document.createElement("span");
+      nameSpan.className = "slot-name";
+      nameSpan.textContent = slot.label;
+
+      const planSpan = document.createElement("span");
+      planSpan.className = "slot-plan" + (slot.checked ? " done" : "");
+      planSpan.textContent = `(${slot.planTime})`;
+
+      const actualSpan = document.createElement("span");
+      actualSpan.className = "slot-actual";
+      actualSpan.textContent = slot.actualTime ? slot.actualTime : "";
+
+      row.appendChild(cb);
+      row.appendChild(nameSpan);
+      row.appendChild(planSpan);
+      row.appendChild(actualSpan);
+      sleepContainer.appendChild(row);
+    });
+  }
+
+  // (2) 상단 요약 카드 렌더
+  function renderSummary() {
+    // 약
+    currentMedIndex = getFirstUncheckedIndex(medSlotsState);
+    const medSlot = medSlotsState[currentMedIndex];
+    document.getElementById("summaryMedSlot").textContent = medSlot.label;
+    const planSpan = document.getElementById("summaryMedPlan");
+    planSpan.textContent = `(${medSlot.planTime})`;
+    planSpan.className = "summary-time-plan" + (medSlot.checked ? " done" : "");
+    const actualSpan = document.getElementById("summaryMedActual");
+    actualSpan.textContent = medSlot.actualTime ? medSlot.actualTime : "";
+    const diffSpan = document.getElementById("summaryMedDiff");
+    diffSpan.textContent = medSlot.actualTime ? diffTime(medSlot.planTime, medSlot.actualTime) : "";
+    const summaryMedCheck = document.getElementById("summaryMedCheck");
+    summaryMedCheck.checked = medSlot.checked;
+
+    // 수면
+    currentSleepIndex = getFirstUncheckedIndex(sleepSlotsState);
+    const sleepSlot = sleepSlotsState[currentSleepIndex];
+    document.getElementById("summarySleepSlot").textContent = sleepSlot.label;
+    const sPlanSpan = document.getElementById("summarySleepPlan");
+    sPlanSpan.textContent = `(${sleepSlot.planTime})`;
+    sPlanSpan.className = "summary-time-plan" + (sleepSlot.checked ? " done" : "");
+    const sActualSpan = document.getElementById("summarySleepActual");
+    sActualSpan.textContent = sleepSlot.actualTime ? sleepSlot.actualTime : "";
+    const sDiffSpan = document.getElementById("summarySleepDiff");
+    sDiffSpan.textContent = sleepSlot.actualTime ? diffTime(sleepSlot.planTime, sleepSlot.actualTime) : "";
+    const summarySleepCheck = document.getElementById("summarySleepCheck");
+    summarySleepCheck.checked = sleepSlot.checked;
+
+    // 진행률 (임시: 약+수면 전체 슬롯 중 체크된 비율)
+    const totalSlots = medSlotsState.length + sleepSlotsState.length;
+    const doneSlots =
+      medSlotsState.filter(s => s.checked).length +
+      sleepSlotsState.filter(s => s.checked).length;
+    const rate = totalSlots === 0 ? 0 : Math.round((doneSlots / totalSlots) * 100);
+    document.getElementById("progressBar").style.width = `${rate}%`;
+    document.getElementById("progressText").textContent = `오늘 체크 진행률 ${rate}% (임시)`;
+  }
+
+  // 초기 렌더
+  renderSlotsList();
+  renderSummary();
+
+  /* -------------------------
+     4. 이벤트 바인딩
+  ------------------------- */
+
+  // (1) 하단 슬롯 체크 시
+  function handleSlotToggle(type, index, checked) {
+    const stateArr = type === "med" ? medSlotsState : sleepSlotsState;
+    const slot = stateArr[index];
+    slot.checked = checked;
+    slot.actualTime = checked ? formatNowTime() : null;
+    renderSlotsList();
+    renderSummary();
+  }
+
+  document.getElementById("medSlotsContainer").addEventListener("change", (e) => {
+    if (e.target.type === "checkbox") {
+      const idx = Number(e.target.dataset.index);
+      handleSlotToggle("med", idx, e.target.checked);
+    }
+  });
+
+  document.getElementById("sleepSlotsContainer").addEventListener("change", (e) => {
+    if (e.target.type === "checkbox") {
+      const idx = Number(e.target.dataset.index);
+      handleSlotToggle("sleep", idx, e.target.checked);
+    }
+  });
+
+  // (2) 상단 요약 체크박스 → 현재 슬롯 토글
+  document.getElementById("summaryMedCheck").addEventListener("change", (e) => {
+    handleSlotToggle("med", currentMedIndex, e.target.checked);
+  });
+  document.getElementById("summarySleepCheck").addEventListener("change", (e) => {
+    handleSlotToggle("sleep", currentSleepIndex, e.target.checked);
+  });
+
+  // (3) “다음에” 버튼 → 현재 인덱스를 다음 미완료 슬롯으로 이동
+  document.getElementById("summaryMedNextBtn").addEventListener("click", () => {
+    const arr = medSlotsState;
+    if (!arr.length) return;
+    let idx = currentMedIndex;
+    let step = 0;
+    do {
+      idx = (idx + 1) % arr.length;
+      step++;
+      if (!arr[idx].checked) break;
+    } while (step < arr.length);
+    currentMedIndex = idx;
+    renderSummary();
+  });
+
+  document.getElementById("summarySleepNextBtn").addEventListener("click", () => {
+    const arr = sleepSlotsState;
+    if (!arr.length) return;
+    let idx = currentSleepIndex;
+    let step = 0;
+    do {
+      idx = (idx + 1) % arr.length;
+      step++;
+      if (!arr[idx].checked) break;
+    } while (step < arr.length);
+    currentSleepIndex = idx;
+    renderSummary();
+  });
+
+  // (4) 내 상태 기록
+  const stateInput = document.getElementById("stateInput");
+  const stateLogList = document.getElementById("stateLogList");
+  document.getElementById("stateSendBtn").addEventListener("click", () => {
+    const text = stateInput.value.trim();
+    if (!text) return;
+    const time = formatNowTime();
+    const item = document.createElement("div");
+    item.className = "state-log-item";
+    item.innerHTML = `<div>${text}</div><div class="state-log-time">${time}</div>`;
+    stateLogList.prepend(item);
+    stateInput.value = "";
+  });
+
+  // (5) 아코디언 열림 상태(나중에 localStorage 연동 가능)
+  document.getElementById("medSleepAccordion").addEventListener("toggle", (e) => {
+    // TODO: localStorage에 open/close 저장 가능
+  });
+
+  // (6) 하단 네비게이션
+  document.querySelectorAll(".nav-item").forEach(item => {
+    item.addEventListener("click", () => {
+      document.querySelectorAll(".nav-item").forEach(i => i.classList.remove("active"));
+      item.classList.add("active");
+      const tab = item.dataset.tab;
+      if (tab === "medsleep") {
+        alert("약&수면 상세 설정 화면은 다음 단계에서 구현 예정입니다.");
+      } else if (tab !== "state") {
+        alert(`"${item.innerText.trim()}" 화면은 추후 연결 예정입니다.`);
       }
-    })();
-  </script>
+    });
+  });
+</script>
 </body>
 </html>
