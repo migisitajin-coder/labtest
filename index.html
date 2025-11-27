@@ -127,20 +127,26 @@
       font-size: 0.78rem;
       color: #d32f2f;
     }
-    .btn-next {
-      margin-left: auto;
+    .summary-checkbox {
+      transform: scale(1.1);
+    }
+    .btn-next, .btn-prev {
       padding: 4px 8px;
       border-radius: 999px;
-      border: none;
-      background: #4caf50;
-      color: #fff;
       font-size: 0.78rem;
       cursor: pointer;
       white-space: nowrap;
     }
-
-    .summary-checkbox {
-      transform: scale(1.1);
+    .btn-next {
+      border: none;
+      background: #4caf50;
+      color: #fff;
+      margin-left: auto;
+    }
+    .btn-prev {
+      border: 1px solid #bbb;
+      background: #ffffff;
+      color: #555;
     }
 
     /* 약&수면 아코디언 */
@@ -338,6 +344,7 @@
         <span class="summary-time-plan" id="summaryMedPlan">(--:--)</span>
         <span class="summary-time-actual" id="summaryMedActual"></span>
         <span class="summary-diff" id="summaryMedDiff"></span>
+        <button type="button" class="btn-prev" id="summaryMedPrevBtn">이전</button>
         <button type="button" class="btn-next" id="summaryMedNextBtn">다음에</button>
       </div>
       <!-- 수면 관리 -->
@@ -348,6 +355,7 @@
         <span class="summary-time-plan" id="summarySleepPlan">(--:--)</span>
         <span class="summary-time-actual" id="summarySleepActual"></span>
         <span class="summary-diff" id="summarySleepDiff"></span>
+        <button type="button" class="btn-prev" id="summarySleepPrevBtn">이전</button>
         <button type="button" class="btn-next" id="summarySleepNextBtn">다음에</button>
       </div>
     </section>
@@ -450,10 +458,13 @@
   let medSlotsState = medSlotsConfig.map(s => ({ ...s, checked: false, actualTime: null }));
   let sleepSlotsState = sleepSlotsConfig.map(s => ({ ...s, checked: false, actualTime: null }));
 
-  // 현재 포인터(상단 요약에 어떤 슬롯을 보여줄지)
-  let currentMedIndex = 0;
-  let currentSleepIndex = sleepSlotsState.findIndex(s => s.label === "기상");
-  if (currentSleepIndex === -1) currentSleepIndex = 0;
+  function firstUncheckedIndex(arr) {
+    const idx = arr.findIndex(s => !s.checked);
+    return idx === -1 ? 0 : idx;
+  }
+
+  let currentMedIndex = firstUncheckedIndex(medSlotsState);
+  let currentSleepIndex = firstUncheckedIndex(sleepSlotsState);
 
   /* -------------------------
      2. 시간 관련 유틸
@@ -471,7 +482,7 @@
     const [ah, am] = actual.split(":").map(Number);
     const planMin = ph * 60 + pm;
     const actMin = ah * 60 + am;
-    let diff = actMin - planMin; // + 늦음, - 빠름
+    let diff = actMin - planMin; // + 늦게, - 일찍
     const sign = diff === 0 ? "±" : (diff > 0 ? "+" : "-");
     diff = Math.abs(diff);
     const h = Math.floor(diff / 60);
@@ -558,7 +569,7 @@
   }
 
   function renderSummary() {
-    // 약 복용 - currentMedIndex 기준
+    // 약 복용
     const medSlot = medSlotsState[currentMedIndex];
     document.getElementById("summaryMedSlot").textContent = medSlot.label;
     const mPlanSpan = document.getElementById("summaryMedPlan");
@@ -570,7 +581,7 @@
     mDiffSpan.textContent = medSlot.actualTime ? diffTime(medSlot.planTime, medSlot.actualTime) : "";
     document.getElementById("summaryMedCheck").checked = medSlot.checked;
 
-    // 수면 관리 - currentSleepIndex 기준
+    // 수면 관리
     const sleepSlot = sleepSlotsState[currentSleepIndex];
     document.getElementById("summarySleepSlot").textContent = sleepSlot.label;
     const sPlanSpan = document.getElementById("summarySleepPlan");
@@ -590,30 +601,16 @@
   renderSummary();
 
   /* -------------------------
-     4. 슬롯 토글/다음 로직
+     4. 슬롯 토글 / 커서 이동
   ------------------------- */
 
-  // 체크 시: 상태 업데이트 + "체크된 슬롯 뒤의 다음 미체크 슬롯"을 포인터로
+  // 체크/해제만 처리 (커서 이동은 하지 않음)
   function handleSlotToggle(type, index, checkedFromUser) {
     const stateArr = type === "med" ? medSlotsState : sleepSlotsState;
     const slot = stateArr[index];
 
     slot.checked = checkedFromUser;
     slot.actualTime = checkedFromUser ? formatNowTime() : null;
-
-    // 포인터 이동: "이번에 체크한 슬롯 뒤"에서 출발 → 다음 미체크 슬롯
-    if (checkedFromUser) {
-      let idx = index;
-      let step = 0;
-      const len = stateArr.length;
-      do {
-        idx = (idx + 1) % len;
-        step++;
-        if (!stateArr[idx].checked) break;
-      } while (step < len);
-      if (type === "med") currentMedIndex = idx;
-      else currentSleepIndex = idx;
-    }
 
     renderSlotsList();
     renderSummary();
@@ -641,14 +638,26 @@
     handleSlotToggle("sleep", currentSleepIndex, e.target.checked);
   });
 
-  // "다음에" 버튼: 순차적으로 다음 슬롯으로 커서 이동 (체크 여부와 관계 없이)
+  // 커서 이동: 다음 / 이전
   function moveNextSlot(type) {
     const stateArr = type === "med" ? medSlotsState : sleepSlotsState;
     if (!stateArr.length) return;
-    let idx = type === "med" ? currentMedIndex : currentSleepIndex;
-    idx = (idx + 1) % stateArr.length;
-    if (type === "med") currentMedIndex = idx;
-    else currentSleepIndex = idx;
+    if (type === "med") {
+      currentMedIndex = (currentMedIndex + 1) % stateArr.length;
+    } else {
+      currentSleepIndex = (currentSleepIndex + 1) % stateArr.length;
+    }
+    renderSummary();
+  }
+
+  function movePrevSlot(type) {
+    const stateArr = type === "med" ? medSlotsState : sleepSlotsState;
+    if (!stateArr.length) return;
+    if (type === "med") {
+      currentMedIndex = (currentMedIndex - 1 + stateArr.length) % stateArr.length;
+    } else {
+      currentSleepIndex = (currentSleepIndex - 1 + stateArr.length) % stateArr.length;
+    }
     renderSummary();
   }
 
@@ -657,6 +666,12 @@
   });
   document.getElementById("summarySleepNextBtn").addEventListener("click", () => {
     moveNextSlot("sleep");
+  });
+  document.getElementById("summaryMedPrevBtn").addEventListener("click", () => {
+    movePrevSlot("med");
+  });
+  document.getElementById("summarySleepPrevBtn").addEventListener("click", () => {
+    movePrevSlot("sleep");
   });
 
   /* -------------------------
@@ -680,8 +695,7 @@
     if (stateLogs.length > 0) {
       const prev = stateLogs[stateLogs.length - 1];
       let diffMin = totalMinutes - prev.totalMinutes;
-      // 날짜가 바뀌었을 가능성까지 고려 (0시 넘어간 경우)
-      if (diffMin < 0) diffMin += 24 * 60;
+      if (diffMin < 0) diffMin += 24 * 60; // 자정 넘어간 경우 보정
 
       if (diffMin < 1) {
         diffText = "방금 전";
