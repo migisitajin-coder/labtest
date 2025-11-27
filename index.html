@@ -175,6 +175,10 @@
     .accordion-body {
       padding: 8px 8px 10px;
     }
+    .accordion-arrow {
+      font-size: 0.9rem;
+    }
+
     .two-columns {
       display: flex;
       gap: 8px;
@@ -202,6 +206,7 @@
       gap: 4px;
       font-size: 0.8rem;
       padding: 2px 0;
+      flex-wrap: wrap;
     }
     .slot-row input[type="checkbox"] {
       flex-shrink: 0;
@@ -218,6 +223,10 @@
       color: #bbb;
     }
     .slot-actual {
+      font-size: 0.75rem;
+      color: #d32f2f;
+    }
+    .slot-diff {
       font-size: 0.75rem;
       color: #d32f2f;
     }
@@ -364,7 +373,7 @@
     <details class="accordion" id="medSleepAccordion" open>
       <summary>
         <span>약 & 수면</span>
-        <span class="small">펼치기 / 접기</span>
+        <span class="accordion-arrow" data-for="medSleepAccordion">▲</span>
       </summary>
       <div class="accordion-body">
         <div class="two-columns">
@@ -372,7 +381,7 @@
           <div class="column-card">
             <div class="column-title">
               <span>약 복용</span>
-              <span class="small">체크 시 상단 "약 복용"에 반영</span>
+              <span class="small">체크 시 상단 "약 복용"으로 반영</span>
             </div>
             <div id="medSlotsContainer"></div>
           </div>
@@ -380,7 +389,7 @@
           <div class="column-card">
             <div class="column-title">
               <span>수면 관리</span>
-              <span class="small">체크 시 상단 "수면 관리"에 반영</span>
+              <span class="small">체크 시 상단 "수면 관리"로 반영</span>
             </div>
             <div id="sleepSlotsContainer"></div>
           </div>
@@ -392,7 +401,7 @@
     <details class="accordion" id="logAccordion" open>
       <summary>
         <span>기록 보기</span>
-        <span class="small">내 상태 기록 리스트</span>
+        <span class="accordion-arrow" data-for="logAccordion">▲</span>
       </summary>
       <div class="accordion-body">
         <div class="state-log-list" id="stateLogList"></div>
@@ -521,10 +530,15 @@
       actualSpan.className = "slot-actual";
       actualSpan.textContent = slot.actualTime ? slot.actualTime : "";
 
+      const diffSpan = document.createElement("span");
+      diffSpan.className = "slot-diff";
+      diffSpan.textContent = slot.actualTime ? diffTime(slot.planTime, slot.actualTime) : "";
+
       row.appendChild(cb);
       row.appendChild(nameSpan);
       row.appendChild(planSpan);
       row.appendChild(actualSpan);
+      row.appendChild(diffSpan);
       medContainer.appendChild(row);
     });
 
@@ -550,10 +564,15 @@
       actualSpan.className = "slot-actual";
       actualSpan.textContent = slot.actualTime ? slot.actualTime : "";
 
+      const diffSpan = document.createElement("span");
+      diffSpan.className = "slot-diff";
+      diffSpan.textContent = slot.actualTime ? diffTime(slot.planTime, slot.actualTime) : "";
+
       row.appendChild(cb);
       row.appendChild(nameSpan);
       row.appendChild(planSpan);
       row.appendChild(actualSpan);
+      row.appendChild(diffSpan);
       sleepContainer.appendChild(row);
     });
   }
@@ -594,10 +613,10 @@
     document.getElementById("summarySleepCheck").checked = sleepSlot.checked;
 
     updateProgress();
+    renderSlotsList(); // 리스트 쪽 diff도 함께 갱신
   }
 
   // 초기 렌더
-  renderSlotsList();
   renderSummary();
 
   /* -------------------------
@@ -612,7 +631,6 @@
     slot.checked = checkedFromUser;
     slot.actualTime = checkedFromUser ? formatNowTime() : null;
 
-    renderSlotsList();
     renderSummary();
   }
 
@@ -745,7 +763,25 @@
   });
 
   /* -------------------------
-     6. 하단 네비게이션 (임시 동작)
+     6. 아코디언 화살표(▼/▲) 토글
+  ------------------------- */
+  function updateAccordionArrow(detailsEl) {
+    const id = detailsEl.id;
+    const arrowSpan = document.querySelector(`.accordion-arrow[data-for="${id}"]`);
+    if (!arrowSpan) return;
+    arrowSpan.textContent = detailsEl.open ? "▲" : "▼";
+  }
+
+  const medSleepAccordion = document.getElementById("medSleepAccordion");
+  const logAccordion = document.getElementById("logAccordion");
+
+  [medSleepAccordion, logAccordion].forEach(det => {
+    updateAccordionArrow(det);
+    det.addEventListener("toggle", () => updateAccordionArrow(det));
+  });
+
+  /* -------------------------
+     7. 하단 네비게이션 (임시 동작)
   ------------------------- */
   document.querySelectorAll(".nav-item").forEach(item => {
     item.addEventListener("click", () => {
