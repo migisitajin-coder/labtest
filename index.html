@@ -41,8 +41,17 @@
       font-size: 18px;
     }
     .app-title {
+      display: flex;
+      align-items: center;
+      gap: 4px;
       font-weight: 700;
+      font-size: 1rem;
+    }
+    .app-title-emoji {
       font-size: 1.1rem;
+    }
+    .app-title-text {
+      font-size: 1rem;
     }
 
     .content {
@@ -325,7 +334,10 @@
     <button class="icon-btn" title="설정 / 메뉴">
       ☰
     </button>
-    <div class="app-title">A-Lab · 일일로그</div>
+    <div class="app-title">
+      <span class="app-title-emoji">🧠</span>
+      <span class="app-title-text">A-Lab</span>
+    </div>
     <div style="width:32px;height:32px;"></div>
   </header>
 
@@ -381,7 +393,6 @@
           <div class="column-card">
             <div class="column-title">
               <span>약 복용</span>
-              <span class="small">체크 시 상단 "약 복용"으로 반영</span>
             </div>
             <div id="medSlotsContainer"></div>
           </div>
@@ -389,7 +400,6 @@
           <div class="column-card">
             <div class="column-title">
               <span>수면 관리</span>
-              <span class="small">체크 시 상단 "수면 관리"로 반영</span>
             </div>
             <div id="sleepSlotsContainer"></div>
           </div>
@@ -613,7 +623,7 @@
     document.getElementById("summarySleepCheck").checked = sleepSlot.checked;
 
     updateProgress();
-    renderSlotsList(); // 리스트 쪽 diff도 함께 갱신
+    renderSlotsList(); // 리스트 쪽도 함께 갱신
   }
 
   // 초기 렌더
