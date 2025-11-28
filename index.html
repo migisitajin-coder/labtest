@@ -932,6 +932,40 @@ function renderRecords() {
   document.getElementById("recordCount").textContent = records.length;
 }
 
+ // ---------- 내 상태 입력 초기화 ----------
+function initStateInput() {
+  const input = document.getElementById("stateInput");
+  const btn = document.getElementById("saveStateBtn");
+
+  // 혹시 요소를 못 찾는 경우 에러 막기
+  if (!input || !btn) return;
+
+  function save() {
+    const text = input.value.trim();
+    if (!text) return; // 공백이면 무시
+
+    const now = new Date();
+    // records 배열에 { text, time } 형태로 추가
+    records.push({
+      text,
+      time: now
+    });
+
+    input.value = "";
+    renderRecords(); // 기록 리스트 다시 그리기
+  }
+
+  // 버튼 클릭 시 저장
+  btn.addEventListener("click", save);
+
+  // 엔터 눌러도 저장
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      save();
+    }
+  });
+}
 
     // ---------- 약&수면 섹션 토글 ----------
     function initMedSleepToggle() {
