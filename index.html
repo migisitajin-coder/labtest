@@ -2,24 +2,20 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>A-Lab · 일일로그</title>
+  <title>A-Lab 일일로그</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    /* --------------------------
-       0. 기본 색상 & 공통 스타일
-       -------------------------- */
     :root {
-      --bg-main: #f3f4f8;
-      --bg-card: #ffffff;
-      --accent: #6366f1;      /* 포인트 컬러 (보라계열) */
-      --accent-soft: #eef0ff;
-      --accent-warn: #ff6b6b;
-      --text-main: #111827;
-      --text-sub: #6b7280;
-      --border-soft: #e5e7eb;
-      --shadow-soft: 0 12px 30px rgba(15, 23, 42, 0.12);
+      --bg: #eef1f6;
+      --card-bg: #f9fafc;
+      --accent: #4caf50;
+      --accent-soft: #e1f5e4;
+      --danger: #ff5b6b;
+      --text-main: #222;
+      --text-sub: #707791;
+      --border-soft: #dde2ee;
+      --shadow-soft: 8px 8px 16px #d3d8e0, -8px -8px 16px #ffffff;
       --radius-card: 18px;
-      --radius-pill: 999px;
     }
 
     * {
@@ -28,1459 +24,908 @@
 
     body {
       margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
-        sans-serif;
-      background: var(--bg-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI",
+        system-ui, sans-serif;
+      background: var(--bg);
       color: var(--text-main);
     }
 
-    a {
-      text-decoration: none;
-      color: inherit;
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    button {
-      font-family: inherit;
+    .main {
+      width: 100%;
+      max-width: 960px;
+      padding: 8px 10px 80px;
     }
 
-    .hidden {
-      display: none !important;
-    }
-
-    /* --------------------------
-       1. 상단 헤더
-       -------------------------- */
-    header {
+    /* 110 헤더바 */
+    .top-bar-wrap {
+      width: 100%;
+      display: flex;
+      justify-content: center;
       position: sticky;
       top: 0;
       z-index: 20;
-      background: rgba(243, 244, 248, 0.92);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+      background: linear-gradient(to bottom, var(--bg) 60%, transparent);
     }
 
     .top-bar {
+      width: 100%;
       max-width: 960px;
-      margin: 0 auto;
-      padding: 8px 14px 10px;
+      padding: 8px 12px 6px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
-    .top-left,
-    .top-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .menu-icon {
-      width: 26px;
-      height: 26px;
+    .icon-button {
+      border: none;
+      background: transparent;
+      font-size: 20px;
+      padding: 6px;
       border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
       cursor: pointer;
-      background: rgba(255, 255, 255, 0.9);
-      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+      color: var(--text-main);
     }
 
-    .menu-icon div {
-      width: 14px;
-      height: 2px;
-      background: #4b5563;
-      border-radius: 999px;
-      position: relative;
+    .icon-button:hover {
+      background: rgba(0, 0, 0, 0.03);
     }
 
-    .menu-icon div::before,
-    .menu-icon div::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      width: 14px;
-      height: 2px;
-      background: #4b5563;
-      border-radius: 999px;
-    }
-
-    .menu-icon div::before {
-      top: -4px;
-    }
-
-    .menu-icon div::after {
-      top: 4px;
-    }
-
-    .header-logo {
+    .logo {
       display: flex;
       align-items: center;
       gap: 6px;
+    }
+
+    .logo-emoji {
+      font-size: 22px;
+    }
+
+    /* 로고 텍스트 25% 상향 */
+    .logo-text {
+      font-size: 1.4rem; /* 기존 1.1~1.2 기준에서 25% 정도 크게 */
       font-weight: 700;
-      font-size: 18px;
       letter-spacing: 0.02em;
-      color: #111827;
     }
 
-    .header-logo span.emoji {
-      font-size: 20px;
+    .top-bar-right {
+      width: 24px;
+      height: 24px;
     }
 
-    .header-logo span.text {
-      font-weight: 700;
+    /* 공통 섹션 */
+    .section {
+      margin-top: 10px;
     }
 
-    .header-title-sub {
-      font-size: 11px;
-      color: var(--text-sub);
-      margin-left: 2px;
-    }
-
-    /* --------------------------
-       2. 전체 레이아웃 / 메인 컨테이너
-       -------------------------- */
-    main {
-      max-width: 960px;
-      margin: 8px auto 80px;
-      padding: 0 12px 24px;
-    }
-
-    .section-title-row {
+    .section-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 6px;
-      margin-top: 6px;
+      padding: 0 4px;
+      font-size: 14px;
+      color: var(--text-sub);
     }
 
     .section-title {
-      font-size: 14px;
       font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      color: #333;
     }
 
-    .section-title-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #111827;
+    .section-pill {
+      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.03);
     }
 
-    .section-sub {
-      font-size: 11px;
+    .section-count {
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.03);
+    }
+
+    .helper-text {
+      margin: 0 4px 4px;
+      font-size: 12px;
       color: var(--text-sub);
     }
 
-    /* --------------------------
-       3. 카드 공통 스타일
-       -------------------------- */
-    .card {
-      background: var(--bg-card);
-      border-radius: var(--radius-card);
-      box-shadow: var(--shadow-soft);
-      padding: 14px 14px 16px;
-      margin-bottom: 14px;
-      position: relative;
-      overflow: hidden;
+    /* 버튼 */
+    .btn {
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      padding: 6px 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      white-space: nowrap;
     }
 
-    .card-header-row {
+    .btn.primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 5px 12px rgba(76, 175, 80, 0.35);
+    }
+
+    .btn.primary:hover {
+      filter: brightness(0.95);
+    }
+
+    .btn.ghost {
+      background: #ffffff;
+      color: var(--text-main);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .btn.ghost:hover {
+      background: rgba(0, 0, 0, 0.03);
+    }
+
+    .btn.link {
+      background: transparent;
+      color: var(--text-sub);
+      padding: 4px 8px;
+      box-shadow: none;
+    }
+
+    .btn.link:hover {
+      background: rgba(0, 0, 0, 0.03);
+    }
+
+    /* 120 ~ 진행바 / 요약 카드 */
+
+    .summary-section {
+      padding: 10px 4px 4px;
+    }
+
+    .progress-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 8px;
-    }
-
-    .badge-soft {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 3px 9px;
-      border-radius: 999px;
-      background: #e5e7eb;
       font-size: 11px;
-      color: #374151;
+      color: var(--text-sub);
+      margin: 2px 4px 4px;
     }
 
-    .badge-soft span {
-      font-size: 12px;
-    }
-
-    /* 진행률 바 */
-    .progress-wrapper {
-      margin-top: 4px;
-      margin-bottom: 6px;
-    }
-
-    .progress-bar-bg {
+    .progress-bar {
       width: 100%;
-      height: 12px;
+      height: 8px;
       border-radius: 999px;
-      background: #e5e7eb;
+      background: #dde3f1;
       overflow: hidden;
-      position: relative;
+      box-shadow: inset 2px 2px 4px #c8cfdd, inset -2px -2px 4px #ffffff;
     }
 
     .progress-bar-fill {
       height: 100%;
-      width: 35%;
+      width: 0%;
       border-radius: 999px;
-      background: linear-gradient(90deg, #4ade80, #22c55e);
-      box-shadow: 0 4px 10px rgba(34, 197, 94, 0.4);
-      transition: width 0.3s ease-out;
+      background: linear-gradient(90deg, #8bd68f, #4caf50);
+      transition: width 0.25s ease-out;
     }
 
-    .runner-emoji {
-      position: absolute;
-      top: -18px;
-      right: 0;
-      font-size: 18px;
-      pointer-events: none;
-    }
-
-    .progress-caption {
-      margin-top: 4px;
-      font-size: 11px;
-      color: var(--text-sub);
-      display: flex;
-      justify-content: space-between;
-    }
-
-    /* --------------------------
-       4. 상단 약/수면 “다음 항목” 카드
-       -------------------------- */
-    .next-row {
+    .summary-cards {
+      margin-top: 10px;
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 8px;
-      margin-top: 6px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
     }
 
-    @media (min-width: 540px) {
-      .next-row {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+    @media (max-width: 640px) {
+      .summary-cards {
+        grid-template-columns: minmax(0, 1fr);
       }
     }
 
-    .next-item-card {
-      border-radius: 14px;
-      background: linear-gradient(145deg, #ffffff, #f8fafc);
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.15);
-      padding: 10px 12px;
+    .summary-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
+      padding: 12px 14px;
+      box-shadow: var(--shadow-soft);
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      border: 1px solid rgba(148, 163, 184, 0.35);
-    }
-
-    .next-item-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
-      color: #4b5563;
-    }
-
-    .next-item-main {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 8px;
-      margin-top: 2px;
-    }
-
-    .next-label {
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .next-time {
-      font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono",
-        "Courier New", monospace;
-      font-size: 14px;
-      font-weight: 600;
-      color: #111827;
-    }
-
-    .next-diff {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--accent-warn);
-      white-space: nowrap;
-    }
-
-    .pill-btn {
-      border-radius: 999px;
-      border: none;
-      padding: 4px 10px;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      background: #22c55e;
-      color: white;
-      box-shadow: 0 6px 14px rgba(34, 197, 94, 0.35);
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .pill-btn span {
-      font-size: 12px;
-    }
-
-    /* --------------------------
-       5. 약 & 수면 아코디언 카드
-       -------------------------- */
-    .accordion-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      padding: 4px 0 2px;
-    }
-
-    .accordion-title {
-      font-size: 14px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
       gap: 6px;
     }
 
-    .accordion-arrow {
-      font-size: 16px;
-      color: #6b7280;
-      transition: transform 0.2s ease-out;
-    }
-
-    .accordion-arrow.open {
-      transform: rotate(180deg);
-    }
-
-    .med-sleep-columns {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    @media (min-width: 640px) {
-      .med-sleep-columns {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    .sub-card {
-      border-radius: 16px;
-      background: #f9fafb;
-      padding: 10px 12px 10px;
-      box-shadow: inset 0 0 0 1px rgba(209, 213, 219, 0.8);
-    }
-
-    .sub-card-title {
+    .summary-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 6px;
       font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: #374151;
     }
 
-    .check-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      padding: 6px 8px;
-      margin-bottom: 4px;
-      border-radius: 12px;
-      background: #ffffff;
-      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+    .summary-card-title {
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .summary-card-sub {
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+
+    .summary-card-time-group {
+      text-align: right;
       font-size: 12px;
     }
 
-    .check-left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 0;
+    .summary-time {
+      display: block;
+      font-weight: 600;
     }
 
-    .check-label-main {
-      font-weight: 500;
-    }
-
-    .check-plan {
+    .summary-diff {
+      display: block;
+      color: var(--danger);
       font-size: 11px;
-      color: #6b7280;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-        "Liberation Mono", "Courier New", monospace;
+      margin-top: 2px;
     }
 
-    .check-right {
-      text-align: right;
-      min-width: 70px;
-    }
-
-    .check-time {
-      font-size: 11px;
-      color: var(--accent-warn);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-        "Liberation Mono", "Courier New", monospace;
-    }
-
-    .check-diff {
-      font-size: 10px;
-      color: var(--accent-warn);
-    }
-
-    .check-row.checked .check-label-main {
-      text-decoration: line-through;
-      color: #9ca3af;
-    }
-
-    .check-row.checked .check-plan {
-      text-decoration: line-through;
-      color: #d1d5db;
-    }
-
-    /* --------------------------
-       6. 내 상태 기록 카드
-       -------------------------- */
-    .status-card-input {
+    .summary-card-footer {
       display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 4px;
+      justify-content: flex-end;
     }
 
-    .status-input {
+    .summary-card-buttons {
+      display: flex;
+      gap: 6px;
+    }
+
+    /* 200 약 & 수면 카드 */
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-soft);
+      padding: 10px 12px 12px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .med-sleep-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 720px) {
+      .med-sleep-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .caret {
+      font-size: 16px;
+      padding: 2px 4px;
+    }
+
+    .checklist {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .check-item {
+      padding: 6px 8px;
+      border-radius: 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      background: #f4f6fb;
+      box-shadow: inset 2px 2px 4px #d7dce7, inset -2px -2px 4px #ffffff;
+      transition: background 0.15s ease-out, transform 0.1s ease-out;
+    }
+
+    .check-item.checked {
+      background: #e8f6ea;
+      transform: translateY(1px);
+    }
+
+    .check-input {
+      margin-top: 3px;
+    }
+
+    .check-text {
       flex: 1;
-      border-radius: var(--radius-pill);
+      font-size: 13px;
+    }
+
+    .check-title {
+      font-weight: 500;
+      margin-bottom: 1px;
+    }
+
+    .check-times {
+      font-size: 11px;
+      color: var(--text-sub);
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .planned-time.checked {
+      text-decoration: line-through;
+      color: #9da4ba;
+    }
+
+    .actual-time,
+    .time-diff {
+      color: var(--danger);
+    }
+
+    /* 300 내 상태 기록 / 기록 보기 */
+
+    .state-input-row {
+      display: flex;
+      gap: 6px;
+      margin: 4px 4px 0;
+    }
+
+    .state-input-row input {
+      flex: 1;
+      border-radius: 999px;
       border: 1px solid var(--border-soft);
       padding: 8px 12px;
       font-size: 13px;
       outline: none;
-      background: #f9fafb;
+      background: var(--card-bg);
+      box-shadow: inset 2px 2px 3px #dde2ee, inset -2px -2px 4px #ffffff;
     }
 
-    .status-input:focus {
-      border-color: var(--accent);
-      background: #ffffff;
-      box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.4);
+    .state-input-row input:focus {
+      border-color: #8fa2ff;
+      box-shadow: 0 0 0 2px rgba(143, 162, 255, 0.35);
     }
 
-    .status-send-btn {
-      border-radius: 999px;
-      border: none;
-      background: var(--accent);
-      color: white;
-      padding: 8px 12px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 8px 16px rgba(99, 102, 241, 0.45);
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      white-space: nowrap;
-    }
-
-    .status-send-btn span {
-      font-size: 12px;
-    }
-
-    .status-log-list {
-      margin-top: 10px;
-      max-height: 220px;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-
-    .status-item {
+    .records {
+      margin-top: 4px;
       display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 8px;
-      padding: 6px 8px;
-      border-radius: 10px;
-      background: #f9fafb;
-      margin-bottom: 6px;
-      font-size: 12px;
+      flex-direction: column;
+      gap: 6px;
     }
 
-    .status-content {
-      flex: 1;
-      word-break: break-all;
-    }
-
-    .status-time {
-      font-size: 11px;
-      color: var(--text-sub);
-      white-space: nowrap;
-      text-align: right;
-    }
-
-    /* --------------------------
-       7. 통계 카드
-       -------------------------- */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-      margin-top: 6px;
-    }
-
-    .stat-pill {
+    .record-item {
+      background: var(--card-bg);
       border-radius: 16px;
-      background: #f9fafb;
-      padding: 8px 10px;
-      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
-      font-size: 11px;
+      padding: 6px 10px 8px;
+      box-shadow: var(--shadow-soft);
+      font-size: 13px;
       display: flex;
       flex-direction: column;
       gap: 2px;
     }
 
-    .stat-label {
-      color: #6b7280;
+    /* 350: 상단에 격차시간(방금 전 / 몇시간 전) */
+    .record-meta {
+      font-size: 11px;
+      color: var(--text-sub);
     }
 
-    .stat-value {
-      font-weight: 700;
-      font-size: 14px;
+    .record-main {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    /* --------------------------
-       8. 네비게이션 바
-       -------------------------- */
+    .record-text {
+      flex: 1;
+      word-break: break-word;
+    }
+
+    .record-time {
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-left: auto; /* 항상 맨 오른쪽 */
+    }
+
+    /* 900 하단 네비게이션 */
+
     .bottom-nav {
       position: fixed;
       bottom: 0;
       left: 0;
-      right: 0;
-      height: 60px;
-      background: rgba(255, 255, 255, 0.96);
-      box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.18);
+      width: 100%;
+      background: #e3e7f0;
+      box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.08);
       display: flex;
       justify-content: center;
-      align-items: center;
       z-index: 30;
     }
 
     .bottom-nav-inner {
-      max-width: 960px;
       width: 100%;
+      max-width: 960px;
       display: flex;
-      justify-content: space-around;
-      padding: 0 12px;
     }
 
     .nav-item {
       flex: 1;
+      padding: 6px 4px 8px;
+      border: none;
+      background: transparent;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 2px;
-      font-size: 10px;
-      color: #6b7280;
+      font-size: 11px;
+      color: var(--text-sub);
       cursor: pointer;
     }
 
-    .nav-item span.icon {
+    .nav-item .nav-icon {
       font-size: 16px;
     }
 
     .nav-item.active {
-      color: var(--accent);
+      color: #222;
       font-weight: 600;
     }
 
-    /* --------------------------
-       9. 약&수면 상세보기 화면
-       -------------------------- */
-    #detailView {
-      max-width: 960px;
-      margin: 8px auto 80px;
-      padding: 0 12px 24px;
-    }
-
-    .detail-header {
-      margin-top: 8px;
-      margin-bottom: 6px;
-      font-size: 14px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .detail-tabs {
-      display: flex;
-      border-radius: 999px;
-      overflow: hidden;
-      border: 1px solid #e5e7eb;
-      background: #e5e7eb;
-      margin-bottom: 10px;
-      max-width: 260px;
-    }
-
-    .detail-tab {
-      flex: 1;
-      text-align: center;
-      padding: 6px 0;
-      font-size: 13px;
-      cursor: pointer;
-      color: #6b7280;
-    }
-
-    .detail-tab.active {
-      background: #ffffff;
-      color: #111827;
-      font-weight: 600;
-      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.15);
-    }
-
-    .detail-card {
-      background: var(--bg-card);
-      border-radius: var(--radius-card);
-      box-shadow: var(--shadow-soft);
-      padding: 14px 14px 16px;
-      margin-bottom: 14px;
-    }
-
-    .detail-row {
-      display: grid;
-      grid-template-columns: 70px 1fr;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 8px;
-      font-size: 12px;
-    }
-
-    .detail-row label {
-      font-weight: 600;
-      color: #4b5563;
-    }
-
-    .detail-input-line {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .detail-input {
-      border-radius: 10px;
-      border: 1px solid var(--border-soft);
-      padding: 6px 8px;
-      font-size: 12px;
-      min-width: 60px;
-      background: #f9fafb;
-      outline: none;
-    }
-
-    .detail-input:focus {
-      border-color: var(--accent);
-      background: #ffffff;
-      box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.35);
-    }
-
-    .detail-suffix {
-      font-size: 11px;
-      color: #6b7280;
-    }
-
-    .detail-save-btn {
-      margin-top: 10px;
-      width: 100%;
-      border-radius: var(--radius-pill);
-      border: none;
-      padding: 10px 12px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      background: var(--accent);
-      color: white;
-      box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);
-    }
-
-    /* 간단한 달력 틀 (디자인용) */
-    .mini-calendar {
-      border-radius: 18px;
-      border: 1px solid #e5e7eb;
-      background: #f9fafb;
-      padding: 10px 10px 12px;
-      margin-top: 8px;
-    }
-
-    .mini-cal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .mini-cal-grid {
-      display: grid;
-      grid-template-columns: repeat(7, minmax(0, 1fr));
-      gap: 2px;
-      font-size: 10px;
-      text-align: center;
-      color: #6b7280;
-    }
-
-    .mini-cal-cell {
-      padding: 4px 0;
-      border-radius: 8px;
-    }
-
-    .mini-cal-cell.today {
-      background: var(--accent-soft);
-      color: var(--accent);
-      font-weight: 700;
-    }
-
-    .period-display {
-      margin-top: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      text-align: center;
-      background: #111827;
-      color: white;
-      border-radius: 999px;
-      padding: 6px 10px;
+    .nav-item.active .nav-icon {
+      transform: translateY(-1px);
     }
   </style>
 </head>
+
 <body>
-  <!-- 상단 헤더 -->
-  <header>
-    <div class="top-bar">
-      <div class="top-left">
-        <div class="menu-icon">
-          <div></div>
+  <div class="app">
+    <div class="top-bar-wrap">
+      <header class="top-bar">
+        <button class="icon-button" aria-label="메뉴">☰</button>
+        <div class="logo">
+          <span class="logo-emoji">🧠</span>
+          <span class="logo-text">A-Lab</span>
         </div>
-      </div>
-      <div class="header-logo">
-        <span class="emoji">🧠</span>
-        <span class="text">A-Lab</span>
-        <span class="header-title-sub">일일로그</span>
-      </div>
-      <div class="top-right">
-        <!-- 오른쪽에는 나중에 설정/프로필 아이콘 등 배치 가능 -->
-      </div>
+        <div class="top-bar-right"></div>
+      </header>
     </div>
-  </header>
 
-  <!-- 메인 일일로그 화면 -->
-  <main id="mainView">
-    <!-- 1. 오늘 진행률 & 다음 약/수면 -->
-    <section class="card">
-      <div class="card-header-row">
-        <div>
-          <div class="section-title-row">
-            <div class="section-title">
-              <span class="section-title-dot"></span>
-              <span>오늘 요약</span>
-            </div>
-          </div>
-          <div class="section-sub" id="todayDateLabel"></div>
+    <main class="main">
+      <!-- 100~140 오늘 요약 -->
+      <section class="section summary-section">
+        <div class="section-header">
+          <!-- 120: 오늘 요약 -> 기록하면 채워지는 하루 -->
+          <span class="section-title">● 기록하면 채워지는 하루</span>
+          <span class="section-pill"><span id="completedCount">0</span>개 완료</span>
         </div>
-        <div class="badge-soft">
-          <span>✔</span>
-          <span id="todayDoneCount">0개 완료</span>
-        </div>
-      </div>
 
-      <div class="progress-wrapper">
-        <div class="progress-bar-bg">
+        <div class="progress-row">
+          <span>오늘 기록할수록 퍼센트가 채워집니다.</span>
+          <span><span id="progressPercent">0</span>%</span>
+        </div>
+
+        <div class="progress-bar">
           <div class="progress-bar-fill" id="progressFill"></div>
-          <div class="runner-emoji">🏃‍♀️</div>
-        </div>
-        <div class="progress-caption">
-          <span>기록하면 채워지는 하루</span>
-          <span id="progressPercentLabel">0%</span>
-        </div>
-      </div>
-
-      <div class="next-row">
-        <!-- 약 -->
-        <div class="next-item-card" id="nextMedCard">
-          <div class="next-item-top">
-            <span>💊 약</span>
-            <button class="pill-btn" type="button" onclick="markNext('med')">
-              <span>다음에</span> ➜
-            </button>
-          </div>
-          <div class="next-item-main">
-            <div>
-              <div class="next-label" id="nextMedLabel">아침</div>
-              <div class="section-sub">설정된 시간 기준</div>
-            </div>
-            <div style="text-align:right;">
-              <div class="next-time" id="nextMedTime">09:00</div>
-              <div class="next-diff" id="nextMedDiff">+0h00m</div>
-            </div>
-          </div>
         </div>
 
-        <!-- 수면 -->
-        <div class="next-item-card" id="nextSleepCard">
-          <div class="next-item-top">
-            <span>😴 수면</span>
-            <button class="pill-btn" type="button" onclick="markNext('sleep')">
-              <span>다음에</span> ➜
-            </button>
-          </div>
-          <div class="next-item-main">
-            <div>
-              <div class="next-label" id="nextSleepLabel">기상</div>
-              <div class="section-sub">설정된 시간 기준</div>
+        <div class="summary-cards">
+          <!-- 141 약 요약 카드 -->
+          <article class="summary-card" data-summary="med">
+            <div class="summary-card-header">
+              <div>
+                <div class="summary-card-title">💊 약</div>
+                <div class="summary-card-sub" id="medSummaryLabel">아침</div>
+              </div>
+              <div class="summary-card-time-group">
+                <span class="summary-time" id="medSummaryTime">09:00</span>
+                <span class="summary-diff" id="medSummaryDiff">+0h00m</span>
+              </div>
             </div>
-            <div style="text-align:right;">
-              <div class="next-time" id="nextSleepTime">07:30</div>
-              <div class="next-diff" id="nextSleepDiff">+0h00m</div>
+            <div class="summary-card-footer">
+              <div class="summary-card-buttons">
+                <!-- 이전 버튼 추가 -->
+                <button class="btn ghost" data-prev="med">이전</button>
+                <button class="btn primary" data-next="med">다음에 ➜</button>
+              </div>
             </div>
-          </div>
+          </article>
+
+          <!-- 142 수면 요약 카드 -->
+          <article class="summary-card" data-summary="sleep">
+            <div class="summary-card-header">
+              <div>
+                <div class="summary-card-title">😴 수면</div>
+                <div class="summary-card-sub" id="sleepSummaryLabel">누운 시간</div>
+              </div>
+              <div class="summary-card-time-group">
+                <span class="summary-time" id="sleepSummaryTime">00:20</span>
+                <span class="summary-diff" id="sleepSummaryDiff">+0h00m</span>
+              </div>
+            </div>
+            <div class="summary-card-footer">
+              <div class="summary-card-buttons">
+                <!-- 이전 버튼 추가 -->
+                <button class="btn ghost" data-prev="sleep">이전</button>
+                <button class="btn primary" data-next="sleep">다음에 ➜</button>
+              </div>
+            </div>
+          </article>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- 2. 약 & 수면 아코디언 카드 -->
-    <section class="card">
-      <div class="accordion-header" onclick="toggleAccordion()">
-        <div class="accordion-title">
-          <span>💊 약 & 수면</span>
+      <!-- 200 약 & 수면 -->
+      <section class="section" id="medSleepSection">
+        <div class="section-header">
+          <span class="section-title">● 약 & 수면</span>
+          <button class="icon-button caret" id="toggleMedSleep" aria-expanded="true">▾</button>
         </div>
-        <span class="accordion-arrow open" id="accordionArrow">▾</span>
-      </div>
-
-      <div id="accordionBody">
-        <div class="med-sleep-columns">
-          <!-- 약 복용 -->
-          <div class="sub-card">
-            <div class="sub-card-title">
-              <span>약 복용</span>
-            </div>
-            <div id="medList">
-              <!-- JS로 행 생성 -->
-            </div>
+        <div class="med-sleep-grid" id="medSleepBody">
+          <div class="card column-card">
+            <div class="card-title">약 복용</div>
+            <ul class="checklist" id="medList"></ul>
           </div>
-
-          <!-- 수면 관리 -->
-          <div class="sub-card">
-            <div class="sub-card-title">
-              <span>수면 관리</span>
-            </div>
-            <div id="sleepList">
-              <!-- JS로 행 생성 -->
-            </div>
+          <div class="card column-card">
+            <div class="card-title">수면 관리</div>
+            <ul class="checklist" id="sleepList"></ul>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- 3. 내 상태 기록 카드 -->
-    <section class="card">
-      <div class="section-title-row">
-        <div class="section-title">
-          <span class="section-title-dot"></span>
-          <span>내 상태 기록</span>
+      <!-- 300 내 상태 기록 -->
+      <section class="section">
+        <div class="section-header">
+          <span class="section-title">● 내 상태 기록</span>
+          <button class="btn link" id="viewAllBtn">전체보기</button>
         </div>
-      </div>
-      <div class="section-sub">지금 떠오르는 생각·기분을 한 줄로 남겨두세요.</div>
+        <p class="helper-text">지금 떠오르는 생각·기분을 한 줄로 남겨주세요.</p>
+        <div class="state-input-row">
+          <input
+            type="text"
+            id="stateInput"
+            placeholder="에이랩님 반가워요! 상태를 알려주세요~"
+          />
+          <button class="btn primary" id="saveStateBtn">기록 ➜</button>
+        </div>
+      </section>
 
-      <div class="status-card-input">
-        <input
-          id="statusInput"
-          class="status-input"
-          type="text"
-          placeholder="에이랩님 반가워요! 상태를 알려주세요~"
-        />
-        <button class="status-send-btn" type="button" onclick="addStatusLog()">
-          <span>기록</span> ⮕
+      <!-- 350 기록 보기 -->
+      <section class="section">
+        <div class="section-header">
+          <span class="section-title">● 기록 보기</span>
+          <span class="section-count" id="recordCount">0</span>
+        </div>
+        <div class="records" id="recordsContainer"></div>
+      </section>
+
+      <!-- 요청대로: 하단 네비게이션 바로 위에 있던 "오늘 체크 요약" 영역은 제거함 -->
+    </main>
+
+    <!-- 900 하단 네비게이션 -->
+    <nav class="bottom-nav">
+      <div class="bottom-nav-inner">
+        <button class="nav-item active">
+          <span class="nav-icon">💬</span>
+          <span class="nav-label">내 상태</span>
+        </button>
+        <button class="nav-item">
+          <span class="nav-icon">🧩</span>
+          <span class="nav-label">할일 루틴</span>
+        </button>
+        <button class="nav-item">
+          <span class="nav-icon">📷</span>
+          <span class="nav-label">카메라?</span>
+        </button>
+        <button class="nav-item">
+          <span class="nav-icon">✅</span>
+          <span class="nav-label">약&수면</span>
+        </button>
+        <button class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">통계보기</span>
         </button>
       </div>
-
-      <div class="section-title-row" style="margin-top:12px;">
-        <div class="section-title">
-          <span class="section-title-dot"></span>
-          <span>기록 보기</span>
-        </div>
-      </div>
-      <div class="status-log-list" id="statusLog"></div>
-    </section>
-
-    <!-- 4. 오늘 통계 카드 -->
-    <section class="card">
-      <div class="section-title-row">
-        <div class="section-title">
-          <span class="section-title-dot"></span>
-          <span>오늘 체크 요약</span>
-        </div>
-      </div>
-      <div class="stats-grid">
-        <div class="stat-pill">
-          <span class="stat-label">약 복용 체크</span>
-          <span class="stat-value" id="statMedCount">0개</span>
-        </div>
-        <div class="stat-pill">
-          <span class="stat-label">수면 관리 체크</span>
-          <span class="stat-value" id="statSleepCount">0개</span>
-        </div>
-        <div class="stat-pill">
-          <span class="stat-label">상태 메시지</span>
-          <span class="stat-value" id="statStatusCount">0개</span>
-        </div>
-        <div class="stat-pill">
-          <span class="stat-label">전체 체크 합계</span>
-          <span class="stat-value" id="statTotalCount">0개</span>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- 약&수면 상세보기 화면 -->
-  <section id="detailView" class="hidden">
-    <div class="detail-header">
-      <span>●</span>
-      <span>약&수면 상세보기</span>
-    </div>
-
-    <div class="detail-tabs">
-      <div
-        class="detail-tab active"
-        id="tabMed"
-        onclick="switchDetailTab('med')"
-      >
-        약
-      </div>
-      <div
-        class="detail-tab"
-        id="tabSleep"
-        onclick="switchDetailTab('sleep')"
-      >
-        수면
-      </div>
-    </div>
-
-    <!-- 약 설정 카드 -->
-    <div class="detail-card" id="detailMedCard">
-      <div class="card-header-row">
-        <div class="section-title">
-          <span class="section-title-dot"></span>
-          <span>* 약 설정하기</span>
-        </div>
-      </div>
-
-      <div class="detail-row">
-        <label>날짜</label>
-        <div class="detail-input-line">
-          <input
-            class="detail-input"
-            type="date"
-            id="medConfigDate"
-            onchange="syncConfigDate()"
-          />
-        </div>
-      </div>
-
-      <!-- 아침 / 점심 / 저녁 / 취침 / 필요시 / 직접입력 -->
-      <div id="medConfigRows"></div>
-
-      <!-- 미니 달력(기간 설정 느낌만) -->
-      <div class="mini-calendar">
-        <div class="mini-cal-header">
-          <button
-            type="button"
-            class="detail-input"
-            style="padding:4px 8px; min-width:40px;"
-            onclick="changeMiniMonth(-1)"
-          >
-            ◀
-          </button>
-          <span id="miniMonthLabel">11월</span>
-          <button
-            type="button"
-            class="detail-input"
-            style="padding:4px 8px; min-width:40px;"
-            onclick="changeMiniMonth(1)"
-          >
-            ▶
-          </button>
-        </div>
-        <div class="mini-cal-grid" id="miniCalGrid"></div>
-        <div class="period-display" id="periodDisplay">
-          기간 미설정
-        </div>
-      </div>
-
-      <button class="detail-save-btn" type="button">
-        설정 저장
-      </button>
-    </div>
-
-    <!-- 수면 설정 카드 (단순 버전) -->
-    <div class="detail-card hidden" id="detailSleepCard">
-      <div class="card-header-row">
-        <div class="section-title">
-          <span class="section-title-dot"></span>
-          <span>* 수면 설정하기</span>
-        </div>
-      </div>
-
-      <div class="detail-row">
-        <label>기상 시간</label>
-        <div class="detail-input-line">
-          <input
-            class="detail-input"
-            type="time"
-            id="sleepWakeTimeConfig"
-            value="07:30"
-          />
-        </div>
-      </div>
-      <div class="detail-row">
-        <label>취침 시간</label>
-        <div class="detail-input-line">
-          <input
-            class="detail-input"
-            type="time"
-            id="sleepBedTimeConfig"
-            value="00:30"
-          />
-        </div>
-      </div>
-      <button class="detail-save-btn" type="button">
-        설정 저장
-      </button>
-    </div>
-  </section>
-
-  <!-- 하단 네비게이션 -->
-  <nav class="bottom-nav">
-    <div class="bottom-nav-inner">
-      <div class="nav-item active" onclick="switchView('main')">
-        <span class="icon">💬</span>
-        <span>내 상태</span>
-      </div>
-      <div class="nav-item">
-        <span class="icon">🧩</span>
-        <span>할일 루틴</span>
-      </div>
-      <div class="nav-item">
-        <span class="icon">📷</span>
-        <span>카메라?</span>
-      </div>
-      <div class="nav-item" onclick="switchView('detail')">
-        <span class="icon">✅</span>
-        <span>약&수면</span>
-      </div>
-      <div class="nav-item">
-        <span class="icon">📈</span>
-        <span>통계보기</span>
-      </div>
-    </div>
-  </nav>
+    </nav>
+  </div>
 
   <script>
-    /* ===============================
-       JS: 아주 기본 기능만 유지
-       =============================== */
-
-    // 약·수면 기본 데이터 (간단 버전)
-    const medPlans = [
-      { id: "아침", label: "아침", time: "09:00" },
-      { id: "점심", label: "점심", time: "13:00" },
-      { id: "저녁", label: "저녁", time: "19:00" },
-      { id: "취침", label: "취침전", time: "23:30" },
-      { id: "필요시", label: "필요시", time: "00:00" },
-      { id: "직접입력", label: "직접입력", time: "00:00" }
+    // ---------- 데이터 설정 ----------
+    const medItems = [
+      { id: "morning", label: "아침", time: "09:00" },
+      { id: "noon", label: "점심", time: "13:00" },
+      { id: "evening", label: "저녁", time: "18:00" },
+      { id: "bed", label: "취침전", time: "23:30" },
+      { id: "prn", label: "필요시", time: "00:00" },
+      { id: "custom", label: "직접입력", time: "00:00" }
     ];
 
-    const sleepPlans = [
-      { id: "기상", label: "기상", time: "07:30" },
-      { id: "누움", label: "누운 시간", time: "00:20" },
-      { id: "진짜잠", label: "진짜 잔다", time: "00:40" },
-      { id: "일어남", label: "일어남", time: "07:10" }
+    const sleepItems = [
+      { id: "wake", label: "기상", time: "07:30" },
+      { id: "inBed", label: "누운 시간", time: "00:20" },
+      { id: "sleep", label: "진짜 잔다", time: "00:40" },
+      { id: "up", label: "일어남", time: "07:10" }
     ];
 
-    let medIndex = 0;
-    let sleepIndex = 0;
+    const summaryIndex = {
+      med: 0,
+      sleep: 0
+    };
 
-    let medCheckCount = 0;
-    let sleepCheckCount = 0;
-    let statusCount = 0;
+    const records = [];
 
-    // 오늘 날짜 표시
-    function setTodayLabel() {
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, "0");
-      const dd = String(today.getDate()).padStart(2, "0");
-      const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
-      const day = dayNames[today.getDay()];
-      document.getElementById(
-        "todayDateLabel"
-      ).innerText = `${yyyy}/${mm}/${dd} (${day}) 기준`;
+    // ---------- 유틸 함수 ----------
+    function timeToMinutes(t) {
+      const [h, m] = t.split(":").map(Number);
+      return h * 60 + m;
     }
 
-    // 체크 행 생성
-    function renderCheckLists() {
+    function diffNowFromScheduled(timeStr) {
+      const now = new Date();
+      const nowMinutes = now.getHours() * 60 + now.getMinutes();
+      return nowMinutes - timeToMinutes(timeStr);
+    }
+
+    function formatDiffMinutes(minDiff) {
+      const sign = minDiff >= 0 ? "+" : "-";
+      const abs = Math.abs(minDiff);
+      const h = Math.floor(abs / 60);
+      const m = abs % 60;
+      return (
+        sign + h.toString() + "h" + (m < 10 ? "0" + m.toString() : m.toString()) + "m"
+      );
+    }
+
+    function getHHMM(date) {
+      const h = date.getHours().toString().padStart(2, "0");
+      const m = date.getMinutes().toString().padStart(2, "0");
+      return `${h}:${m}`;
+    }
+
+    function formatKoreanDiff(ms) {
+      const sec = Math.floor(ms / 1000);
+      if (sec < 60) return "방금 전";
+      const min = Math.floor(sec / 60);
+      const hour = Math.floor(min / 60);
+      const remMin = min % 60;
+      const parts = [];
+      if (hour > 0) parts.push(hour + "시간");
+      if (remMin > 0) parts.push(remMin + "분");
+      return parts.join(" ") + " 전";
+    }
+
+    // ---------- 약/수면 리스트 렌더 ----------
+    function createCheckItem(item, type) {
+      const li = document.createElement("li");
+      li.className = "check-item";
+      li.dataset.type = type;
+      li.dataset.id = item.id;
+      li.dataset.scheduled = item.time;
+
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.className = "check-input";
+
+      const textWrap = document.createElement("div");
+      textWrap.className = "check-text";
+
+      const title = document.createElement("div");
+      title.className = "check-title";
+      title.textContent = item.label;
+
+      const times = document.createElement("div");
+      times.className = "check-times";
+
+      const planned = document.createElement("span");
+      planned.className = "planned-time";
+      planned.textContent = item.time;
+
+      const actual = document.createElement("span");
+      actual.className = "actual-time";
+
+      const diff = document.createElement("span");
+      diff.className = "time-diff";
+
+      times.appendChild(planned);
+      times.appendChild(actual);
+      times.appendChild(diff);
+
+      textWrap.appendChild(title);
+      textWrap.appendChild(times);
+
+      li.appendChild(input);
+      li.appendChild(textWrap);
+
+      input.addEventListener("change", () => handleCheckChange(li, input));
+
+      return li;
+    }
+
+    function handleCheckChange(li, checkbox) {
+      const plannedTime = li.dataset.scheduled;
+      const plannedSpan = li.querySelector(".planned-time");
+      const actualSpan = li.querySelector(".actual-time");
+      const diffSpan = li.querySelector(".time-diff");
+
+      if (checkbox.checked) {
+        const now = new Date();
+        const nowStr = getHHMM(now);
+        li.dataset.actual = now.toISOString();
+        actualSpan.textContent = nowStr;
+        const diffMin = timeToMinutes(nowStr) - timeToMinutes(plannedTime);
+        diffSpan.textContent = "(" + formatDiffMinutes(diffMin) + ")";
+        plannedSpan.classList.add("checked");
+        li.classList.add("checked");
+      } else {
+        li.dataset.actual = "";
+        actualSpan.textContent = "";
+        diffSpan.textContent = "";
+        plannedSpan.classList.remove("checked");
+        li.classList.remove("checked");
+      }
+      updateProgress();
+    }
+
+    function renderMedSleepLists() {
       const medList = document.getElementById("medList");
       const sleepList = document.getElementById("sleepList");
       medList.innerHTML = "";
       sleepList.innerHTML = "";
 
-      medPlans.forEach((plan, idx) => {
-        const row = document.createElement("div");
-        row.className = "check-row";
-        row.dataset.type = "med";
-        row.dataset.index = idx;
-
-        row.innerHTML = `
-          <div class="check-left">
-            <input type="checkbox" onchange="handleCheck(this)" />
-            <div>
-              <div class="check-label-main">${plan.label}</div>
-              <div class="check-plan">${plan.time}</div>
-            </div>
-          </div>
-          <div class="check-right">
-            <div class="check-time"></div>
-            <div class="check-diff"></div>
-          </div>
-        `;
-        medList.appendChild(row);
+      medItems.forEach((item) => {
+        medList.appendChild(createCheckItem(item, "med"));
       });
-
-      sleepPlans.forEach((plan, idx) => {
-        const row = document.createElement("div");
-        row.className = "check-row";
-        row.dataset.type = "sleep";
-        row.dataset.index = idx;
-
-        row.innerHTML = `
-          <div class="check-left">
-            <input type="checkbox" onchange="handleCheck(this)" />
-            <div>
-              <div class="check-label-main">${plan.label}</div>
-              <div class="check-plan">${plan.time}</div>
-            </div>
-          </div>
-          <div class="check-right">
-            <div class="check-time"></div>
-            <div class="check-diff"></div>
-          </div>
-        `;
-        sleepList.appendChild(row);
+      sleepItems.forEach((item) => {
+        sleepList.appendChild(createCheckItem(item, "sleep"));
       });
     }
 
-    // 다음 카드 표시
-    function setNextCards() {
-      const med = medPlans[medIndex];
-      const sleep = sleepPlans[sleepIndex];
-      document.getElementById("nextMedLabel").innerText = med.label;
-      document.getElementById("nextMedTime").innerText = med.time;
-      document.getElementById("nextSleepLabel").innerText = sleep.label;
-      document.getElementById("nextSleepTime").innerText = sleep.time;
-
-      updateDiffLabel("med");
-      updateDiffLabel("sleep");
+    // ---------- 진행률 / 완료 개수 ----------
+    function updateProgress() {
+      const checkboxes = document.querySelectorAll(".check-input");
+      const total = checkboxes.length;
+      let checked = 0;
+      checkboxes.forEach((cb) => {
+        if (cb.checked) checked++;
+      });
+      const percent = total === 0 ? 0 : Math.round((checked / total) * 100);
+      document.getElementById("progressPercent").textContent = percent;
+      document.getElementById("progressFill").style.width = percent + "%";
+      document.getElementById("completedCount").textContent = checked;
     }
 
-    // 현재 시간 형식 (HH:MM)
-    function getNowTimeString() {
-      const now = new Date();
-      const hh = String(now.getHours()).padStart(2, "0");
-      const mm = String(now.getMinutes()).padStart(2, "0");
-      return `${hh}:${mm}`;
+    // ---------- 상단 요약 카드 ----------
+    function updateSummaryCard(type) {
+      const items = type === "med" ? medItems : sleepItems;
+      if (items.length === 0) return;
+      const index = ((summaryIndex[type] % items.length) + items.length) % items.length;
+      summaryIndex[type] = index;
+      const item = items[index];
+
+      const labelId = type === "med" ? "medSummaryLabel" : "sleepSummaryLabel";
+      const timeId = type === "med" ? "medSummaryTime" : "sleepSummaryTime";
+      const diffId = type === "med" ? "medSummaryDiff" : "sleepSummaryDiff";
+
+      document.getElementById(labelId).textContent = item.label;
+      document.getElementById(timeId).textContent = item.time;
+      const diffMin = diffNowFromScheduled(item.time);
+      document.getElementById(diffId).textContent = formatDiffMinutes(diffMin);
     }
 
-    // 시간 차이 계산 (+- 0h00m)
-    function calcTimeDiffStr(planTimeStr) {
-      const [ph, pm] = planTimeStr.split(":").map(Number);
-      const now = new Date();
-      const nh = now.getHours();
-      const nm = now.getMinutes();
-      const planMinutes = ph * 60 + pm;
-      const nowMinutes = nh * 60 + nm;
-      const diff = nowMinutes - planMinutes; // +면 늦음
-      const sign = diff >= 0 ? "+" : "-";
-      const abs = Math.abs(diff);
-      const h = Math.floor(abs / 60);
-      const m = abs % 60;
-      return `${sign}${h}h${String(m).padStart(2, "0")}m`;
+    function initSummaryButtons() {
+      document.querySelectorAll("button[data-next]").forEach((btn) => {
+        const type = btn.dataset.next;
+        btn.addEventListener("click", () => {
+          summaryIndex[type] += 1;
+          updateSummaryCard(type);
+        });
+      });
+
+      document.querySelectorAll("button[data-prev]").forEach((btn) => {
+        const type = btn.dataset.prev;
+        btn.addEventListener("click", () => {
+          summaryIndex[type] -= 1;
+          updateSummaryCard(type);
+        });
+      });
     }
 
-    function updateDiffLabel(type) {
-      if (type === "med") {
-        const med = medPlans[medIndex];
-        document.getElementById("nextMedDiff").innerText = calcTimeDiffStr(
-          med.time
-        );
-      } else {
-        const sleep = sleepPlans[sleepIndex];
-        document.getElementById("nextSleepDiff").innerText = calcTimeDiffStr(
-          sleep.time
-        );
-      }
-    }
-
-    // “다음에” 버튼 클릭
-    function markNext(type) {
-      if (type === "med") {
-        medIndex = (medIndex + 1) % medPlans.length;
-      } else {
-        sleepIndex = (sleepIndex + 1) % sleepPlans.length;
-      }
-      setNextCards();
-    }
-
-    // 체크 핸들러
-    function handleCheck(checkbox) {
-      const row = checkbox.closest(".check-row");
-      const type = row.dataset.type;
-      const index = Number(row.dataset.index);
-      const nowStr = getNowTimeString();
-
-      const timeEl = row.querySelector(".check-time");
-      const diffEl = row.querySelector(".check-diff");
-      const planStr =
-        type === "med" ? medPlans[index].time : sleepPlans[index].time;
-
-      if (checkbox.checked) {
-        row.classList.add("checked");
-        timeEl.innerText = nowStr;
-        diffEl.innerText = calcTimeDiffStr(planStr);
-
-        if (type === "med") medCheckCount++;
-        else sleepCheckCount++;
-      } else {
-        row.classList.remove("checked");
-        timeEl.innerText = "";
-        diffEl.innerText = "";
-        if (type === "med" && medCheckCount > 0) medCheckCount--;
-        if (type === "sleep" && sleepCheckCount > 0) sleepCheckCount--;
-      }
-      updateStats();
-    }
-
-    function updateStats() {
-      const total = medCheckCount + sleepCheckCount;
-      document.getElementById("statMedCount").innerText = `${medCheckCount}개`;
-      document.getElementById(
-        "statSleepCount"
-      ).innerText = `${sleepCheckCount}개`;
-      document.getElementById("statStatusCount").innerText = `${statusCount}개`;
-      document.getElementById("statTotalCount").innerText = `${total}개`;
-      document.getElementById("todayDoneCount").innerText = `${total}개 완료`;
-      const percent = Math.min(100, total * 10);
-      document.getElementById("progressFill").style.width = `${percent}%`;
-      document.getElementById("progressPercentLabel").innerText = `${percent}%`;
-    }
-
-    // 아코디언 토글
-    function toggleAccordion() {
-      const body = document.getElementById("accordionBody");
-      const arrow = document.getElementById("accordionArrow");
-      if (body.style.display === "none") {
-        body.style.display = "";
-        arrow.classList.add("open");
-      } else {
-        body.style.display = "none";
-        arrow.classList.remove("open");
-      }
-    }
-
-    // 내 상태 기록 추가
-    const statusLogs = [];
-    function addStatusLog() {
-      const input = document.getElementById("statusInput");
-      const text = input.value.trim();
-      if (!text) return;
-      const now = new Date();
-      const timeStr = `${String(now.getHours()).padStart(
-        2,
-        "0"
-      )}:${String(now.getMinutes()).padStart(2, "0")}`;
-
-      statusLogs.push({ text, time: now });
-      statusCount++;
-      updateStatusLogList();
-      updateStats();
-      input.value = "";
-    }
-
-    function formatAgo(prev, now) {
-      const diffMs = now - prev;
-      const diffMin = Math.floor(diffMs / 60000);
-      if (diffMin < 1) return "방금 전";
-      if (diffMin < 60) return `${diffMin}분 전`;
-      const h = Math.floor(diffMin / 60);
-      const m = diffMin % 60;
-      if (m === 0) return `${h}시간 전`;
-      return `${h}시간 ${m}분 전`;
-    }
-
-    function updateStatusLogList() {
-      const container = document.getElementById("statusLog");
+    // ---------- 내 상태 기록 / 기록 보기 (350) ----------
+    function renderRecords() {
+      const container = document.getElementById("recordsContainer");
       container.innerHTML = "";
-      for (let i = statusLogs.length - 1; i >= 0; i--) {
-        const log = statusLogs[i];
-        const now = new Date();
-        const timeLabel =
-          i === statusLogs.length - 1
-            ? "방금 전"
-            : formatAgo(statusLogs[i].time, now);
-        const timeStr = `${String(log.time.getHours()).padStart(
-          2,
-          "0"
-        )}:${String(log.time.getMinutes()).padStart(2, "0")}`;
-
+      records.forEach((rec, idx) => {
         const item = document.createElement("div");
-        item.className = "status-item";
-        item.innerHTML = `
-          <div class="status-content">${log.text}</div>
-          <div class="status-time">${timeStr}<br/>${timeLabel}</div>
-        `;
+        item.className = "record-item";
+
+        const meta = document.createElement("div");
+        meta.className = "record-meta";
+        if (idx === 0) {
+          meta.textContent = "방금 전";
+        } else {
+          const prevTime = records[idx - 1].time;
+          const diffMs = rec.time.getTime() - prevTime.getTime();
+          meta.textContent = formatKoreanDiff(diffMs);
+        }
+
+        const main = document.createElement("div");
+        main.className = "record-main";
+
+        const textSpan = document.createElement("div");
+        textSpan.className = "record-text";
+        textSpan.textContent = rec.text;
+
+        const timeSpan = document.createElement("div");
+        timeSpan.className = "record-time";
+        timeSpan.textContent = getHHMM(rec.time); // 항상 오른쪽
+
+        main.appendChild(textSpan);
+        main.appendChild(timeSpan);
+
+        item.appendChild(meta); // 기록 바로 위에 격차시간
+        item.appendChild(main);
+
         container.appendChild(item);
-      }
-    }
-
-    // 뷰 전환 (메인 / 상세)
-    function switchView(target) {
-      const main = document.getElementById("mainView");
-      const detail = document.getElementById("detailView");
-      const navItems = document.querySelectorAll(".nav-item");
-      navItems.forEach((n, idx) => {
-        n.classList.remove("active");
-        if (target === "main" && idx === 0) n.classList.add("active");
-        if (target === "detail" && idx === 3) n.classList.add("active");
       });
-
-      if (target === "main") {
-        main.classList.remove("hidden");
-        detail.classList.add("hidden");
-      } else {
-        main.classList.add("hidden");
-        detail.classList.remove("hidden");
-      }
+      document.getElementById("recordCount").textContent = records.length;
     }
 
-    // 상세 탭 전환
-    function switchDetailTab(type) {
-      const tabMed = document.getElementById("tabMed");
-      const tabSleep = document.getElementById("tabSleep");
-      const cardMed = document.getElementById("detailMedCard");
-      const cardSleep = document.getElementById("detailSleepCard");
+    function initStateInput() {
+      const input = document.getElementById("stateInput");
+      const btn = document.getElementById("saveStateBtn");
 
-      if (type === "med") {
-        tabMed.active = true;
-        tabMed.classList.add("active");
-        tabSleep.classList.remove("active");
-        cardMed.classList.remove("hidden");
-        cardSleep.classList.add("hidden");
-      } else {
-        tabSleep.classList.add("active");
-        tabMed.classList.remove("active");
-        cardSleep.classList.remove("hidden");
-        cardMed.classList.add("hidden");
+      function save() {
+        const text = input.value.trim();
+        if (!text) return;
+        const now = new Date();
+        records.push({ text, time: now });
+        input.value = "";
+        renderRecords();
       }
-    }
 
-    // 약 설정 행 (아침/점심/저녁/취침/필요시/직접입력)
-    function renderMedConfigRows() {
-      const container = document.getElementById("medConfigRows");
-      container.innerHTML = "";
-      medPlans.forEach((plan) => {
-        const row = document.createElement("div");
-        row.className = "detail-row";
-        row.innerHTML = `
-          <label>${plan.label}</label>
-          <div class="detail-input-line">
-            <input class="detail-input" type="text" placeholder="약 이름" />
-            <input class="detail-input" type="number" min="0" max="9999" placeholder="0" />
-            <span class="detail-suffix">mg / 알 / 포</span>
-            <input class="detail-input" type="time" value="${plan.time}" />
-          </div>
-        `;
-        container.appendChild(row);
+      btn.addEventListener("click", save);
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          save();
+        }
       });
     }
 
-    // 상세 날짜 동기화 (오늘)
-    function initConfigDate() {
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, "0");
-      const dd = String(today.getDate()).padStart(2, "0");
-      document.getElementById("medConfigDate").value = `${yyyy}-${mm}-${dd}`;
-    }
-
-    function syncConfigDate() {
-      // 현재 버전에서는 날짜 값만 유지 (추가 로직은 나중에)
-    }
-
-    // 미니 달력 (단순한 모양만)
-    let miniMonthOffset = 0;
-    function renderMiniCalendar() {
-      const grid = document.getElementById("miniCalGrid");
-      const label = document.getElementById("miniMonthLabel");
-
-      const base = new Date();
-      base.setMonth(base.getMonth() + miniMonthOffset);
-      const month = base.getMonth() + 1;
-      label.innerText = `${month}월`;
-
-      grid.innerHTML = "";
-      const weeks = ["S", "M", "T", "W", "T", "F", "S"];
-      weeks.forEach((w) => {
-        const c = document.createElement("div");
-        c.className = "mini-cal-cell";
-        c.style.fontWeight = "600";
-        c.innerText = w;
-        grid.appendChild(c);
+    // ---------- 약&수면 섹션 토글 ----------
+    function initMedSleepToggle() {
+      const btn = document.getElementById("toggleMedSleep");
+      const body = document.getElementById("medSleepBody");
+      btn.addEventListener("click", () => {
+        const isHidden = body.style.display === "none";
+        body.style.display = isHidden ? "grid" : "none";
+        btn.textContent = isHidden ? "▾" : "▴";
+        btn.setAttribute("aria-expanded", isHidden ? "true" : "false");
       });
-
-      for (let i = 1; i <= 35; i++) {
-        const c = document.createElement("div");
-        c.className = "mini-cal-cell";
-        c.innerText = i <= 30 ? i : "";
-        if (i === 20) c.classList.add("today");
-        grid.appendChild(c);
-      }
     }
 
-    function changeMiniMonth(delta) {
-      miniMonthOffset += delta;
-      renderMiniCalendar();
-    }
-
-    // 초기화
+    // ---------- 초기화 ----------
     function init() {
-      setTodayLabel();
-      renderCheckLists();
-      setNextCards();
-      renderMedConfigRows();
-      initConfigDate();
-      renderMiniCalendar();
-      updateStats();
+      renderMedSleepLists();
+      updateProgress();
+      updateSummaryCard("med");
+      updateSummaryCard("sleep");
+      initSummaryButtons();
+      initStateInput();
+      initMedSleepToggle();
     }
 
-    init();
+    document.addEventListener("DOMContentLoaded", init);
   </script>
 </body>
 </html>
