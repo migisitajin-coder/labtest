@@ -40,7 +40,7 @@
     .main {
       width: 100%;
       max-width: 960px;
-      padding: 8px 10px 80px;
+      padding: 8px 10px 140px; /* 하단 고정 입력창+네비게이션 공간 확보 */
     }
 
     /* 110 헤더바 */
@@ -87,9 +87,9 @@
       font-size: 22px;
     }
 
-    /* 로고 텍스트 25% 상향 */
+    /* 로고 텍스트 15% 정도 추가 확대 */
     .logo-text {
-      font-size: 1.4rem; /* 기존 1.1~1.2 기준에서 25% 정도 크게 */
+      font-size: 1.6rem;
       font-weight: 700;
       letter-spacing: 0.02em;
     }
@@ -131,6 +131,12 @@
       padding: 2px 8px;
       border-radius: 999px;
       background: rgba(0, 0, 0, 0.03);
+    }
+
+    .section-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
     .helper-text {
@@ -201,7 +207,7 @@
 
     .progress-bar {
       width: 100%;
-      height: 8px;
+      height: 16px; /* 2배로 증가 */
       border-radius: 999px;
       background: #dde3f1;
       overflow: hidden;
@@ -374,7 +380,25 @@
       color: var(--danger);
     }
 
-    /* 300 내 상태 기록 / 기록 보기 */
+    /* 300 내 상태 기록 - 하단 고정 바 */
+
+    #stateSection {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 56px; /* 네비게이션 바로 위 */
+      padding: 6px 8px 10px;
+      background: linear-gradient(to top, var(--bg) 85%, transparent);
+      z-index: 25;
+      margin-top: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    #stateSection .state-inner {
+      width: 100%;
+      max-width: 960px;
+    }
 
     .state-input-row {
       display: flex;
@@ -506,8 +530,8 @@
       <!-- 100~140 오늘 요약 -->
       <section class="section summary-section">
         <div class="section-header">
-          <!-- 120: 오늘 요약 -> 기록하면 채워지는 하루 -->
-          <span class="section-title">● 기록하면 채워지는 하루</span>
+          <!-- 120: 이모지 추가 -->
+          <span class="section-title">● 📝 기록하면 채워지는 하루</span>
           <span class="section-pill"><span id="completedCount">0</span>개 완료</span>
         </div>
 
@@ -535,7 +559,7 @@
             </div>
             <div class="summary-card-footer">
               <div class="summary-card-buttons">
-                <!-- 이전 버튼 추가 -->
+                <!-- 이전 버튼 -->
                 <button class="btn ghost" data-prev="med">이전</button>
                 <button class="btn primary" data-next="med">다음에 ➜</button>
               </div>
@@ -556,7 +580,7 @@
             </div>
             <div class="summary-card-footer">
               <div class="summary-card-buttons">
-                <!-- 이전 버튼 추가 -->
+                <!-- 이전 버튼 -->
                 <button class="btn ghost" data-prev="sleep">이전</button>
                 <button class="btn primary" data-next="sleep">다음에 ➜</button>
               </div>
@@ -583,20 +607,25 @@
         </div>
       </section>
 
-      <!-- 300 내 상태 기록 -->
-      <section class="section">
-        <div class="section-header">
-          <span class="section-title">● 내 상태 기록</span>
-          <button class="btn link" id="viewAllBtn">전체보기</button>
-        </div>
-        <p class="helper-text">지금 떠오르는 생각·기분을 한 줄로 남겨주세요.</p>
-        <div class="state-input-row">
-          <input
-            type="text"
-            id="stateInput"
-            placeholder="에이랩님 반가워요! 상태를 알려주세요~"
-          />
-          <button class="btn primary" id="saveStateBtn">기록 ➜</button>
+      <!-- 300 내 상태 기록 (하단 고정) -->
+      <section class="section" id="stateSection">
+        <div class="state-inner">
+          <div class="section-header">
+            <span class="section-title">● 내 상태 기록</span>
+            <button class="btn link" id="viewAllBtn">전체보기</button>
+          </div>
+          <p class="helper-text">지금 떠오르는 생각·기분을 한 줄로 남겨주세요.</p>
+          <div class="state-input-row">
+            <input
+              type="text"
+              id="stateInput"
+              placeholder="에이랩님 반가워요! 상태를 알려주세요~"
+            />
+            <!-- 330: 전송 아이콘 버튼 -->
+            <button class="btn primary" id="saveStateBtn" aria-label="기록">
+              📤
+            </button>
+          </div>
         </div>
       </section>
 
@@ -604,12 +633,14 @@
       <section class="section">
         <div class="section-header">
           <span class="section-title">● 기록 보기</span>
-          <span class="section-count" id="recordCount">0</span>
+          <div class="section-right">
+            <span class="section-count" id="recordCount">0</span>
+            <!-- 340: 아코디언 토글 -->
+            <button class="icon-button caret" id="toggleRecords" aria-expanded="true">▾</button>
+          </div>
         </div>
         <div class="records" id="recordsContainer"></div>
       </section>
-
-      <!-- 요청대로: 하단 네비게이션 바로 위에 있던 "오늘 체크 요약" 영역은 제거함 -->
     </main>
 
     <!-- 900 하단 네비게이션 -->
@@ -844,6 +875,8 @@
     function renderRecords() {
       const container = document.getElementById("recordsContainer");
       container.innerHTML = "";
+      const LIMIT = 80; // 기록 텍스트 최대 80자 노출
+
       records.forEach((rec, idx) => {
         const item = document.createElement("div");
         item.className = "record-item";
@@ -863,7 +896,14 @@
 
         const textSpan = document.createElement("div");
         textSpan.className = "record-text";
-        textSpan.textContent = rec.text;
+
+        let display = rec.text;
+        if (display.length > LIMIT) {
+          textSpan.textContent = display.slice(0, LIMIT) + "…";
+          textSpan.title = rec.text; // 전체 문장은 title로 유지
+        } else {
+          textSpan.textContent = display;
+        }
 
         const timeSpan = document.createElement("div");
         timeSpan.className = "record-time";
@@ -914,6 +954,19 @@
       });
     }
 
+    // ---------- 기록 보기 아코디언 ----------
+    function initRecordsToggle() {
+      const btn = document.getElementById("toggleRecords");
+      const container = document.getElementById("recordsContainer");
+      if (!btn || !container) return;
+      btn.addEventListener("click", () => {
+        const isHidden = container.style.display === "none";
+        container.style.display = isHidden ? "flex" : "none";
+        btn.textContent = isHidden ? "▾" : "▴";
+        btn.setAttribute("aria-expanded", isHidden ? "true" : "false");
+      });
+    }
+
     // ---------- 초기화 ----------
     function init() {
       renderMedSleepLists();
@@ -923,6 +976,7 @@
       initSummaryButtons();
       initStateInput();
       initMedSleepToggle();
+      initRecordsToggle();
     }
 
     document.addEventListener("DOMContentLoaded", init);
