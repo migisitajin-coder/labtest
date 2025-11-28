@@ -87,7 +87,7 @@
       font-size: 22px;
     }
 
-    /* 로고 텍스트 15% 정도 추가 확대 */
+    /* 로고 텍스트 확대 (약 15% 증가) */
     .logo-text {
       font-size: 1.6rem;
       font-weight: 700;
@@ -400,6 +400,48 @@
       max-width: 960px;
     }
 
+    /* 305: 직전 기록 프리뷰 */
+    .last-record-preview {
+      display: none; /* 기본은 숨김, 기록이 생기면 보이게 */
+      margin: 0 4px 4px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-soft);
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .last-record-label {
+      font-weight: 600;
+      color: var(--text-sub);
+      white-space: nowrap;
+    }
+
+    .last-record-main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .last-record-text {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .last-record-time {
+      font-size: 11px;
+      color: var(--text-sub);
+      white-space: nowrap;
+    }
+
     .state-input-row {
       display: flex;
       gap: 6px;
@@ -610,6 +652,15 @@
       <!-- 300 내 상태 기록 (하단 고정) -->
       <section class="section" id="stateSection">
         <div class="state-inner">
+          <!-- 305: 직전 기록 프리뷰 -->
+          <div class="last-record-preview" id="lastRecordPreview">
+            <span class="last-record-label">직전 기록</span>
+            <div class="last-record-main">
+              <span class="last-record-text" id="lastRecordText"></span>
+              <span class="last-record-time" id="lastRecordTime"></span>
+            </div>
+          </div>
+
           <div class="section-header">
             <span class="section-title">● 내 상태 기록</span>
             <button class="btn link" id="viewAllBtn">전체보기</button>
@@ -871,105 +922,125 @@
       });
     }
 
-// ---------- 내 상태 기록 / 기록 보기 (350) ----------
-function renderRecords() {
-  const container = document.getElementById("recordsContainer");
-  container.innerHTML = "";
-  const LIMIT = 80; // 기록 텍스트 최대 80자 노출
+    // ---------- 기록 리스트 렌더 (350) ----------
+    function renderRecords() {
+      const container = document.getElementById("recordsContainer");
+      container.innerHTML = "";
+      const LIMIT = 80; // 기록 텍스트 최대 80자 노출
 
-  const len = records.length;
+      const len = records.length;
 
-  // 오래된 기록이 위, 최근 기록이 아래로 내려오게 순서대로 렌더링
-  for (let i = 0; i < len; i++) {
-    const rec = records[i];
+      // 오래된 기록이 위, 최근 기록이 아래로 내려오게 순서대로 렌더링
+      for (let i = 0; i < len; i++) {
+        const rec = records[i];
 
-    const item = document.createElement("div");
-    item.className = "record-item";
+        const item = document.createElement("div");
+        item.className = "record-item";
 
-    // --- 상단: 시간 차(직전 최신 기록 기준) ---
-    const meta = document.createElement("div");
-    meta.className = "record-meta";
+        // --- 상단: 시간 차(직전 최신 기록 기준) ---
+        const meta = document.createElement("div");
+        meta.className = "record-meta";
 
-    if (i === len - 1) {
-      // 리스트의 맨 아래 = 가장 최근 기록
-      meta.textContent = "방금 전";
-    } else {
-      // 바로 다음(더 최신) 기록과의 시간 차이
-      const newer = records[i + 1];
-      const diffMs = newer.time.getTime() - rec.time.getTime();
-      meta.textContent = formatKoreanDiff(diffMs);
+        if (i === len - 1) {
+          // 리스트의 맨 아래 = 가장 최근 기록
+          meta.textContent = "방금 전";
+        } else {
+          // 바로 다음(더 최신) 기록과의 시간 차이
+          const newer = records[i + 1];
+          const diffMs = newer.time.getTime() - rec.time.getTime();
+          meta.textContent = formatKoreanDiff(diffMs);
+        }
+
+        // --- 본문: 텍스트 + 기록 시간 (오른쪽 고정) ---
+        const main = document.createElement("div");
+        main.className = "record-main";
+
+        const textSpan = document.createElement("div");
+        textSpan.className = "record-text";
+
+        let display = rec.text;
+        if (display.length > LIMIT) {
+          textSpan.textContent = display.slice(0, LIMIT) + "…";
+          textSpan.title = rec.text; // 전체 문장은 title로 유지
+        } else {
+          textSpan.textContent = display;
+        }
+
+        const timeSpan = document.createElement("div");
+        timeSpan.className = "record-time";
+        timeSpan.textContent = getHHMM(rec.time); // 항상 오른쪽
+
+        main.appendChild(textSpan);
+        main.appendChild(timeSpan);
+
+        item.appendChild(meta);   // 기록 바로 위에 격차시간
+        item.appendChild(main);
+
+        container.appendChild(item);
+      }
+
+      document.getElementById("recordCount").textContent = records.length;
+      container.scrollTop = container.scrollHeight;
     }
 
-    // --- 본문: 텍스트 + 기록 시간 (오른쪽 고정) ---
-    const main = document.createElement("div");
-    main.className = "record-main";
+    // ---------- 305: 직전 기록 프리뷰 업데이트 ----------
+    function renderLastRecord() {
+      const preview = document.getElementById("lastRecordPreview");
+      const textSpan = document.getElementById("lastRecordText");
+      const timeSpan = document.getElementById("lastRecordTime");
+      if (!preview || !textSpan || !timeSpan) return;
 
-    const textSpan = document.createElement("div");
-    textSpan.className = "record-text";
+      if (records.length === 0) {
+        preview.style.display = "none";
+        return;
+      }
 
-    let display = rec.text;
-    if (display.length > LIMIT) {
-      textSpan.textContent = display.slice(0, LIMIT) + "…";
-      textSpan.title = rec.text; // 전체 문장은 title로 유지
-    } else {
+      const last = records[records.length - 1];
+      const LIMIT = 50;
+      const fullText = last.text || "";
+      const display = fullText.length > LIMIT ? fullText.slice(0, LIMIT) + "…" : fullText;
+
+      preview.style.display = "flex";
       textSpan.textContent = display;
+
+      const now = new Date();
+      const diffMs = now.getTime() - last.time.getTime();
+      const diffLabel = formatKoreanDiff(diffMs); // "방금 전 / 10분 전 / 1시간 30분 전"
+
+      timeSpan.textContent = `${getHHMM(last.time)} · ${diffLabel}`;
     }
 
-    const timeSpan = document.createElement("div");
-    timeSpan.className = "record-time";
-    timeSpan.textContent = getHHMM(rec.time); // 항상 오른쪽
+    // ---------- 내 상태 입력 초기화 ----------
+    function initStateInput() {
+      const input = document.getElementById("stateInput");
+      const btn = document.getElementById("saveStateBtn");
 
-    main.appendChild(textSpan);
-    main.appendChild(timeSpan);
+      if (!input || !btn) return;
 
-    item.appendChild(meta);   // 기록 바로 위에 격차시간
-    item.appendChild(main);
+      function save() {
+        const text = input.value.trim();
+        if (!text) return;
 
-    container.appendChild(item);
-  }
+        const now = new Date();
+        records.push({
+          text,
+          time: now
+        });
 
-  // 전체 개수 표시
-  document.getElementById("recordCount").textContent = records.length;
+        input.value = "";
+        renderRecords();
+        renderLastRecord(); // 직전 기록 프리뷰도 함께 갱신
+      }
 
-  // 새 기록 추가 시 항상 맨 아래(가장 최근)까지 자동 스크롤
-  container.scrollTop = container.scrollHeight;
-}
+      btn.addEventListener("click", save);
 
-
- // ---------- 내 상태 입력 초기화 ----------
-function initStateInput() {
-  const input = document.getElementById("stateInput");
-  const btn = document.getElementById("saveStateBtn");
-
-  // 혹시 요소를 못 찾는 경우 에러 막기
-  if (!input || !btn) return;
-
-  function save() {
-    const text = input.value.trim();
-    if (!text) return; // 공백이면 무시
-
-    const now = new Date();
-    // records 배열에 { text, time } 형태로 추가
-    records.push({
-      text,
-      time: now
-    });
-
-    input.value = "";
-    renderRecords(); // 기록 리스트 다시 그리기
-  }
-
-  // 버튼 클릭 시 저장
-  btn.addEventListener("click", save);
-
-  // 엔터 눌러도 저장
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      save();
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          save();
+        }
+      });
     }
-  });
-}
 
     // ---------- 약&수면 섹션 토글 ----------
     function initMedSleepToggle() {
@@ -1006,6 +1077,7 @@ function initStateInput() {
       initStateInput();
       initMedSleepToggle();
       initRecordsToggle();
+      renderLastRecord(); // 시작 시에도 한번 호출 (초기 상태에선 숨김)
     }
 
     document.addEventListener("DOMContentLoaded", init);
