@@ -871,76 +871,68 @@
       });
     }
 
-    // ---------- 내 상태 기록 / 기록 보기 (350) ----------
-    function renderRecords() {
-      const container = document.getElementById("recordsContainer");
-      container.innerHTML = "";
-      const LIMIT = 80; // 기록 텍스트 최대 80자 노출
+  // ---------- 내 상태 기록 / 기록 보기 (350) ----------
+function renderRecords() {
+  const container = document.getElementById("recordsContainer");
+  container.innerHTML = "";
+  const LIMIT = 80; // 기록 텍스트 최대 80자 노출
 
-      records.forEach((rec, idx) => {
-        const item = document.createElement("div");
-        item.className = "record-item";
+  const len = records.length;
 
-        const meta = document.createElement("div");
-        meta.className = "record-meta";
-        if (idx === 0) {
-          meta.textContent = "방금 전";
-        } else {
-          const prevTime = records[idx - 1].time;
-          const diffMs = rec.time.getTime() - prevTime.getTime();
-          meta.textContent = formatKoreanDiff(diffMs);
-        }
+  for (let uiIndex = 0; uiIndex < len; uiIndex++) {
+    // 최신 기록이 위로 오도록 역순 인덱스 사용
+    const i = len - 1 - uiIndex;
+    const rec = records[i];
 
-        const main = document.createElement("div");
-        main.className = "record-main";
+    const item = document.createElement("div");
+    item.className = "record-item";
 
-        const textSpan = document.createElement("div");
-        textSpan.className = "record-text";
+    // --- 상단: 시간 차 (마지막 기록 기준) ---
+    const meta = document.createElement("div");
+    meta.className = "record-meta";
 
-        let display = rec.text;
-        if (display.length > LIMIT) {
-          textSpan.textContent = display.slice(0, LIMIT) + "…";
-          textSpan.title = rec.text; // 전체 문장은 title로 유지
-        } else {
-          textSpan.textContent = display;
-        }
-
-        const timeSpan = document.createElement("div");
-        timeSpan.className = "record-time";
-        timeSpan.textContent = getHHMM(rec.time); // 항상 오른쪽
-
-        main.appendChild(textSpan);
-        main.appendChild(timeSpan);
-
-        item.appendChild(meta); // 기록 바로 위에 격차시간
-        item.appendChild(main);
-
-        container.appendChild(item);
-      });
-      document.getElementById("recordCount").textContent = records.length;
+    if (uiIndex === 0) {
+      // 가장 최근 기록
+      meta.textContent = "방금 전";
+    } else {
+      // 바로 위(더 최근) 기록과의 시간 차이
+      const prevIndex = len - uiIndex; // 이전 UI 항목에 해당하는 records 인덱스
+      const newer = records[prevIndex]; // 더 최근 기록
+      const diffMs = newer.time.getTime() - rec.time.getTime();
+      meta.textContent = formatKoreanDiff(diffMs);
     }
 
-    function initStateInput() {
-      const input = document.getElementById("stateInput");
-      const btn = document.getElementById("saveStateBtn");
+    // --- 본문: 텍스트 + 기록 시간 (오른쪽 고정) ---
+    const main = document.createElement("div");
+    main.className = "record-main";
 
-      function save() {
-        const text = input.value.trim();
-        if (!text) return;
-        const now = new Date();
-        records.push({ text, time: now });
-        input.value = "";
-        renderRecords();
-      }
+    const textSpan = document.createElement("div");
+    textSpan.className = "record-text";
 
-      btn.addEventListener("click", save);
-      input.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          save();
-        }
-      });
+    let display = rec.text;
+    if (display.length > LIMIT) {
+      textSpan.textContent = display.slice(0, LIMIT) + "…";
+      textSpan.title = rec.text; // 전체 문장은 title로 유지
+    } else {
+      textSpan.textContent = display;
     }
+
+    const timeSpan = document.createElement("div");
+    timeSpan.className = "record-time";
+    timeSpan.textContent = getHHMM(rec.time); // 항상 오른쪽
+
+    main.appendChild(textSpan);
+    main.appendChild(timeSpan);
+
+    item.appendChild(meta);   // 기록 바로 위에 격차시간
+    item.appendChild(main);
+
+    container.appendChild(item);
+  }
+
+  document.getElementById("recordCount").textContent = records.length;
+}
+
 
     // ---------- 약&수면 섹션 토글 ----------
     function initMedSleepToggle() {
