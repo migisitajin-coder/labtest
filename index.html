@@ -871,7 +871,7 @@
       });
     }
 
-  // ---------- 내 상태 기록 / 기록 보기 (350) ----------
+ // ---------- 내 상태 기록 / 기록 보기 (350) ----------
 function renderRecords() {
   const container = document.getElementById("recordsContainer");
   container.innerHTML = "";
@@ -879,10 +879,10 @@ function renderRecords() {
 
   const len = records.length;
 
-  for (let uiIndex = 0; uiIndex < len; uiIndex++) {
-    // 최신 기록이 위로 오도록 역순 인덱스 사용
-    const i = len - 1 - uiIndex;
+  // 최신 기록이 위(맨 처음)으로 보이도록 역순 렌더링
+  for (let i = len - 1; i >= 0; i--) {
     const rec = records[i];
+    const uiIndex = (len - 1) - i; // 0 = 가장 최근, 1 = 그 이전...
 
     const item = document.createElement("div");
     item.className = "record-item";
@@ -896,8 +896,7 @@ function renderRecords() {
       meta.textContent = "방금 전";
     } else {
       // 바로 위(더 최근) 기록과의 시간 차이
-      const prevIndex = len - uiIndex; // 이전 UI 항목에 해당하는 records 인덱스
-      const newer = records[prevIndex]; // 더 최근 기록
+      const newer = records[i + 1]; // 우리가 역순으로 도는 중이라 i+1이 더 최근
       const diffMs = newer.time.getTime() - rec.time.getTime();
       meta.textContent = formatKoreanDiff(diffMs);
     }
