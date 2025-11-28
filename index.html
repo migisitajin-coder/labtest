@@ -871,7 +871,7 @@
       });
     }
 
- // ---------- 내 상태 기록 / 기록 보기 (350) ----------
+// ---------- 내 상태 기록 / 기록 보기 (350) ----------
 function renderRecords() {
   const container = document.getElementById("recordsContainer");
   container.innerHTML = "";
@@ -879,24 +879,23 @@ function renderRecords() {
 
   const len = records.length;
 
-  // 최신 기록이 위(맨 처음)으로 보이도록 역순 렌더링
-  for (let i = len - 1; i >= 0; i--) {
+  // 오래된 기록이 위, 최근 기록이 아래로 내려오게 순서대로 렌더링
+  for (let i = 0; i < len; i++) {
     const rec = records[i];
-    const uiIndex = (len - 1) - i; // 0 = 가장 최근, 1 = 그 이전...
 
     const item = document.createElement("div");
     item.className = "record-item";
 
-    // --- 상단: 시간 차 (마지막 기록 기준) ---
+    // --- 상단: 시간 차(직전 최신 기록 기준) ---
     const meta = document.createElement("div");
     meta.className = "record-meta";
 
-    if (uiIndex === 0) {
-      // 가장 최근 기록
+    if (i === len - 1) {
+      // 리스트의 맨 아래 = 가장 최근 기록
       meta.textContent = "방금 전";
     } else {
-      // 바로 위(더 최근) 기록과의 시간 차이
-      const newer = records[i + 1]; // 우리가 역순으로 도는 중이라 i+1이 더 최근
+      // 바로 다음(더 최신) 기록과의 시간 차이
+      const newer = records[i + 1];
       const diffMs = newer.time.getTime() - rec.time.getTime();
       meta.textContent = formatKoreanDiff(diffMs);
     }
@@ -929,8 +928,13 @@ function renderRecords() {
     container.appendChild(item);
   }
 
+  // 전체 개수 표시
   document.getElementById("recordCount").textContent = records.length;
+
+  // 새 기록 추가 시 항상 맨 아래(가장 최근)까지 자동 스크롤
+  container.scrollTop = container.scrollHeight;
 }
+
 
  // ---------- 내 상태 입력 초기화 ----------
 function initStateInput() {
