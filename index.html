@@ -43,6 +43,15 @@
       padding: 8px 10px 140px; /* 하단 고정 입력창+네비게이션 공간 확보 */
     }
 
+    /* ID 표시 공통 스타일 */
+    .label-id {
+      display: inline-block;
+      margin-right: 4px;
+      font-size: 11px;
+      color: var(--text-sub);
+      opacity: 0.85;
+    }
+
     /* 110 헤더바 */
     .top-bar-wrap {
       width: 100%;
@@ -87,7 +96,7 @@
       font-size: 22px;
     }
 
-    /* 로고 텍스트 15% 정도 확대 */
+    /* 로고 텍스트 확대 (약 15% 증가) */
     .logo-text {
       font-size: 1.6rem;
       font-weight: 700;
@@ -400,6 +409,48 @@
       max-width: 960px;
     }
 
+    /* 305: 직전 기록 프리뷰 */
+    .last-record-preview {
+      display: none; /* 기본은 숨김, 기록이 생기면 보이게 */
+      margin: 0 4px 4px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-soft);
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .last-record-label {
+      font-weight: 600;
+      color: var(--text-sub);
+      white-space: nowrap;
+    }
+
+    .last-record-main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .last-record-text {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .last-record-time {
+      font-size: 11px;
+      color: var(--text-sub);
+      white-space: nowrap;
+    }
+
     .state-input-row {
       display: flex;
       gap: 6px;
@@ -461,62 +512,6 @@
       font-size: 12px;
       color: var(--text-sub);
       margin-left: auto; /* 항상 맨 오른쪽 */
-    }
-
-    /* 800 약&수면 상세보기 화면 */
-    .detail-view {
-      margin-top: 10px;
-      padding: 10px 4px 40px;
-    }
-
-    .detail-card {
-      background: var(--card-bg);
-      border-radius: var(--radius-card);
-      box-shadow: var(--shadow-soft);
-      padding: 14px 14px 18px;
-    }
-
-    .ms-tab-row {
-      display: flex;
-      margin: 6px 4px 10px;
-      border-radius: 999px;
-      background: #e0e4f0;
-      padding: 3px;
-      box-shadow: inset 2px 2px 4px #cbd1df, inset -2px -2px 4px #ffffff;
-    }
-
-    .ms-tab {
-      flex: 1;
-      border-radius: 999px;
-      border: none;
-      background: transparent;
-      padding: 6px 0;
-      font-size: 13px;
-      cursor: pointer;
-      color: var(--text-sub);
-      transition: all 0.15s ease-out;
-    }
-
-    .ms-tab.active {
-      background: #ffffff;
-      color: #222;
-      box-shadow: 2px 2px 4px #cbd1df, -2px -2px 4px #ffffff;
-      font-weight: 600;
-    }
-
-    .ms-tab-panel {
-      margin-top: 6px;
-    }
-
-    .ms-tab-placeholder {
-      background: var(--card-bg);
-      border-radius: var(--radius-card);
-      box-shadow: var(--shadow-soft);
-      padding: 40px 10px;
-      text-align: center;
-      font-size: 14px;
-      color: var(--text-sub);
-      line-height: 1.6;
     }
 
     /* 900 하단 네비게이션 */
@@ -583,146 +578,187 @@
     </div>
 
     <main class="main">
-      <!-- ▼ 100~350: 일일로그 뷰 전체 래퍼 -->
-      <div id="dailyView">
-        <!-- 100~140 오늘 요약 -->
-        <section class="section summary-section">
-          <div class="section-header">
-            <span class="section-title">● 📝 기록하면 채워지는 하루</span>
-            <span class="section-pill"><span id="completedCount">0</span>개 완료</span>
-          </div>
-
-          <div class="progress-row">
-            <span>오늘 기록할수록 퍼센트가 채워집니다.</span>
-            <span><span id="progressPercent">0</span>%</span>
-          </div>
-
-          <div class="progress-bar">
-            <div class="progress-bar-fill" id="progressFill"></div>
-          </div>
-
-          <div class="summary-cards">
-            <!-- 141 약 요약 카드 -->
-            <article class="summary-card" data-summary="med">
-              <div class="summary-card-header">
-                <div>
-                  <div class="summary-card-title">💊 약</div>
-                  <div class="summary-card-sub" id="medSummaryLabel">아침</div>
-                </div>
-                <div class="summary-card-time-group">
-                  <span class="summary-time" id="medSummaryTime">09:00</span>
-                  <span class="summary-diff" id="medSummaryDiff">+0h00m</span>
-                </div>
-              </div>
-              <div class="summary-card-footer">
-                <div class="summary-card-buttons">
-                  <button class="btn ghost" data-prev="med">이전</button>
-                  <button class="btn primary" data-next="med">다음에 ➜</button>
-                </div>
-              </div>
-            </article>
-
-            <!-- 142 수면 요약 카드 -->
-            <article class="summary-card" data-summary="sleep">
-              <div class="summary-card-header">
-                <div>
-                  <div class="summary-card-title">😴 수면</div>
-                  <div class="summary-card-sub" id="sleepSummaryLabel">누운 시간</div>
-                </div>
-                <div class="summary-card-time-group">
-                  <span class="summary-time" id="sleepSummaryTime">00:20</span>
-                  <span class="summary-diff" id="sleepSummaryDiff">+0h00m</span>
-                </div>
-              </div>
-              <div class="summary-card-footer">
-                <div class="summary-card-buttons">
-                  <button class="btn ghost" data-prev="sleep">이전</button>
-                  <button class="btn primary" data-next="sleep">다음에 ➜</button>
-                </div>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <!-- 200 약 & 수면 -->
-        <section class="section" id="medSleepSection">
-          <div class="section-header">
-            <span class="section-title">● 약 & 수면</span>
-            <button class="icon-button caret" id="toggleMedSleep" aria-expanded="true">▾</button>
-          </div>
-          <div class="med-sleep-grid" id="medSleepBody">
-            <div class="card column-card">
-              <div class="card-title">약 복용</div>
-              <ul class="checklist" id="medList"></ul>
-            </div>
-            <div class="card column-card">
-              <div class="card-title">수면 관리</div>
-              <ul class="checklist" id="sleepList"></ul>
-            </div>
-          </div>
-        </section>
-
-        <!-- 300 내 상태 기록 (하단 고정) -->
-        <section class="section" id="stateSection">
-          <div class="state-inner">
-            <div class="section-header">
-              <span class="section-title">● 내 상태 기록</span>
-              <button class="btn link" id="viewAllBtn">전체보기</button>
-            </div>
-            <p class="helper-text">지금 떠오르는 생각·기분을 한 줄로 남겨주세요.</p>
-            <div class="state-input-row">
-              <input
-                type="text"
-                id="stateInput"
-                placeholder="에이랩님 반가워요! 상태를 알려주세요~"
-              />
-              <button class="btn primary" id="saveStateBtn" aria-label="기록">
-                📤
-              </button>
-            </div>
-          </div>
-        </section>
-
-        <!-- 350 기록 보기 -->
-        <section class="section">
-          <div class="section-header">
-            <span class="section-title">● 기록 보기</span>
-            <div class="section-right">
-              <span class="section-count" id="recordCount">0</span>
-              <button class="icon-button caret" id="toggleRecords" aria-expanded="true">▾</button>
-            </div>
-          </div>
-          <div class="records" id="recordsContainer"></div>
-        </section>
-      </div>
-      <!-- ▲ dailyView 끝 -->
-
-      <!-- 800 약&수면 상세보기 화면 -->
-      <section id="settingsView" class="detail-view" style="display:none;">
+      <!-- 100~140 오늘 요약 -->
+      <section class="section summary-section">
         <div class="section-header">
-          <span class="section-title">● 약&수면 상세보기</span>
+          <!-- 120: 이모지 추가 -->
+          <span class="section-title">
+            <span class="label-id">[120-01]</span>● 📝 기록하면 채워지는 하루
+          </span>
+          <span class="section-pill">
+            <span class="label-id">[120-04]</span>
+            <span id="completedCount">0</span>개 완료
+          </span>
         </div>
 
-        <div class="detail-card">
-          <div class="ms-tab-row">
-            <button class="ms-tab active" data-tab="medTab">약</button>
-            <button class="ms-tab" data-tab="sleepTab">수면</button>
-          </div>
+        <div class="progress-row">
+          <span>
+            <span class="label-id">[120-02]</span>오늘 기록할수록 퍼센트가 채워집니다.
+          </span>
+          <span>
+            <span class="label-id">[120-03]</span>
+            <span id="progressPercent">0</span>%
+          </span>
+        </div>
 
-          <div id="medTab" class="ms-tab-panel">
-            <div class="ms-tab-placeholder">
-              약 수면 관리<br />
-              첫 화면 약 탭으로 고정
+        <div class="progress-bar">
+          <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+
+        <div class="summary-cards">
+          <!-- 141 약 요약 카드 -->
+          <article class="summary-card" data-summary="med">
+            <div class="summary-card-header">
+              <div>
+                <div class="summary-card-title">
+                  <span class="label-id">[141-01]</span>💊 약
+                </div>
+                <div class="summary-card-sub">
+                  <span class="label-id">[141-02]</span>
+                  <span id="medSummaryLabel">아침</span>
+                </div>
+              </div>
+              <div class="summary-card-time-group">
+                <span class="summary-time">
+                  <span class="label-id">[141-03]</span>
+                  <span id="medSummaryTime">09:00</span>
+                </span>
+                <span class="summary-diff">
+                  <span class="label-id">[141-04]</span>
+                  <span id="medSummaryDiff">+0h00m</span>
+                </span>
+              </div>
+            </div>
+            <div class="summary-card-footer">
+              <div class="summary-card-buttons">
+                <!-- 이전 버튼 -->
+                <button class="btn ghost" data-prev="med">
+                  <span class="label-id">[141-05]</span>이전
+                </button>
+                <button class="btn primary" data-next="med">
+                  <span class="label-id">[141-06]</span>다음에 ➜
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- 142 수면 요약 카드 -->
+          <article class="summary-card" data-summary="sleep">
+            <div class="summary-card-header">
+              <div>
+                <div class="summary-card-title">
+                  <span class="label-id">[142-01]</span>😴 수면
+                </div>
+                <div class="summary-card-sub">
+                  <span class="label-id">[142-02]</span>
+                  <span id="sleepSummaryLabel">누운 시간</span>
+                </div>
+              </div>
+              <div class="summary-card-time-group">
+                <span class="summary-time">
+                  <span class="label-id">[142-03]</span>
+                  <span id="sleepSummaryTime">00:20</span>
+                </span>
+                <span class="summary-diff">
+                  <span class="label-id">[142-04]</span>
+                  <span id="sleepSummaryDiff">+0h00m</span>
+                </span>
+              </div>
+            </div>
+            <div class="summary-card-footer">
+              <div class="summary-card-buttons">
+                <!-- 이전 버튼 -->
+                <button class="btn ghost" data-prev="sleep">
+                  <span class="label-id">[142-05]</span>이전
+                </button>
+                <button class="btn primary" data-next="sleep">
+                  <span class="label-id">[142-06]</span>다음에 ➜
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- 200 약 & 수면 -->
+      <section class="section" id="medSleepSection">
+        <div class="section-header">
+          <span class="section-title">
+            <span class="label-id">[200-01]</span>● 약 & 수면
+          </span>
+          <button class="icon-button caret" id="toggleMedSleep" aria-expanded="true">▾</button>
+        </div>
+        <div class="med-sleep-grid" id="medSleepBody">
+          <div class="card column-card">
+            <div class="card-title">
+              <span class="label-id">[210-01]</span>약 복용
+            </div>
+            <ul class="checklist" id="medList"></ul>
+          </div>
+          <div class="card column-card">
+            <div class="card-title">
+              <span class="label-id">[220-01]</span>수면 관리
+            </div>
+            <ul class="checklist" id="sleepList"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 300 내 상태 기록 (하단 고정) -->
+      <section class="section" id="stateSection">
+        <div class="state-inner">
+          <!-- 305: 직전 기록 프리뷰 -->
+          <div class="last-record-preview" id="lastRecordPreview">
+            <span class="last-record-label">
+              <span class="label-id">[305-01]</span>직전 기록
+            </span>
+            <div class="last-record-main">
+              <span class="last-record-text" id="lastRecordText"></span>
+              <span class="last-record-time" id="lastRecordTime"></span>
             </div>
           </div>
 
-          <div id="sleepTab" class="ms-tab-panel" style="display:none;">
-            <div class="ms-tab-placeholder">
-              수면 탭만 눌렀을 경우<br />
-              (제목만 반영)
-            </div>
+          <div class="section-header">
+            <span class="section-title">
+              <span class="label-id">[300-01]</span>● 내 상태 기록
+            </span>
+            <button class="btn link" id="viewAllBtn">
+              <span class="label-id">[300-02]</span>전체보기
+            </button>
+          </div>
+          <p class="helper-text">
+            <span class="label-id">[300-03]</span>지금 떠오르는 생각·기분을 한 줄로 남겨주세요.
+          </p>
+          <div class="state-input-row">
+            <input
+              type="text"
+              id="stateInput"
+              placeholder="에이랩님 반가워요! 상태를 알려주세요~"
+            />
+            <!-- 330: 전송 아이콘 버튼 -->
+            <button class="btn primary" id="saveStateBtn" aria-label="기록">
+              📤
+            </button>
           </div>
         </div>
+      </section>
+
+      <!-- 350 기록 보기 -->
+      <section class="section">
+        <div class="section-header">
+          <span class="section-title">
+            <span class="label-id">[350-01]</span>● 기록 보기
+          </span>
+          <div class="section-right">
+            <span class="section-count">
+              <span class="label-id">[350-02]</span>
+              <span id="recordCount">0</span>
+            </span>
+            <!-- 340: 아코디언 토글 -->
+            <button class="icon-button caret" id="toggleRecords" aria-expanded="true">▾</button>
+          </div>
+        </div>
+        <div class="records" id="recordsContainer"></div>
       </section>
     </main>
 
@@ -731,23 +767,33 @@
       <div class="bottom-nav-inner">
         <button class="nav-item active">
           <span class="nav-icon">💬</span>
-          <span class="nav-label">내 상태</span>
+          <span class="nav-label">
+            <span class="label-id">[900-01]</span>내 상태
+          </span>
         </button>
         <button class="nav-item">
           <span class="nav-icon">🧩</span>
-          <span class="nav-label">할일 루틴</span>
+          <span class="nav-label">
+            <span class="label-id">[900-02]</span>할일 루틴
+          </span>
         </button>
         <button class="nav-item">
           <span class="nav-icon">📷</span>
-          <span class="nav-label">카메라?</span>
+          <span class="nav-label">
+            <span class="label-id">[900-03]</span>카메라?
+          </span>
         </button>
         <button class="nav-item">
           <span class="nav-icon">✅</span>
-          <span class="nav-label">약&수면</span>
+          <span class="nav-label">
+            <span class="label-id">[900-04]</span>약&수면
+          </span>
         </button>
         <button class="nav-item">
           <span class="nav-icon">📊</span>
-          <span class="nav-label">통계보기</span>
+          <span class="nav-label">
+            <span class="label-id">[900-05]</span>통계보기
+          </span>
         </button>
       </div>
     </nav>
@@ -954,7 +1000,7 @@
       });
     }
 
-    // ---------- 내 상태 기록 / 기록 보기 (350) ----------
+    // ---------- 기록 리스트 렌더 (350) ----------
     function renderRecords() {
       const container = document.getElementById("recordsContainer");
       container.innerHTML = "";
@@ -962,27 +1008,28 @@
 
       const len = records.length;
 
-      // 최신 기록이 위에서부터 보이도록 역순 렌더링
-      for (let i = len - 1; i >= 0; i--) {
+      // 오래된 기록이 위, 최근 기록이 아래로 내려오게 순서대로 렌더링
+      for (let i = 0; i < len; i++) {
         const rec = records[i];
-        const uiIndex = (len - 1) - i; // 0 = 가장 최근, 1 = 그 이전...
 
         const item = document.createElement("div");
         item.className = "record-item";
 
-        // 상단: 시간 차 (직전 기록 기준)
+        // --- 상단: 시간 차(직전 최신 기록 기준) ---
         const meta = document.createElement("div");
         meta.className = "record-meta";
 
-        if (uiIndex === 0) {
+        if (i === len - 1) {
+          // 리스트의 맨 아래 = 가장 최근 기록
           meta.textContent = "방금 전";
         } else {
-          const newer = records[i + 1]; // 더 최근
+          // 바로 다음(더 최신) 기록과의 시간 차이
+          const newer = records[i + 1];
           const diffMs = newer.time.getTime() - rec.time.getTime();
           meta.textContent = formatKoreanDiff(diffMs);
         }
 
-        // 본문: 텍스트 + 기록 시간
+        // --- 본문: 텍스트 + 기록 시간 (오른쪽 고정) ---
         const main = document.createElement("div");
         main.className = "record-main";
 
@@ -992,25 +1039,85 @@
         let display = rec.text;
         if (display.length > LIMIT) {
           textSpan.textContent = display.slice(0, LIMIT) + "…";
-          textSpan.title = rec.text;
+          textSpan.title = rec.text; // 전체 문장은 title로 유지
         } else {
           textSpan.textContent = display;
         }
 
         const timeSpan = document.createElement("div");
         timeSpan.className = "record-time";
-        timeSpan.textContent = getHHMM(rec.time);
+        timeSpan.textContent = getHHMM(rec.time); // 항상 오른쪽
 
         main.appendChild(textSpan);
         main.appendChild(timeSpan);
 
-        item.appendChild(meta);
+        item.appendChild(meta);   // 기록 바로 위에 격차시간
         item.appendChild(main);
 
         container.appendChild(item);
       }
 
       document.getElementById("recordCount").textContent = records.length;
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // ---------- 305: 직전 기록 프리뷰 업데이트 ----------
+    function renderLastRecord() {
+      const preview = document.getElementById("lastRecordPreview");
+      const textSpan = document.getElementById("lastRecordText");
+      const timeSpan = document.getElementById("lastRecordTime");
+      if (!preview || !textSpan || !timeSpan) return;
+
+      if (records.length === 0) {
+        preview.style.display = "none";
+        return;
+      }
+
+      const last = records[records.length - 1];
+      const LIMIT = 50;
+      const fullText = last.text || "";
+      const display = fullText.length > LIMIT ? fullText.slice(0, LIMIT) + "…" : fullText;
+
+      preview.style.display = "flex";
+      textSpan.textContent = display;
+
+      const now = new Date();
+      const diffMs = now.getTime() - last.time.getTime();
+      const diffLabel = formatKoreanDiff(diffMs); // "방금 전 / 10분 전 / 1시간 30분 전"
+
+      timeSpan.textContent = `${getHHMM(last.time)} · ${diffLabel}`;
+    }
+
+    // ---------- 내 상태 입력 초기화 ----------
+    function initStateInput() {
+      const input = document.getElementById("stateInput");
+      const btn = document.getElementById("saveStateBtn");
+
+      if (!input || !btn) return;
+
+      function save() {
+        const text = input.value.trim();
+        if (!text) return;
+
+        const now = new Date();
+        records.push({
+          text,
+          time: now
+        });
+
+        input.value = "";
+        renderRecords();
+        renderLastRecord(); // 직전 기록 프리뷰도 함께 갱신
+      }
+
+      btn.addEventListener("click", save);
+
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          save();
+        }
+      });
     }
 
     // ---------- 약&수면 섹션 토글 ----------
@@ -1038,85 +1145,6 @@
       });
     }
 
-    // ---------- 내 상태 입력 ----------
-    function initStateInput() {
-      const input = document.getElementById("stateInput");
-      const btn = document.getElementById("saveStateBtn");
-      if (!input || !btn) return;
-
-      function save() {
-        const text = input.value.trim();
-        if (!text) return;
-        const now = new Date();
-        records.push({ text, time: now });
-        input.value = "";
-        renderRecords();
-      }
-
-      btn.addEventListener("click", save);
-      input.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          save();
-        }
-      });
-    }
-
-    // ---------- 800 네비게이션: 일일로그 <-> 약&수면 상세보기 ----------
-    function showDailyView() {
-      const daily = document.getElementById("dailyView");
-      const settings = document.getElementById("settingsView");
-      if (daily) daily.style.display = "block";
-      if (settings) settings.style.display = "none";
-    }
-
-    function showSettingsView() {
-      const daily = document.getElementById("dailyView");
-      const settings = document.getElementById("settingsView");
-      if (daily) daily.style.display = "none";
-      if (settings) settings.style.display = "block";
-    }
-
-    function initNavRouting() {
-      const navItems = document.querySelectorAll(".bottom-nav-inner .nav-item");
-      if (navItems.length < 4) return;
-
-      const homeBtn = navItems[0];        // 1번째: 내 상태
-      const medSettingsBtn = navItems[3]; // 4번째: 약&수면
-
-      homeBtn.addEventListener("click", () => {
-        navItems.forEach((b) => b.classList.remove("active"));
-        homeBtn.classList.add("active");
-        showDailyView();
-      });
-
-      medSettingsBtn.addEventListener("click", () => {
-        navItems.forEach((b) => b.classList.remove("active"));
-        medSettingsBtn.classList.add("active");
-        showSettingsView();
-      });
-    }
-
-    // ---------- 810 약/수면 탭 토글 ----------
-    function initDetailTabs() {
-      const tabs = document.querySelectorAll(".ms-tab-row .ms-tab");
-      const panels = document.querySelectorAll(".ms-tab-panel");
-      if (!tabs.length || !panels.length) return;
-
-      tabs.forEach((tab) => {
-        tab.addEventListener("click", () => {
-          const targetId = tab.dataset.tab;
-
-          tabs.forEach((t) => t.classList.remove("active"));
-          tab.classList.add("active");
-
-          panels.forEach((p) => {
-            p.style.display = p.id === targetId ? "block" : "none";
-          });
-        });
-      });
-    }
-
     // ---------- 초기화 ----------
     function init() {
       renderMedSleepLists();
@@ -1127,8 +1155,7 @@
       initStateInput();
       initMedSleepToggle();
       initRecordsToggle();
-      initNavRouting();
-      initDetailTabs();
+      renderLastRecord(); // 시작 시에도 한번 호출 (초기 상태에선 숨김)
     }
 
     document.addEventListener("DOMContentLoaded", init);
